@@ -137,7 +137,7 @@ def run_after_download_source(link, out_dir):
 
         if success:
             logger.info("Downloaded Dir:"+temp_src_dir)
-            run(temp_src_dir, temp_src_dir, temp_src_dir, temp_src_dir,
+            run(temp_src_dir, temp_src_dir,
                 "", final_excel_dir, False, result_log)
         else:
             logger.error("Download failed:" + msg)
