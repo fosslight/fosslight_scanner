@@ -92,7 +92,8 @@ $ tree
 
 ## 👏 How to report issue
 
-Please report any ideas or bugs to improve by creating an issue in [fosslight_scanner repository][cl]. Then there will be quick bug fixes and upgrades. Ideas to improve are always welcome.
+Please report any ideas or bugs to improve by creating an issue in [fosslight_scanner repository][cl].    
+Then there will be quick bug fixes and upgrades. Ideas to improve are always welcome.
 
 [cl]: https://github.com/fosslight/fosslight_scanner/issues
 
