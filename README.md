@@ -65,7 +65,7 @@ FOSSLight Scanner is run with the **fosslight** command.
 
 ### Ex 1. Local Source Analysis
 ```
-$ fosslight -d /home/source_path -a "-a 'source /test/Projects/venv/bin/activate' -d 'deactivate'" -s /home/source_path -b /home/binary_path -r /home/source_path
+$ fosslight -d /home/source_path -a "-a 'source /test/Projects/venv/bin/activate' -d 'deactivate'" -s /home/source_path
 ```
 
 ### Ex 2. Download Link and analyze
