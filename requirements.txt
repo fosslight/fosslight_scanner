@@ -1,0 +1,9 @@
+fosslight_source
+future
+pandas
+xlrd
+openpyxl
+progress
+pyyaml
+fosslight_util
+fosslight_dependency
