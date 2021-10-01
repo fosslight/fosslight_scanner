@@ -51,15 +51,17 @@ $ pip3 install fosslight_scanner
 
 FOSSLight Scanner is run with the **fosslight** command.
 
-### Parameters      
-| Parameter  | Argument | Description |
-| ------------- | ------------- | ------------- |
-| h | None | Print help message. | 
-| s | String | Path to analyze source. | 
-| d | String | Path to analyze dependencies. | 
-| a | String | Additional arguments for running dependency analysis. See the [FOSSLight Dependency Guide][fd_guide] for instructions. | 
-| w | String | Link to be analyzed can be downloaded by wget or git clone. | 
-| o | String | Output Directory. | 
+### Parameters   
+``` 
+    -h                        Print help message
+    -r                        Keep raw data 
+    -s <source_path>          Path to analyze source
+    -w <link>                 Link to be analyzaed can be downloaded by wget or git clone
+    -o <dir_name>             Output Directory
+    -d <dependency_path>      Path to analyze dependencies
+    -d <dependency_path> -a <additional_arg> (Using with -d option) Additional arguments for running dependency analysis  
+```
+- Ref. Additional arguments for running dependency analysis. See the [FOSSLight Dependency Guide][fd_guide] for instructions.
 
 [fd_guide]: https://fosslight.org/fosslight-guide-en/scanner/2_dependency.html
 
@@ -78,12 +80,8 @@ $ fosslight -o test_result_wget -w "https://github.com/LGE-OSS/example.git"
 ```
 $ tree
 .
-├── fosslight_raw_data_20210924_022422
+├── fosslight_log
 │   ├── fosslight_log_20210924_022422.txt
-│   ├── FOSSLight-Report_SRC_SRC.csv
-│   ├── FOSSLight-Report_SRC.xlsx
-│   ├── pip_dependency_output_SRC.csv
-│   └── pip_dependency_output.xlsx
 └── FOSSLight-Report_20210924_022422.xlsx
 ```
 
