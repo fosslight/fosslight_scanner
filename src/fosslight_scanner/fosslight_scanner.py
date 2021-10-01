@@ -10,9 +10,11 @@ import warnings
 import re
 import getopt
 import yaml
+from pathlib import Path
+from shutil import rmtree as rmdir
 from datetime import datetime
 from fosslight_source import run_scancode
-from fosslight_dependency import analyze_dependency
+from fosslight_dependency.run_dependency_scanner import main as dep_main
 from fosslight_util.download import cli_download_and_extract
 from ._get_input import get_input_mode
 from ._help import print_help_msg
@@ -80,7 +82,8 @@ def set_sub_parameter(default_params, params):  # For dependency
     return default_params
 
 
-def run(src_path, dep_path, dep_arguments, output_path, need_init=True, result_log={}):
+def run(src_path, dep_path, dep_arguments, output_path, remove_raw_data=True,
+        remove_src_data=True, need_init=True, result_log={}):
     try:
         success = True
         if need_init:
@@ -89,9 +92,9 @@ def run(src_path, dep_path, dep_arguments, output_path, need_init=True, result_l
             final_excel_dir = output_path
 
         if success:
-            output_files = {"SRC": _OUTPUT_FILE_PREFIX + "SRC",
-                            "BIN": _OUTPUT_FILE_PREFIX + "BIN",
-                            "DEP": _OUTPUT_FILE_PREFIX + "DEP",
+            output_files = {"SRC": "FL_Source",
+                            "BIN": "FL_Binary.xlsx",
+                            "DEP": "FL_Dependency",
                             "REUSE": "reuse.xml",
                             "FINAL": _OUTPUT_FILE_PREFIX + _start_time + '.xlsx'}
 
@@ -105,7 +108,7 @@ def run(src_path, dep_path, dep_arguments, output_path, need_init=True, result_l
                          set_sub_parameter(["DEP",
                                             "-p", os.path.abspath(dep_path),
                                             "-o", _output_dir], dep_arguments),
-                         analyze_dependency.main, "Dependency Analysis")
+                         dep_main, "Dependency Analysis")
 
             ouput_file = os.path.join(final_excel_dir, output_files["FINAL"])
             success, error_msg = merge_excels(_output_dir, ouput_file)
@@ -123,13 +126,23 @@ def run(src_path, dep_path, dep_arguments, output_path, need_init=True, result_l
     except Exception as ex:
         logger.warn("Error to print final log:"+str(ex))
 
+    try:
+        if remove_raw_data:
+            logger.debug("Remove temporary files: " + _output_dir)
+            rmdir(_output_dir)
+        if remove_src_data:
+            logger.debug("Remove Source: " + src_path)
+            rmdir(src_path)
+    except Exception as ex:
+        logger.debug("Error to remove temp files:"+str(ex))
 
-def run_after_download_source(link, out_dir):
+
+def run_after_download_source(link, out_dir, remove_raw_data):
     start_time = datetime.now().strftime('%Y%m%d_%H%M%S')
     try:
         success, final_excel_dir, result_log = init(out_dir)
         temp_src_dir = os.path.join(
-            final_excel_dir, _SRC_DIR_FROM_LINK_PREFIX+start_time)
+            _output_dir, _SRC_DIR_FROM_LINK_PREFIX+start_time)
 
         logger.info("Link to download :"+link)
         success, msg = cli_download_and_extract(
@@ -138,7 +151,7 @@ def run_after_download_source(link, out_dir):
         if success:
             logger.info("Downloaded Dir:"+temp_src_dir)
             run(temp_src_dir, temp_src_dir,
-                "", final_excel_dir, False, result_log)
+                "", final_excel_dir, remove_raw_data, remove_raw_data, False, result_log)
         else:
             logger.error("Download failed:" + msg)
     except Exception as ex:
@@ -161,12 +174,13 @@ def init(output_path=""):
     else:
         output_root_dir = _executed_path
 
-    if not os.path.isdir(_output_dir):
-        os.makedirs(_output_dir)
+    Path(_output_dir).mkdir(parents=True, exist_ok=True)
     _output_dir = os.path.abspath(_output_dir)
 
-    logger, result_log = init_log(os.path.join(_output_dir, _log_file + _start_time + ".txt"),
+    log_dir = os.path.join(output_root_dir, "fosslight_log")
+    logger, result_log = init_log(os.path.join(log_dir, _log_file + _start_time + ".txt"),
                                   True, logging.INFO, logging.DEBUG, _PKG_NAME)
+
     return os.path.isdir(_output_dir), output_root_dir, result_log
 
 
@@ -181,10 +195,11 @@ def main():
     url_to_analyze = ""
     _executed_path = os.getcwd()
     output_dir = _executed_path
+    remove_raw_data = True
 
     try:
         argv = sys.argv[1:]
-        opts, args = getopt.getopt(argv, 'hs:d:a:o:w:')
+        opts, args = getopt.getopt(argv, 'hrs:d:a:o:w:')
     except getopt.GetoptError:
         print_help_msg()
 
@@ -204,6 +219,8 @@ def main():
             url_to_analyze = arg
         elif opt == "-o":
             output_dir = os.path.abspath(arg)
+        elif opt == "-r":
+            remove_raw_data = False
 
     try:
         if not _cli_mode:
@@ -212,14 +229,14 @@ def main():
         timer.setDaemon(True)
         timer.start()
         if url_to_analyze != "":
-            run_after_download_source(url_to_analyze, output_dir)
+            run_after_download_source(url_to_analyze, output_dir, remove_raw_data)
 
         if src_path != "" or dep_path != "":
             run(src_path, dep_path,
-                dep_arguments, output_dir)
+                dep_arguments, output_dir, remove_raw_data, False)
 
     except Exception as ex:
-        print(str(ex))
+        logger.warning(str(ex))
 
 
 if __name__ == '__main__':
