@@ -57,7 +57,7 @@ FOSSLight Scanner is run with the **fosslight** command.
     -r                        Keep raw data 
     -s <source_path>          Path to analyze source
     -w <link>                 Link to be analyzaed can be downloaded by wget or git clone
-    -o <dir_name>             Output Directory
+    -o <output>               Output Directory or file
     -d <dependency_path>      Path to analyze dependencies
     -d <dependency_path> -a <additional_arg> (Using with -d option) Additional arguments for running dependency analysis  
 ```
