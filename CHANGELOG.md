@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.6.2 (05/10/2021)
+## Changes
+## 🔧 Maintenance
+
+- Specify the output file name @soimkim (#6)
+
+---
+
 ## v1.6.1 (01/10/2021)
 ## Changes
 ## 🐛 Hotfixes
