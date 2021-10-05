@@ -32,29 +32,29 @@ _log_file = "fosslight_log_"
 _start_time = ""
 _executed_path = ""
 _SRC_DIR_FROM_LINK_PREFIX = "fosslight_src_dir_"
+OUTPUT_FILE_EXTENSION = ".xlsx"
 
 
-def run_analysis(path_to_run, params, func, str_run_start):
+def run_analysis(path_to_run, params, func, str_run_start, output, exe_path):
     # This function will be replaced by call_analysis_api().
     logger.info("## Start to run "+str_run_start)
     try:
         if path_to_run != "":
             logger.info("|--- Path to analyze :"+path_to_run)
-            os.chdir(_output_dir)
+            os.chdir(output)
             sys.argv = params
             func()
-            os.chdir(_executed_path)
+            os.chdir(exe_path)
         else:
             logger.info("Analyzing path is missing...")
     except SystemExit:
         pass
     except Exception as ex:
-        logger.error(str(ex))
+        logger.error(str_run_start + ":" + str(ex))
 
 
 def call_analysis_api(path_to_run, str_run_start, func, *args):
     logger.info("## Start to run " + str_run_start)
-
     try:
         if path_to_run != "":
             logger.info("|--- Path to analyze :"+path_to_run)
@@ -66,7 +66,7 @@ def call_analysis_api(path_to_run, str_run_start, func, *args):
     except SystemExit:
         pass
     except Exception as ex:
-        logger.error(str(ex))
+        logger.error(str_run_start + ":" + str(ex))
 
 
 def set_sub_parameter(default_params, params):  # For dependency
@@ -83,32 +83,35 @@ def set_sub_parameter(default_params, params):  # For dependency
 
 
 def run(src_path, dep_path, dep_arguments, output_path, remove_raw_data=True,
-        remove_src_data=True, need_init=True, result_log={}):
+        remove_src_data=True, need_init=True, result_log={}, output_file=""):
     try:
         success = True
         if need_init:
             success, final_excel_dir, result_log = init(output_path)
         else:
             final_excel_dir = output_path
+        if output_file == "":
+            output_file = _OUTPUT_FILE_PREFIX + _start_time + OUTPUT_FILE_EXTENSION
 
         if success:
             output_files = {"SRC": "FL_Source",
                             "BIN": "FL_Binary.xlsx",
                             "DEP": "FL_Dependency",
                             "REUSE": "reuse.xml",
-                            "FINAL": _OUTPUT_FILE_PREFIX + _start_time + '.xlsx'}
-
-            call_analysis_api(src_path, "Source Analysis",
-                              run_scancode.run_scan,
-                              os.path.abspath(src_path), os.path.join(
-                                  _output_dir, output_files["SRC"]),
-                              False)
-
-            run_analysis(dep_path,
-                         set_sub_parameter(["DEP",
-                                            "-p", os.path.abspath(dep_path),
-                                            "-o", _output_dir], dep_arguments),
-                         dep_main, "Dependency Analysis")
+                            "FINAL": output_file}
+            if src_path != "":
+                call_analysis_api(src_path, "Source Analysis",
+                                  run_scancode.run_scan,
+                                  os.path.abspath(src_path),
+                                  os.path.join(_output_dir, output_files["SRC"]),
+                                  False)
+            if dep_path != "":
+                run_analysis(dep_path,
+                             set_sub_parameter(["DEP",
+                                                "-p", os.path.abspath(dep_path),
+                                                "-o", _output_dir], dep_arguments),
+                             dep_main, "Dependency Analysis",
+                             _output_dir, _executed_path)
 
             ouput_file = os.path.join(final_excel_dir, output_files["FINAL"])
             success, error_msg = merge_excels(_output_dir, ouput_file)
@@ -137,7 +140,7 @@ def run(src_path, dep_path, dep_arguments, output_path, remove_raw_data=True,
         logger.debug("Error to remove temp files:"+str(ex))
 
 
-def run_after_download_source(link, out_dir, remove_raw_data):
+def run_after_download_source(link, out_dir, remove_raw_data, output_file=""):
     start_time = datetime.now().strftime('%Y%m%d_%H%M%S')
     try:
         success, final_excel_dir, result_log = init(out_dir)
@@ -151,7 +154,8 @@ def run_after_download_source(link, out_dir, remove_raw_data):
         if success:
             logger.info("Downloaded Dir:"+temp_src_dir)
             run(temp_src_dir, temp_src_dir,
-                "", final_excel_dir, remove_raw_data, remove_raw_data, False, result_log)
+                "", final_excel_dir, remove_raw_data, remove_raw_data, False,
+                result_log, output_file)
         else:
             logger.error("Download failed:" + msg)
     except Exception as ex:
@@ -194,8 +198,10 @@ def main():
     dep_arguments = ""
     url_to_analyze = ""
     _executed_path = os.getcwd()
-    output_dir = _executed_path
     remove_raw_data = True
+    output_dir = _executed_path
+    output_file = ""
+    output_file_or_dir = ""
 
     try:
         argv = sys.argv[1:]
@@ -218,22 +224,29 @@ def main():
             _cli_mode = True
             url_to_analyze = arg
         elif opt == "-o":
-            output_dir = os.path.abspath(arg)
+            output_file_or_dir = arg
         elif opt == "-r":
             remove_raw_data = False
 
     try:
+        if output_file_or_dir != "":
+            if output_file_or_dir.endswith(OUTPUT_FILE_EXTENSION):
+                output_file = Path(output_file_or_dir).name
+                output_dir = os.path.dirname(os.path.abspath(output_file_or_dir))
+            else:
+                output_dir = os.path.abspath(output_file_or_dir)
+
         if not _cli_mode:
             src_path, dep_path, dep_arguments, url_to_analyze = get_input_mode()
         timer = TimerThread()
         timer.setDaemon(True)
         timer.start()
-        if url_to_analyze != "":
-            run_after_download_source(url_to_analyze, output_dir, remove_raw_data)
 
-        if src_path != "" or dep_path != "":
+        if url_to_analyze != "":
+            run_after_download_source(url_to_analyze, output_dir, remove_raw_data, output_file)
+        elif src_path != "" or dep_path != "":
             run(src_path, dep_path,
-                dep_arguments, output_dir, remove_raw_data, False)
+                dep_arguments, output_dir, remove_raw_data, False, True, {}, output_file)
 
     except Exception as ex:
         logger.warning(str(ex))
