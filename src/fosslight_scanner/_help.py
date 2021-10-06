@@ -14,6 +14,7 @@ _HELP_MESSAGE_SCANNER = """
     Options:
         -h\t\t\t\t\t    Print help message
         -r\t\t\t\t\t    Keep raw data
+        -t\t\t\t\t\t    Hide the progress bar
         -s <source_path>\t\t\t    Path to analyze source
         -w <link>\t\t\t\t    Link to be analyzaed can be downloaded by wget or git clone
         -o <output>\t\t\t\t    Output directory or file
