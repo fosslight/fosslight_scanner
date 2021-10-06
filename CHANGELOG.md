@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.6.3 (06/10/2021)
+## Changes
+## 🚀 Features
+
+- Add option -t  for hiding the progress bar @soimkim (#7)
+
+---
+
 ## v1.6.2 (05/10/2021)
 ## Changes
 ## 🔧 Maintenance
