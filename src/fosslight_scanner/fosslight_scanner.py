@@ -202,10 +202,11 @@ def main():
     output_dir = _executed_path
     output_file = ""
     output_file_or_dir = ""
+    show_progressbar = True
 
     try:
         argv = sys.argv[1:]
-        opts, args = getopt.getopt(argv, 'hrs:d:a:o:w:')
+        opts, args = getopt.getopt(argv, 'htrs:d:a:o:w:')
     except getopt.GetoptError:
         print_help_msg()
 
@@ -227,6 +228,8 @@ def main():
             output_file_or_dir = arg
         elif opt == "-r":
             remove_raw_data = False
+        elif opt == "-t":
+            show_progressbar = False
 
     try:
         if output_file_or_dir != "":
@@ -238,16 +241,16 @@ def main():
 
         if not _cli_mode:
             src_path, dep_path, dep_arguments, url_to_analyze = get_input_mode()
-        timer = TimerThread()
-        timer.setDaemon(True)
-        timer.start()
+        if show_progressbar:
+            timer = TimerThread()
+            timer.setDaemon(True)
+            timer.start()
 
         if url_to_analyze != "":
             run_after_download_source(url_to_analyze, output_dir, remove_raw_data, output_file)
         elif src_path != "" or dep_path != "":
             run(src_path, dep_path,
                 dep_arguments, output_dir, remove_raw_data, False, True, {}, output_file)
-
     except Exception as ex:
         logger.warning(str(ex))
 
