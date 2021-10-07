@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.6.4 (07/10/2021)
+## Changes
+## 🔧 Maintenance
+
+- Change sheet name of Dependency Scan result @soimkim (#8)
+
+---
+
 ## v1.6.3 (06/10/2021)
 ## Changes
 ## 🚀 Features
