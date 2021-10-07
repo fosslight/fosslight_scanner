@@ -96,7 +96,7 @@ def run(src_path, dep_path, dep_arguments, output_path, remove_raw_data=True,
         if success:
             output_files = {"SRC": "FL_Source",
                             "BIN": "FL_Binary.xlsx",
-                            "DEP": "FL_Dependency",
+                            "DEP": "FL_Dependency.xlsx",
                             "REUSE": "reuse.xml",
                             "FINAL": output_file}
             if src_path != "":
@@ -109,7 +109,8 @@ def run(src_path, dep_path, dep_arguments, output_path, remove_raw_data=True,
                 run_analysis(dep_path,
                              set_sub_parameter(["DEP",
                                                 "-p", os.path.abspath(dep_path),
-                                                "-o", _output_dir], dep_arguments),
+                                                "-o", os.path.join(_output_dir, output_files["DEP"])],
+                                               dep_arguments),
                              dep_main, "Dependency Analysis",
                              _output_dir, _executed_path)
 
