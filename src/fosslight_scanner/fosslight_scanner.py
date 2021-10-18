@@ -214,13 +214,11 @@ def main():
     for opt, arg in opts:
         if opt == "-h":
             print_help_msg()
-        elif opt == "-s":
+        elif opt == "-p":
             src_path = arg
-            _cli_mode = True
-        elif opt == "-d":
             dep_path = arg
             _cli_mode = True
-        elif opt == "-a":
+        elif opt == "-d":
             dep_arguments = arg
         elif opt == "-w":
             _cli_mode = True

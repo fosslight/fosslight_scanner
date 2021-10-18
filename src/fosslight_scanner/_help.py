@@ -15,11 +15,10 @@ _HELP_MESSAGE_SCANNER = """
         -h\t\t\t\t\t    Print help message
         -r\t\t\t\t\t    Keep raw data
         -t\t\t\t\t\t    Hide the progress bar
-        -s <source_path>\t\t\t    Path to analyze source
+        -p <source_path>\t\t\t    Path to analyze source, dependency
         -w <link>\t\t\t\t    Link to be analyzaed can be downloaded by wget or git clone
         -o <output>\t\t\t\t    Output directory or file
-        -d <dependency_path> \t\t\t    Path to analyze dependencies
-        -d <dependency_path> -a <additional_arg>    (Using with -d option) Additional arguments for running dependency analysis"""
+        -d <dependency_argument> \t\t\t    Additional arguments for running dependency analysis"""
 
 
 def print_help_msg():
