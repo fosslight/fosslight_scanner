@@ -1,4 +1,5 @@
 tox
 pytest
 pytest-cov
+flake8==3.9.2
 pytest-flake8

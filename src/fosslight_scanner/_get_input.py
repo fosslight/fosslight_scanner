@@ -39,8 +39,6 @@ def get_input_mode():
     _PYTHON_VERSION = sys.version_info[0]
 
     _input_path_msg = "Please enter the path to analyze:"
-    _additional_msg = "\n(Enter if it is the same as "\
-        + "the source code analysis path)"
 
     url_to_analyze = ""
     src_path = ""
@@ -53,18 +51,10 @@ def get_input_mode():
             2. Local source path\n"):
         success, url_to_analyze = get_input("Enter the link to analyze:", "")
     else:
-        # 1. FOSSLight Source
-        if ask_to_run("1. Do you want to analyze the source code? (y/n)"):
-            success, src_path = get_input(_input_path_msg, "")
+        success, src_path = get_input(_input_path_msg, "")
+        dep_path = src_path
 
-        if src_path == "":
-            _additional_msg = ""
-
-        # 2. FOSSLight Dependency
-        if ask_to_run("3. Do you want to analyze the dependency? (y/n)"):
-            success, dep_path = get_input(
-                _input_path_msg + _additional_msg, src_path)
-            success, dep_arguments = get_input(
-                "Please enter arguments for dependency analysis:", "")
+        success, dep_arguments = get_input(
+            "Please enter arguments for dependency analysis:", "")
 
     return src_path, dep_path, dep_arguments, url_to_analyze
