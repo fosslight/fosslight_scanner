@@ -5,5 +5,5 @@ xlrd
 openpyxl
 progress
 pyyaml
-fosslight_util>=1.3.3
-fosslight_dependency>=3.7.3
+fosslight_util>=1.3.4
+fosslight_dependency>=3.7.4
