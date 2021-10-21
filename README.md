@@ -55,11 +55,11 @@ FOSSLight Scanner is run with the **fosslight** command.
 ``` 
     -h                        Print help message
     -r                        Keep raw data 
-    -s <source_path>          Path to analyze source
+    -p <path>                 Path to analyze source
     -w <link>                 Link to be analyzaed can be downloaded by wget or git clone
     -o <output>               Output Directory or file
-    -d <dependency_path>      Path to analyze dependencies
-    -d <dependency_path> -a <additional_arg> (Using with -d option) Additional arguments for running dependency analysis  
+    -f <format>               Output file format (excel, csv, opossum)
+    -d <additional_arg>       Additional arguments for running dependency analysis 
 ```
 - Ref. Additional arguments for running dependency analysis. See the [FOSSLight Dependency Guide][fd_guide] for instructions.
 
@@ -67,7 +67,7 @@ FOSSLight Scanner is run with the **fosslight** command.
 
 ### Ex 1. Local Source Analysis
 ```
-$ fosslight -d /home/source_path -a "-a 'source /test/Projects/venv/bin/activate' -d 'deactivate'" -s /home/source_path
+$ fosslight -p /home/source_path -a "-a 'source /test/Projects/venv/bin/activate' -d 'deactivate'"
 ```
 
 ### Ex 2. Download Link and analyze

@@ -18,7 +18,8 @@ _HELP_MESSAGE_SCANNER = """
         -p <source_path>\t\t\t    Path to analyze source, dependency
         -w <link>\t\t\t\t    Link to be analyzaed can be downloaded by wget or git clone
         -o <output>\t\t\t\t    Output directory or file
-        -d <dependency_argument> \t\t\t    Additional arguments for running dependency analysis"""
+        -f <format>\t\t\t\t    Output file format (excel, csv, opossum)
+        -d <dependency_argument> \t\t    Additional arguments for running dependency analysis"""
 
 
 def print_help_msg():
