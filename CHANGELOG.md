@@ -1,5 +1,14 @@
 # Changelog
 
+## v1.6.5 (21/10/2021)
+## Changes
+## 🔧 Maintenance
+
+- Add the -f option and change way to create output @soimkim (#10)
+- Change the parameters related to the scanner path @soimkim (#9)
+
+---
+
 ## v1.6.4 (07/10/2021)
 ## Changes
 ## 🔧 Maintenance
