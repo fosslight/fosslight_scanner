@@ -172,7 +172,8 @@ def run(src_path, dep_path, dep_arguments, output_path, remove_raw_data=True,
 
             result_log["Result"] = success
             if success:
-                result_log["Output Path"] = final_excel_dir
+                file_extension = ".xlsx" if output_extension == "" else output_extension
+                result_log["Output File"] = output_file_without_ext + file_extension
             else:
                 result_log["Result Message - Merge"] = msg
     except Exception as ex:
