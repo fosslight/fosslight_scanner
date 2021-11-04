@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.6.6 (04/11/2021)
+## Changes
+## 🚀 Features
+
+- Add number of process to analyze as parameter @soimkim (#11)
+
+---
+
 ## v1.6.5 (21/10/2021)
 ## Changes
 ## 🔧 Maintenance
