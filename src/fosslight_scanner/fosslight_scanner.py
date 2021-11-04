@@ -136,7 +136,7 @@ def run_dependency(path_to_analyze, output_file_with_path, params=""):
 
 
 def run(src_path, dep_path, dep_arguments, output_path, remove_raw_data=True,
-        remove_src_data=True, need_init=True, result_log={}, output_file="", output_extension=""):
+        remove_src_data=True, need_init=True, result_log={}, output_file="", output_extension="", num_cores=-1):
     try:
         success = True
         sheet_list = {}
@@ -160,7 +160,7 @@ def run(src_path, dep_path, dep_arguments, output_path, remove_raw_data=True,
                                                 2, run_scancode.run_scan,
                                                 os.path.abspath(src_path),
                                                 os.path.join(_output_dir, output_files["SRC"]),
-                                                False, -1, True)
+                                                False, num_cores, True)
             if success:
                 sheet_list["SRC_FL_Source"] = [scan_item.get_row_to_print() for scan_item in result]
 
@@ -195,7 +195,7 @@ def run(src_path, dep_path, dep_arguments, output_path, remove_raw_data=True,
         logger.debug("Error to remove temp files:"+str(ex))
 
 
-def run_after_download_source(link, out_dir, remove_raw_data, output_file="", output_extension=""):
+def run_after_download_source(link, out_dir, remove_raw_data, output_file="", output_extension="", num_cores=-1):
     start_time = datetime.now().strftime('%Y%m%d_%H%M%S')
     try:
         success, final_excel_dir, result_log = init(out_dir)
@@ -210,7 +210,7 @@ def run_after_download_source(link, out_dir, remove_raw_data, output_file="", ou
             logger.info("Downloaded Dir:"+temp_src_dir)
             run(temp_src_dir, temp_src_dir,
                 "", final_excel_dir, remove_raw_data, remove_raw_data, False,
-                result_log, output_file, output_extension)
+                result_log, output_file, output_extension, num_cores)
         else:
             logger.error("Download failed:" + msg)
     except Exception as ex:
@@ -259,10 +259,11 @@ def main():
     output_file_or_dir = ""
     show_progressbar = True
     file_format = ""
+    num_cores = -1
 
     try:
         argv = sys.argv[1:]
-        opts, args = getopt.getopt(argv, 'htrs:d:a:o:w:f:p:')
+        opts, args = getopt.getopt(argv, 'htrs:d:a:o:w:f:p:c:')
     except getopt.GetoptError:
         print_help_msg()
 
@@ -286,6 +287,8 @@ def main():
             show_progressbar = False
         elif opt == "-f":
             file_format = arg
+        elif opt == "-c":
+            num_cores = arg
 
     try:
         success, msg, output_path, output_file, output_extension = check_output_format(output_file_or_dir, file_format)
@@ -301,10 +304,10 @@ def main():
             timer.start()
 
         if url_to_analyze != "":
-            run_after_download_source(url_to_analyze, output_path, remove_raw_data, output_file, output_extension)
+            run_after_download_source(url_to_analyze, output_path, remove_raw_data, output_file, output_extension, num_cores)
         elif src_path != "" or dep_path != "":
             run(src_path, dep_path,
-                dep_arguments, output_path, remove_raw_data, False, True, {}, output_file, output_extension)
+                dep_arguments, output_path, remove_raw_data, False, True, {}, output_file, output_extension, num_cores)
     except Exception as ex:
         logger.warning(str(ex))
 

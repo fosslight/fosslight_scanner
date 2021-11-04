@@ -19,6 +19,7 @@ _HELP_MESSAGE_SCANNER = """
         -w <link>\t\t\t\t    Link to be analyzaed can be downloaded by wget or git clone
         -o <output>\t\t\t\t    Output directory or file
         -f <format>\t\t\t\t    Output file format (excel, csv, opossum)
+        -c <cores>\t\t\t\t    Number of processes to analyze source
         -d <dependency_argument> \t\t    Additional arguments for running dependency analysis"""
 
 
