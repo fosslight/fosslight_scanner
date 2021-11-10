@@ -59,6 +59,7 @@ FOSSLight Scanner is run with the **fosslight** command.
     -w <link>                 Link to be analyzaed can be downloaded by wget or git clone
     -o <output>               Output Directory or file
     -f <format>               Output file format (excel, csv, opossum)
+    -c <cores>                Number of processes to analyze source
     -d <additional_arg>       Additional arguments for running dependency analysis 
 ```
 - Ref. Additional arguments for running dependency analysis. See the [FOSSLight Dependency Guide][fd_guide] for instructions.
