@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.6.7 (25/11/2021)
+## Changes
+## 🔧 Maintenance
+
+- Print output file instead of path @soimkim (#13)
+
+---
+
 ## v1.6.6 (04/11/2021)
 ## Changes
 ## 🚀 Features
