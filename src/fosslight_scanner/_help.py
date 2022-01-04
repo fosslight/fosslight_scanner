@@ -13,6 +13,7 @@ _HELP_MESSAGE_SCANNER = """
 
     Options:
         -h\t\t\t\t\t    Print help message
+        -v\t\t\t\t\t    Print FOSSLight Scanner version
         -r\t\t\t\t\t    Keep raw data
         -t\t\t\t\t\t    Hide the progress bar
         -p <source_path>\t\t\t    Path to analyze source, dependency

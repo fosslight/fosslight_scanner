@@ -18,6 +18,7 @@ from fosslight_dependency.run_dependency_scanner import run_dependency_scanner
 from fosslight_util.download import cli_download_and_extract
 from ._get_input import get_input_mode
 from ._help import print_help_msg
+from fosslight_util.help import print_package_version
 from fosslight_util.set_log import init_log
 from fosslight_util.timer_thread import TimerThread
 import fosslight_util.constant as constant
@@ -264,13 +265,15 @@ def main():
 
     try:
         argv = sys.argv[1:]
-        opts, args = getopt.getopt(argv, 'htrs:d:a:o:w:f:p:c:')
+        opts, args = getopt.getopt(argv, 'hvtrs:d:a:o:w:f:p:c:')
     except getopt.GetoptError:
         print_help_msg()
 
     for opt, arg in opts:
         if opt == "-h":
             print_help_msg()
+        elif opt == "-v":
+            print_package_version(PKG_NAME, "FOSSLight Scanner Version:")
         elif opt == "-p":
             src_path = arg
             dep_path = arg
