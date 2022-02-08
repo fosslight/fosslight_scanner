@@ -13,6 +13,7 @@ import yaml
 from pathlib import Path
 from shutil import rmtree as rmdir
 from datetime import datetime
+from fosslight_binary import binary_analysis
 from fosslight_source import run_scancode
 from fosslight_dependency.run_dependency_scanner import run_dependency_scanner
 from fosslight_util.download import cli_download_and_extract
@@ -136,8 +137,8 @@ def run_dependency(path_to_analyze, output_file_with_path, params=""):
     return result_list
 
 
-def run(src_path, dep_path, dep_arguments, output_path, remove_raw_data=True,
-        remove_src_data=True, need_init=True, result_log={}, output_file="", output_extension="", num_cores=-1):
+def run(src_path, dep_arguments, output_path, remove_raw_data=True,
+        remove_src_data=True, need_init=True, result_log={}, output_file="", output_extension="", num_cores=-1, db_url=""):
     try:
         success = True
         sheet_list = {}
@@ -146,6 +147,7 @@ def run(src_path, dep_path, dep_arguments, output_path, remove_raw_data=True,
         else:
             final_excel_dir = output_path
         final_excel_dir = os.path.abspath(final_excel_dir)
+        abs_path = os.path.abspath(src_path)
 
         if output_file == "":
             output_prefix = OUTPUT_EXCEL_PREFIX if output_extension != ".json" else OUTPUT_JSON_PREFIX
@@ -159,13 +161,21 @@ def run(src_path, dep_path, dep_arguments, output_path, remove_raw_data=True,
 
             success, result = call_analysis_api(src_path, "Source Analysis",
                                                 2, run_scancode.run_scan,
-                                                os.path.abspath(src_path),
+                                                abs_path,
                                                 os.path.join(_output_dir, output_files["SRC"]),
                                                 False, num_cores, True)
             if success:
                 sheet_list["SRC_FL_Source"] = [scan_item.get_row_to_print() for scan_item in result]
 
-            result_list = run_dependency(dep_path, os.path.join(_output_dir, output_files["DEP"]), dep_arguments)
+            success, result_bin = call_analysis_api(src_path, "Binary Analysis",
+                                                1, binary_analysis.find_binaries,
+                                                abs_path,
+                                                os.path.join(_output_dir, output_files["BIN"]),
+                                                "", db_url)
+            if result_bin:
+                sheet_list["BIN_FL_Binary"] = result_bin
+
+            result_list = run_dependency(src_path, os.path.join(_output_dir, output_files["DEP"]), dep_arguments)
             sheet_list['SRC_FL_Dependency'] = result_list
 
             output_file_without_ext = os.path.join(final_excel_dir, output_file)
@@ -197,8 +207,10 @@ def run(src_path, dep_path, dep_arguments, output_path, remove_raw_data=True,
         logger.debug("Error to remove temp files:"+str(ex))
 
 
-def run_after_download_source(link, out_dir, remove_raw_data, output_file="", output_extension="", num_cores=-1):
+def run_after_download_source(link, out_dir):
     start_time = datetime.now().strftime('%Y%m%d_%H%M%S')
+    success = False
+    temp_src_dir = ""
     try:
         success, final_excel_dir, result_log = init(out_dir)
         temp_src_dir = os.path.join(
@@ -210,15 +222,13 @@ def run_after_download_source(link, out_dir, remove_raw_data, output_file="", ou
 
         if success:
             logger.info("Downloaded Dir:"+temp_src_dir)
-            run(temp_src_dir, temp_src_dir,
-                "", final_excel_dir, remove_raw_data, remove_raw_data, False,
-                result_log, output_file, output_extension, num_cores)
         else:
+            temp_src_dir = ""
             logger.error("Download failed:" + msg)
     except Exception as ex:
         success = False
         logger.error("Failed to analyze from link:" + str(ex))
-    return success
+    return success, temp_src_dir
 
 
 def init(output_path=""):
@@ -251,7 +261,6 @@ def main():
 
     # Path_to_analyze
     src_path = ""
-    dep_path = ""
     dep_arguments = ""
     url_to_analyze = ""
     _executed_path = os.getcwd()
@@ -262,10 +271,11 @@ def main():
     show_progressbar = True
     file_format = ""
     num_cores = -1
+    db_url = ""
 
     try:
         argv = sys.argv[1:]
-        opts, args = getopt.getopt(argv, 'hvtrs:d:a:o:w:f:p:c:')
+        opts, args = getopt.getopt(argv, 'hvtrs:d:a:o:w:f:p:c:u:')
     except getopt.GetoptError:
         print_help_msg()
 
@@ -276,7 +286,6 @@ def main():
             print_package_version(PKG_NAME, "FOSSLight Scanner Version:")
         elif opt == "-p":
             src_path = arg
-            dep_path = arg
             _cli_mode = True
         elif opt == "-d":
             dep_arguments = arg
@@ -293,6 +302,8 @@ def main():
             file_format = arg
         elif opt == "-c":
             num_cores = arg
+        elif opt == "-u":
+            db_url = arg
 
     try:
         success, msg, output_path, output_file, output_extension = check_output_format(output_file_or_dir, file_format)
@@ -301,17 +312,17 @@ def main():
             return False
 
         if not _cli_mode:
-            src_path, dep_path, dep_arguments, url_to_analyze = get_input_mode()
+            src_path, dep_arguments, url_to_analyze = get_input_mode()
         if show_progressbar:
             timer = TimerThread()
             timer.setDaemon(True)
             timer.start()
 
         if url_to_analyze != "":
-            run_after_download_source(url_to_analyze, output_path, remove_raw_data, output_file, output_extension, num_cores)
-        elif src_path != "" or dep_path != "":
-            run(src_path, dep_path,
-                dep_arguments, output_path, remove_raw_data, False, True, {}, output_file, output_extension, num_cores)
+            success, src_path = run_after_download_source(url_to_analyze, output_path)
+        if src_path != "":
+            run(src_path, dep_arguments, output_path, remove_raw_data,
+                False, True, {}, output_file, output_extension, num_cores, db_url)
     except Exception as ex:
         logger.warning(str(ex))
 

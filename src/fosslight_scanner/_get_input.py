@@ -31,7 +31,6 @@ def get_input_mode():
 
     url_to_analyze = ""
     src_path = ""
-    dep_path = ""
     dep_arguments = ""
 
     if ask_to_run("What are you going to analyze? (1/2)\n\
@@ -45,4 +44,4 @@ def get_input_mode():
         dep_arguments = get_input(
             "Please enter arguments for dependency analysis:", "")
 
-    return src_path, dep_path, dep_arguments, url_to_analyze
+    return src_path, dep_arguments, url_to_analyze

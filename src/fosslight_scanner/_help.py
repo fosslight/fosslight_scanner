@@ -21,7 +21,8 @@ _HELP_MESSAGE_SCANNER = """
         -o <output>\t\t\t\t    Output directory or file
         -f <format>\t\t\t\t    Output file format (excel, csv, opossum)
         -c <cores>\t\t\t\t    Number of processes to analyze source
-        -d <dependency_argument> \t\t    Additional arguments for running dependency analysis"""
+        -d <dependency_argument> \t\t    Additional arguments for running dependency analysis
+        -u <db_url>\t\t\t    DB Connection(format :'postgresql://username:password@host:port/database_name')"""
 
 
 def print_help_msg():
