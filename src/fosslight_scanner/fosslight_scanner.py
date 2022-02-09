@@ -24,6 +24,8 @@ from fosslight_util.set_log import init_log
 from fosslight_util.timer_thread import TimerThread
 import fosslight_util.constant as constant
 from fosslight_util.output_format import write_output_file, check_output_format
+from fosslight_reuse._fosslight_reuse import run_lint as reuse_lint
+from .common import copy_file
 
 OUTPUT_EXCEL_PREFIX = "FOSSLight-Report_"
 OUTPUT_JSON_PREFIX = "Opossum_input_"
@@ -158,6 +160,13 @@ def run(src_path, dep_arguments, output_path, remove_raw_data=True,
                             "BIN": "FL_Binary.xlsx",
                             "DEP": "FL_Dependency.xlsx",
                             "REUSE": "reuse.xml"}
+
+            output_reuse = os.path.join(_output_dir, output_files["REUSE"])
+            success, result = call_analysis_api(src_path, "Reuse Lint",
+                                                -1, reuse_lint,
+                                                abs_path, "", False,
+                                                output_reuse)
+            copy_file(output_reuse, output_path)
 
             success, result = call_analysis_api(src_path, "Source Analysis",
                                                 2, run_scancode.run_scan,
