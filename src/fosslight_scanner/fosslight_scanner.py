@@ -105,6 +105,7 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
         if success:
             output_files = {"SRC": "FL_Source.xlsx",
                             "BIN": "FL_Binary.xlsx",
+                            "BIN_TXT": "FL_Binary.txt",
                             "DEP": "FL_Dependency.xlsx",
                             "REUSE": "reuse.xml"}
             if run_reuse:
@@ -132,6 +133,7 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                                                         "", db_url)
                 if result_bin:
                     sheet_list["BIN_FL_Binary"] = result_bin
+                    copy_file(os.path.join(_output_dir, output_files["BIN_TXT"]), output_path)
 
             if run_dep:
                 result_list = run_dependency(src_path, os.path.join(_output_dir, output_files["DEP"]), dep_arguments)
