@@ -12,7 +12,7 @@ from pathlib import Path
 from shutil import rmtree as rmdir
 from datetime import datetime
 from fosslight_binary import binary_analysis
-from fosslight_source import run_scancode
+from fosslight_source.cli import run_all_scanners as source_analysis
 from fosslight_dependency.run_dependency_scanner import run_dependency_scanner
 from fosslight_util.download import cli_download_and_extract
 from ._get_input import get_input_mode
@@ -103,7 +103,7 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
             output_file = output_prefix + _start_time
 
         if success:
-            output_files = {"SRC": "FL_Source",
+            output_files = {"SRC": "FL_Source.xlsx",
                             "BIN": "FL_Binary.xlsx",
                             "DEP": "FL_Dependency.xlsx",
                             "REUSE": "reuse.xml"}
@@ -117,7 +117,7 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
 
             if run_src:
                 success, result = call_analysis_api(src_path, "Source Analysis",
-                                                    2, run_scancode.run_scan,
+                                                    2, source_analysis,
                                                     abs_path,
                                                     os.path.join(_output_dir, output_files["SRC"]),
                                                     False, num_cores, True)
