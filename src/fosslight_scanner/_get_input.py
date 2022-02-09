@@ -39,7 +39,6 @@ def get_input_mode():
         url_to_analyze = get_input("Enter the link to analyze:", "")
     else:
         src_path = get_input("Please enter the path to analyze:", "")
-        dep_path = src_path
 
         dep_arguments = get_input(
             "Please enter arguments for dependency analysis:", "")
