@@ -179,14 +179,13 @@ def run(src_path, dep_arguments, output_path, remove_raw_data=True,
             sheet_list['SRC_FL_Dependency'] = result_list
 
             output_file_without_ext = os.path.join(final_excel_dir, output_file)
-            success, msg = write_output_file(output_file_without_ext, output_extension, sheet_list)
+            success, msg, result_file = write_output_file(output_file_without_ext, output_extension, sheet_list)
 
-            result_log["Result"] = success
             if success:
-                file_extension = ".xlsx" if output_extension == "" else output_extension
-                result_log["Output File"] = output_file_without_ext + file_extension
+                logger.info(f"Writing Output file({result_file}, Success: {success}")
             else:
-                result_log["Result Message - Merge"] = msg
+                logger.error(f"Fail to generate result file. msg:({msg})")
+                sys.exit(0)
     except Exception as ex:
         logger.error("Scanning:" + str(ex))
 
