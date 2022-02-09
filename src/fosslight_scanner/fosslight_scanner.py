@@ -4,11 +4,9 @@
 # Copyright (c) 2020 LG Electronics Inc.
 # SPDX-License-Identifier: Apache-2.0
 import os
-import sys
 import logging
 import warnings
 import re
-import getopt
 import yaml
 from pathlib import Path
 from shutil import rmtree as rmdir
@@ -18,14 +16,12 @@ from fosslight_source import run_scancode
 from fosslight_dependency.run_dependency_scanner import run_dependency_scanner
 from fosslight_util.download import cli_download_and_extract
 from ._get_input import get_input_mode
-from ._help import print_help_msg
-from fosslight_util.help import print_package_version
 from fosslight_util.set_log import init_log
 from fosslight_util.timer_thread import TimerThread
 import fosslight_util.constant as constant
 from fosslight_util.output_format import write_output_file, check_output_format
 from fosslight_reuse._fosslight_reuse import run_lint as reuse_lint
-from .common import copy_file
+from .common import copy_file, call_analysis_api
 
 OUTPUT_EXCEL_PREFIX = "FOSSLight-Report_"
 OUTPUT_JSON_PREFIX = "Opossum_input_"
@@ -37,57 +33,6 @@ _log_file = "fosslight_log_"
 _start_time = ""
 _executed_path = ""
 SRC_DIR_FROM_LINK_PREFIX = "fosslight_src_dir_"
-
-
-def run_analysis(path_to_run, params, func, str_run_start, output, exe_path):
-    # This function will be replaced by call_analysis_api().
-    logger.info("## Start to run "+str_run_start)
-    return_value = ""
-    try:
-        if path_to_run != "":
-            logger.info("|--- Path to analyze :" + path_to_run)
-            os.chdir(output)
-            sys.argv = params
-            return_value = func()
-            os.chdir(exe_path)
-        else:
-            logger.info("Analyzing path is missing...")
-    except SystemExit:
-        pass
-    except Exception as ex:
-        logger.error(str_run_start + ":" + str(ex))
-    return return_value
-
-
-def call_analysis_api(path_to_run, str_run_start, return_idx, func, *args):
-    # return_idx == -1 : Raw return value itself
-    logger.info("## Start to run " + str_run_start)
-    success = True
-    result = []
-    try:
-        if path_to_run != "":
-            logger.info("|--- Path to analyze :"+path_to_run)
-            result = func(*args)
-        else:
-            logger.info("Analyzing path is missing...")
-    except SystemExit:
-        success = False
-    except Exception as ex:
-        success = False
-        logger.error(str_run_start + ":" + str(ex))
-    try:
-        if success:
-            if result and return_idx >= 0:
-                if len(result) > return_idx:
-                    result = result[return_idx]
-                else:
-                    success = False
-    except Exception as ex:
-        logger.debug("Get return value:" + str(ex))
-        success = False
-    if not result:
-        result = []
-    return success, result
 
 
 def run_dependency(path_to_analyze, output_file_with_path, params=""):
@@ -139,8 +84,10 @@ def run_dependency(path_to_analyze, output_file_with_path, params=""):
     return result_list
 
 
-def run(src_path, dep_arguments, output_path, remove_raw_data=True,
-        remove_src_data=True, need_init=True, result_log={}, output_file="", output_extension="", num_cores=-1, db_url=""):
+def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
+                run_src=True, run_bin=True, run_dep=True, run_reuse=True,
+                remove_src_data=True, need_init=True, result_log={}, output_file="",
+                output_extension="", num_cores=-1, db_url=""):
     try:
         success = True
         sheet_list = {}
@@ -160,32 +107,35 @@ def run(src_path, dep_arguments, output_path, remove_raw_data=True,
                             "BIN": "FL_Binary.xlsx",
                             "DEP": "FL_Dependency.xlsx",
                             "REUSE": "reuse.xml"}
+            if run_reuse:
+                output_reuse = os.path.join(_output_dir, output_files["REUSE"])
+                success, result = call_analysis_api(src_path, "Reuse Lint",
+                                                    -1, reuse_lint,
+                                                    abs_path, "", False,
+                                                    output_reuse)
+                copy_file(output_reuse, output_path)
 
-            output_reuse = os.path.join(_output_dir, output_files["REUSE"])
-            success, result = call_analysis_api(src_path, "Reuse Lint",
-                                                -1, reuse_lint,
-                                                abs_path, "", False,
-                                                output_reuse)
-            copy_file(output_reuse, output_path)
+            if run_src:
+                success, result = call_analysis_api(src_path, "Source Analysis",
+                                                    2, run_scancode.run_scan,
+                                                    abs_path,
+                                                    os.path.join(_output_dir, output_files["SRC"]),
+                                                    False, num_cores, True)
+                if success:
+                    sheet_list["SRC_FL_Source"] = [scan_item.get_row_to_print() for scan_item in result]
 
-            success, result = call_analysis_api(src_path, "Source Analysis",
-                                                2, run_scancode.run_scan,
-                                                abs_path,
-                                                os.path.join(_output_dir, output_files["SRC"]),
-                                                False, num_cores, True)
-            if success:
-                sheet_list["SRC_FL_Source"] = [scan_item.get_row_to_print() for scan_item in result]
+            if run_bin:
+                success, result_bin = call_analysis_api(src_path, "Binary Analysis",
+                                                        1, binary_analysis.find_binaries,
+                                                        abs_path,
+                                                        os.path.join(_output_dir, output_files["BIN"]),
+                                                        "", db_url)
+                if result_bin:
+                    sheet_list["BIN_FL_Binary"] = result_bin
 
-            success, result_bin = call_analysis_api(src_path, "Binary Analysis",
-                                                1, binary_analysis.find_binaries,
-                                                abs_path,
-                                                os.path.join(_output_dir, output_files["BIN"]),
-                                                "", db_url)
-            if result_bin:
-                sheet_list["BIN_FL_Binary"] = result_bin
-
-            result_list = run_dependency(src_path, os.path.join(_output_dir, output_files["DEP"]), dep_arguments)
-            sheet_list['SRC_FL_Dependency'] = result_list
+            if run_dep:
+                result_list = run_dependency(src_path, os.path.join(_output_dir, output_files["DEP"]), dep_arguments)
+                sheet_list['SRC_FL_Dependency'] = result_list
 
             output_file_without_ext = os.path.join(final_excel_dir, output_file)
             success, msg = write_output_file(output_file_without_ext, output_extension, sheet_list)
@@ -197,26 +147,26 @@ def run(src_path, dep_arguments, output_path, remove_raw_data=True,
             else:
                 result_log["Result Message - Merge"] = msg
     except Exception as ex:
-        logger.error("Scanning:" + str(ex))
+        logger.error(f"Scanning:{ex}")
 
     try:
         _str_final_result_log = yaml.safe_dump(result_log, allow_unicode=True, sort_keys=True)
         logger.info(_str_final_result_log)
     except Exception as ex:
-        logger.warn("Error to print final log:"+str(ex))
+        logger.warn(f"Error to print final log:{ex}")
 
     try:
-        if remove_raw_data:
-            logger.debug("Remove temporary files: " + _output_dir)
+        if not keep_raw_data:
+            logger.debug(f"Remove temporary files: {_output_dir}")
             rmdir(_output_dir)
         if remove_src_data:
-            logger.debug("Remove Source: " + src_path)
+            logger.debug(f"Remove Source: {src_path}")
             rmdir(src_path)
     except Exception as ex:
-        logger.debug("Error to remove temp files:"+str(ex))
+        logger.debug(f"Error to remove temp files:{ex}")
 
 
-def run_after_download_source(link, out_dir):
+def download_source(link, out_dir):
     start_time = datetime.now().strftime('%Y%m%d_%H%M%S')
     success = False
     temp_src_dir = ""
@@ -264,77 +214,54 @@ def init(output_path=""):
     return os.path.isdir(_output_dir), output_root_dir, result_log
 
 
-def main():
-    global _executed_path
-    _cli_mode = False
-
-    # Path_to_analyze
-    src_path = ""
-    dep_arguments = ""
-    url_to_analyze = ""
-    _executed_path = os.getcwd()
-    remove_raw_data = True
-    output_path = _executed_path
+def run_main(mode, src_path, dep_arguments, output_file_or_dir, file_format, url_to_analyze, db_url,
+             hide_progressbar=False, keep_raw_data=False, num_cores=-1):
     output_file = ""
-    output_file_or_dir = ""
-    show_progressbar = True
-    file_format = ""
-    num_cores = -1
-    db_url = ""
-
-    try:
-        argv = sys.argv[1:]
-        opts, args = getopt.getopt(argv, 'hvtrs:d:a:o:w:f:p:c:u:')
-    except getopt.GetoptError:
-        print_help_msg()
-
-    for opt, arg in opts:
-        if opt == "-h":
-            print_help_msg()
-        elif opt == "-v":
-            print_package_version(PKG_NAME, "FOSSLight Scanner Version:")
-        elif opt == "-p":
-            src_path = arg
-            _cli_mode = True
-        elif opt == "-d":
-            dep_arguments = arg
-        elif opt == "-w":
-            _cli_mode = True
-            url_to_analyze = arg
-        elif opt == "-o":
-            output_file_or_dir = arg
-        elif opt == "-r":
-            remove_raw_data = False
-        elif opt == "-t":
-            show_progressbar = False
-        elif opt == "-f":
-            file_format = arg
-        elif opt == "-c":
-            num_cores = arg
-        elif opt == "-u":
-            db_url = arg
-
+    output_path = _executed_path
     try:
         success, msg, output_path, output_file, output_extension = check_output_format(output_file_or_dir, file_format)
         if not success:
             logger.error(msg)
-            return False
+        else:
+            run_src = False
+            run_bin = False
+            run_dep = False
+            run_reuse = False
+            remove_downloaded_source = False
 
-        if not _cli_mode:
-            src_path, dep_arguments, url_to_analyze = get_input_mode()
-        if show_progressbar:
-            timer = TimerThread()
-            timer.setDaemon(True)
-            timer.start()
+            if src_path == "" and url_to_analyze == "":
+                src_path, dep_arguments, url_to_analyze = get_input_mode()
 
-        if url_to_analyze != "":
-            success, src_path = run_after_download_source(url_to_analyze, output_path)
-        if src_path != "":
-            run(src_path, dep_arguments, output_path, remove_raw_data,
-                False, True, {}, output_file, output_extension, num_cores, db_url)
+            if not hide_progressbar:
+                timer = TimerThread()
+                timer.setDaemon(True)
+                timer.start()
+
+            if url_to_analyze != "":
+                remove_downloaded_source = True
+                success, src_path = download_source(url_to_analyze, output_path)
+
+            if mode == "reuse":
+                run_reuse = True
+            elif mode == "bin":
+                run_bin = True
+            elif mode == "source":
+                run_src = True
+            elif mode == "dependency":
+                run_dep = True
+            else:
+                run_src = True
+                run_bin = True
+                run_dep = True
+                run_reuse = True
+
+            if src_path != "":
+                run_scanner(src_path, dep_arguments, output_path, keep_raw_data,
+                            run_src, run_bin, run_dep, run_reuse,
+                            remove_downloaded_source, True, {}, output_file,
+                            output_extension, num_cores, db_url)
+
     except Exception as ex:
         logger.warning(str(ex))
-
-
-if __name__ == '__main__':
-    main()
+        return False
+    return True
