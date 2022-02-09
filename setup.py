@@ -34,8 +34,8 @@ if __name__ == "__main__":
         install_requires=required,
         entry_points={
             "console_scripts": [
-                "fosslight = fosslight_scanner.fosslight_scanner:main",
-                "fosslight_scanner = fosslight_scanner.fosslight_scanner:main"
+                "fosslight = fosslight_scanner.cli:main",
+                "fosslight_scanner = fosslight_scanner.cli:main"
             ]
         }
     )
