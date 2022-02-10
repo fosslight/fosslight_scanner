@@ -13,6 +13,7 @@ from shutil import rmtree as rmdir
 from datetime import datetime
 from fosslight_binary import binary_analysis
 from fosslight_source.cli import run_all_scanners as source_analysis
+from fosslight_source.cli import create_report_file
 from fosslight_dependency.run_dependency_scanner import run_dependency_scanner
 from fosslight_util.download import cli_download_and_extract
 from ._get_input import get_input_mode
@@ -103,7 +104,7 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
             output_file = output_prefix + _start_time
 
         if success:
-            output_files = {"SRC": "FL_Source.xlsx",
+            output_files = {"SRC": "FL_Source",
                             "BIN": "FL_Binary.xlsx",
                             "BIN_TXT": "FL_Binary.txt",
                             "DEP": "FL_Dependency.xlsx",
@@ -117,13 +118,17 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                 copy_file(output_reuse, output_path)
 
             if run_src:
-                success, result = call_analysis_api(src_path, "Source Analysis",
-                                                    2, source_analysis,
-                                                    abs_path,
-                                                    os.path.join(_output_dir, output_files["SRC"]),
-                                                    False, num_cores, True)
-                if success:
-                    sheet_list["SRC_FL_Source"] = [scan_item.get_row_to_print() for scan_item in result]
+                try:
+                    success, result = call_analysis_api(src_path, "Source Analysis",
+                                                        -1, source_analysis,
+                                                        abs_path,
+                                                        os.path.join(_output_dir, output_files["SRC"]),
+                                                        False, num_cores, True)
+                    if success:
+                        sheet_list["SRC_FL_Source"] = [scan_item.get_row_to_print() for scan_item in result[2]]
+                        create_report_file(0, result[2], result[3], 'all', True, _output_dir, output_files["SRC"], "")
+                except Exception as ex:
+                    logger.warning(f"Failed to run source analysis:{ex}")
 
             if run_bin:
                 success, result_bin = call_analysis_api(src_path, "Binary Analysis",
