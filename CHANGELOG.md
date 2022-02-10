@@ -1,5 +1,26 @@
 # Changelog
 
+## v1.6.8 (10/02/2022)
+## Changes
+## 🚀 Features
+
+- Change the options when analyzing the source @soimkim (#19)
+- Support analysis mode @soimkim (#17)
+- Add a FOSSLight Reuse @soimkim (#16)
+- Add a FOSSLight Binary @soimkim (#14)
+
+## 🐛 Hotfixes
+
+- Fix the bug that the raw folder is not deleted when analyzing with a link @soimkim (#21)
+
+## 🔧 Maintenance
+
+- Modify to print output file name @bjk7119 (#22)
+- Create a result file of FOSSLight Source @soimkim (#20)
+- Move the binary analysis result file to output @soimkim (#18)
+
+---
+
 ## v1.6.7 (25/11/2021)
 ## Changes
 ## 🔧 Maintenance
