@@ -8,6 +8,7 @@ import logging
 import warnings
 import re
 import yaml
+import sys
 from pathlib import Path
 from shutil import rmtree as rmdir
 from datetime import datetime
@@ -145,7 +146,12 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                 sheet_list['SRC_FL_Dependency'] = result_list
 
             output_file_without_ext = os.path.join(final_excel_dir, output_file)
-            success, msg = write_output_file(output_file_without_ext, output_extension, sheet_list)
+            success, msg, result_file = write_output_file(output_file_without_ext, output_extension, sheet_list)
+
+            if success:
+                logger.info(f"Writing Output file({result_file}, Success: {success}")
+            else:
+                logger.error(f"Fail to generate result file. msg:({msg})")
 
             result_log["Result"] = success
             if success:
@@ -229,6 +235,7 @@ def run_main(mode, src_path, dep_arguments, output_file_or_dir, file_format, url
         success, msg, output_path, output_file, output_extension = check_output_format(output_file_or_dir, file_format)
         if not success:
             logger.error(msg)
+            sys.exit(1)
         else:
             run_src = False
             run_bin = False
