@@ -87,12 +87,12 @@ def run_dependency(path_to_analyze, output_file_with_path, params=""):
 
 def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                 run_src=True, run_bin=True, run_dep=True, run_reuse=True,
-                remove_src_data=True, need_init=True, result_log={}, output_file="",
+                remove_src_data=True, result_log={}, output_file="",
                 output_extension="", num_cores=-1, db_url=""):
     try:
         success = True
         sheet_list = {}
-        if need_init:
+        if not remove_src_data:
             success, final_excel_dir, result_log = init(output_path)
         else:
             final_excel_dir = output_path
@@ -265,7 +265,7 @@ def run_main(mode, src_path, dep_arguments, output_file_or_dir, file_format, url
             if src_path != "":
                 run_scanner(src_path, dep_arguments, output_path, keep_raw_data,
                             run_src, run_bin, run_dep, run_reuse,
-                            remove_downloaded_source, True, {}, output_file,
+                            remove_downloaded_source, {}, output_file,
                             output_extension, num_cores, db_url)
 
     except Exception as ex:
