@@ -11,13 +11,18 @@ SPDX-License-Identifier: Apache-2.0
 
 **FOSSLight Scanner** performs open source analysis after downloading the source by passing a link that can be cloned by wget or git. Instead, open source analysis can be performed for the local source path. The output result is generated in [FOSSLight Report][or] format.
 
+- **[FOSSLight Reuse][re]** Check whether the [source code's copyright and license writing rules][rule] are complied with.
 - **[FOSSLight Source Scanner][s]** Extract license and copyright in the source code using [ScanCode][sc].
 - **[FOSSLight Dependency Scanner][d]** Extract dependency and OSS information from the package manager's manifest file.
+- **[FOSSLight Binary Scanner][flbin]** Find binary and print OSS information.
 
 [s]: https://github.com/fosslight/fosslight_source_scanner
 [d]: https://github.com/fosslight/fosslight_dependency_scanner
 [sc]: https://github.com/nexB/scancode-toolkit
 [or]: https://fosslight.org/fosslight-guide-en/learn/2_fosslight_report.html
+[flbin]: https://github.com/fosslight/fosslight_binary_scanner
+[re]: https://github.com/fosslight/fosslight_reuse
+[rule]: https://oss.lge.com/guide/process/osc_process/1-identification/copyright_license_rule.html
 
 ## Contents
 
@@ -50,30 +55,47 @@ $ pip3 install fosslight_scanner
 ## 🚀 How to run
 
 FOSSLight Scanner is run with the **fosslight** command.
-
+``` 
+fosslight [Mode] [option1] <arg1> [option2] <arg2>...
+``` 
 ### Parameters   
+Mode
+``` 
+            source            Run FOSSLight Source
+            dependency        Run FOSSLight Dependency
+            bin               Run FOSSLight Binary
+            reuse             Run FOSSLight Reuse
+            all               Run all scanners
+``` 
+Options:
 ``` 
     -h                        Print help message
-    -r                        Keep raw data 
+    -r                        Keep raw data  
+    -t                        Hide the progress bar
+    -v                        Print FOSSLight Scanner version
     -p <path>                 Path to analyze source
     -w <link>                 Link to be analyzaed can be downloaded by wget or git clone
     -o <output>               Output Directory or file
     -f <format>               Output file format (excel, csv, opossum)
     -c <cores>                Number of processes to analyze source
     -d <additional_arg>       Additional arguments for running dependency analysis 
+    -u <db_url>               DB Connection(format :'postgresql://username:password@host:port/database_name')
 ```
-- Ref. Additional arguments for running dependency analysis. See the [FOSSLight Dependency Guide][fd_guide] for instructions.
+- Refs. 
+    - Additional arguments for running dependency analysis. See the [FOSSLight Dependency Guide][fd_guide] for instructions.
+    - In the case of DB URL, it is the [DB connection information to be used in FOSSLight Binary][flbindb].
 
+[flbindb]: https://fosslight.org/fosslight-guide-en/scanner/etc/binary_db.html
 [fd_guide]: https://fosslight.org/fosslight-guide-en/scanner/2_dependency.html
 
 ### Ex 1. Local Source Analysis
 ```
-$ fosslight -p /home/source_path -a "-a 'source /test/Projects/venv/bin/activate' -d 'deactivate'"
+$ fosslight all -p /home/source_path -a "-a 'source /test/Projects/venv/bin/activate' -d 'deactivate'"
 ```
 
 ### Ex 2. Download Link and analyze
 ```
-$ fosslight -o test_result_wget -w "https://github.com/LGE-OSS/example.git"
+$ fosslight all -o test_result_wget -w "https://github.com/LGE-OSS/example.git"
 ```
 
 ## 📁 Result
