@@ -90,7 +90,7 @@ Options:
 
 ### Ex 1. Local Source Analysis
 ```
-$ fosslight all -p /home/source_path -a "-a 'source /test/Projects/venv/bin/activate' -d 'deactivate'"
+$ fosslight all -p /home/source_path -d "-a 'source /test/Projects/venv/bin/activate' -d 'deactivate'"
 ```
 
 ### Ex 2. Download Link and analyze
