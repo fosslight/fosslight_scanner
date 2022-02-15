@@ -63,7 +63,7 @@ Mode
 ``` 
             source            Run FOSSLight Source
             dependency        Run FOSSLight Dependency
-            bin               Run FOSSLight Binary
+            binary            Run FOSSLight Binary
             reuse             Run FOSSLight Reuse
             all               Run all scanners
 ``` 
