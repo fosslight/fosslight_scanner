@@ -10,7 +10,7 @@ from fosslight_util.help import print_package_version
 
 def main():
     parser = ArgumentParser(description='FOSSLight Scanner', prog='fosslight_scanner', add_help=False)
-    parser.add_argument('mode', nargs='?', help='source| dependency| bin| reuse| all', default="all")
+    parser.add_argument('mode', nargs='?', help='source| dependency| binary| reuse| all', default="all")
     parser.add_argument('--path', '-p', help='Path to analyze', type=str, dest='path', default="")
     parser.add_argument('--wget', '-w', help='Link to be analyzed', type=str, dest='link', default="")
     parser.add_argument('--file', '-f', help='Output file format (excel, csv, opossum)', type=str, dest='file', default="")

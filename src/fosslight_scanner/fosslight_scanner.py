@@ -257,11 +257,11 @@ def run_main(mode, src_path, dep_arguments, output_file_or_dir, file_format, url
 
             if mode == "reuse":
                 run_reuse = True
-            elif mode == "bin":
+            elif mode == "binary" or mode == "bin":
                 run_bin = True
-            elif mode == "source":
+            elif mode == "source" or mode == "src":
                 run_src = True
-            elif mode == "dependency":
+            elif mode == "dependency" or mode == "dep":
                 run_dep = True
             else:
                 run_src = True
