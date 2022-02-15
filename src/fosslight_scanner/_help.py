@@ -15,7 +15,7 @@ _HELP_MESSAGE_SCANNER = """
         Mode
             source\t\t    Run FOSSLight Source
             dependency\t\t    Run FOSSLight Dependency
-            bin\t\t\t    Run FOSSLight Binary
+            binary\t\t    Run FOSSLight Binary
             reuse\t\t    Run FOSSLight Reuse
             all\t\t\t    Run all scanners
 
