@@ -21,9 +21,10 @@ from ._get_input import get_input_mode
 from fosslight_util.set_log import init_log
 from fosslight_util.timer_thread import TimerThread
 import fosslight_util.constant as constant
-from fosslight_util.output_format import write_output_file, check_output_format
+from fosslight_util.output_format import check_output_format
 from fosslight_reuse._fosslight_reuse import run_lint as reuse_lint
 from .common import copy_file, call_analysis_api
+from fosslight_util.write_excel import merge_excels
 
 OUTPUT_EXCEL_PREFIX = "FOSSLight-Report_"
 OUTPUT_JSON_PREFIX = "Opossum_input_"
@@ -90,19 +91,24 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                 run_src=True, run_bin=True, run_dep=True, run_reuse=True,
                 remove_src_data=True, result_log={}, output_file="",
                 output_extension="", num_cores=-1, db_url=""):
+    create_csv = False
+    final_excel_dir = output_path
+    success = True
+    if not remove_src_data:
+        success, final_excel_dir, result_log = init(output_path)
+
+    if output_file == "":
+        output_prefix = OUTPUT_EXCEL_PREFIX if output_extension != ".json" else OUTPUT_JSON_PREFIX
+        output_file = output_prefix + _start_time
+        create_csv = True
+
+    if output_extension == "":
+        output_extension = ".xlsx"
+
     try:
-        success = True
         sheet_list = {}
-        if not remove_src_data:
-            success, final_excel_dir, result_log = init(output_path)
-        else:
-            final_excel_dir = output_path
         final_excel_dir = os.path.abspath(final_excel_dir)
         abs_path = os.path.abspath(src_path)
-
-        if output_file == "":
-            output_prefix = OUTPUT_EXCEL_PREFIX if output_extension != ".json" else OUTPUT_JSON_PREFIX
-            output_file = output_prefix + _start_time
 
         if success:
             output_files = {"SRC": "FL_Source",
@@ -132,48 +138,43 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                     logger.warning(f"Failed to run source analysis:{ex}")
 
             if run_bin:
-                success, result_bin = call_analysis_api(src_path, "Binary Analysis",
-                                                        1, binary_analysis.find_binaries,
-                                                        abs_path,
-                                                        os.path.join(_output_dir, output_files["BIN"]),
-                                                        "", db_url)
-                if result_bin:
-                    sheet_list["BIN_FL_Binary"] = result_bin
+                success, _ = call_analysis_api(src_path, "Binary Analysis",
+                                               1, binary_analysis.find_binaries,
+                                               abs_path,
+                                               os.path.join(_output_dir, output_files["BIN"]),
+                                               "", db_url)
+                if success:
                     copy_file(os.path.join(_output_dir, output_files["BIN_TXT"]), output_path)
 
             if run_dep:
-                result_list = run_dependency(src_path, os.path.join(_output_dir, output_files["DEP"]), dep_arguments)
-                sheet_list['SRC_FL_Dependency'] = result_list
+                run_dependency(src_path, os.path.join(_output_dir, output_files["DEP"]), dep_arguments)
+        else:
+            return
 
-            output_file_without_ext = os.path.join(final_excel_dir, output_file)
-            success, msg, result_file = write_output_file(output_file_without_ext, output_extension, sheet_list)
-
-            if success:
-                logger.info(f"Writing Output file({result_file}, Success: {success}")
-            else:
-                logger.error(f"Fail to generate result file. msg:({msg})")
-
-            result_log["Result"] = success
-            if success:
-                file_extension = ".xlsx" if output_extension == "" else output_extension
-                result_log["Output File"] = output_file_without_ext + file_extension
-            else:
-                result_log["Result Message - Merge"] = msg
     except Exception as ex:
         logger.error(f"Scanning:{ex}")
 
     try:
+        output_file_without_ext = os.path.join(final_excel_dir, output_file)
+        final_report = f"{output_file_without_ext}{output_extension}"
+        success, output_files = merge_excels(_output_dir, final_report, create_csv)
+
+        if success and output_files:
+            result_log["Output File"] = output_files.split(",")
+        else:
+            logger.error(f"Fail to generate a result file. :{output_files}")
+
         _str_final_result_log = yaml.safe_dump(result_log, allow_unicode=True, sort_keys=True)
         logger.info(_str_final_result_log)
     except Exception as ex:
-        logger.warn(f"Error to print final log:{ex}")
+        logger.warning(f"Error to write final report:{ex}")
 
     try:
         if not keep_raw_data:
             logger.debug(f"Remove temporary files: {_output_dir}")
             rmdir(_output_dir)
         if remove_src_data:
-            logger.debug(f"Remove Source: {src_path}")
+            logger.debug(f"Remove temporary source: {src_path}")
             rmdir(src_path)
     except Exception as ex:
         logger.debug(f"Error to remove temp files:{ex}")
@@ -188,18 +189,18 @@ def download_source(link, out_dir):
         temp_src_dir = os.path.join(
             _output_dir, SRC_DIR_FROM_LINK_PREFIX+start_time)
 
-        logger.info("Link to download :"+link)
+        logger.info(f"Link to download :{link}")
         success, msg = cli_download_and_extract(
             link, temp_src_dir, _output_dir)
 
         if success:
-            logger.info("Downloaded Dir:"+temp_src_dir)
+            logger.info(f"Downloaded Dir:{temp_src_dir}")
         else:
             temp_src_dir = ""
-            logger.error("Download failed:" + msg)
+            logger.error(f"Download failed:{msg}")
     except Exception as ex:
         success = False
-        logger.error("Failed to analyze from link:" + str(ex))
+        logger.error(f"Failed to analyze from link:{ex}")
     return success, temp_src_dir
 
 
