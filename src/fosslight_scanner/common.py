@@ -63,7 +63,7 @@ def call_analysis_api(path_to_run, str_run_start, return_idx, func, *args):
                 else:
                     success = False
     except Exception as ex:
-        logger.debug("Get return value:" + str(ex))
+        logger.debug(f"Get return value:{ex}")
         success = False
     if not result:
         result = []
