@@ -1,5 +1,15 @@
 # Changelog
 
+## v1.6.9 (28/02/2022)
+## Changes
+## 🔧 Maintenance
+
+- Change the result generation method to merging @soimkim (#25)
+- Add an inputable value to mode @soimkim (#24)
+- Update the README with additional Scanners @soimkim (#23)
+
+---
+
 ## v1.6.8 (10/02/2022)
 ## Changes
 ## 🚀 Features
