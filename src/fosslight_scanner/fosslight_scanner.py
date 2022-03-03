@@ -66,7 +66,7 @@ def run_dependency(path_to_analyze, output_file_with_path, params=""):
                 elif param == "-t":
                     github_token = value
     except Exception as ex:
-        logger.warning("Set dependency Param:" + str(ex))
+        logger.warning(f"Set dependency Param: {ex}")
 
     try:
         success, result = call_analysis_api(path_to_analyze, "Dependency Analysis",
@@ -80,7 +80,7 @@ def run_dependency(path_to_analyze, output_file_with_path, params=""):
         if success:
             result_list = result.get('SRC_FL_Dependency')
     except Exception as ex:
-        logger.warning("Run dependency:"+str(ex))
+        logger.warning(f"Run dependency: {ex}")
 
     if not result_list:
         result_list = []
@@ -135,7 +135,7 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                         sheet_list["SRC_FL_Source"] = [scan_item.get_row_to_print() for scan_item in result[2]]
                         create_report_file(0, result[2], result[3], 'all', True, _output_dir, output_files["SRC"], "")
                 except Exception as ex:
-                    logger.warning(f"Failed to run source analysis:{ex}")
+                    logger.warning(f"Failed to run source analysis: {ex}")
 
             if run_bin:
                 success, _ = call_analysis_api(src_path, "Binary Analysis",
@@ -152,7 +152,7 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
             return
 
     except Exception as ex:
-        logger.error(f"Scanning:{ex}")
+        logger.error(f"Scanning: {ex}")
 
     try:
         output_file_without_ext = os.path.join(final_excel_dir, output_file)
@@ -162,12 +162,12 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
         if success and output_files:
             result_log["Output File"] = output_files.split(",")
         else:
-            logger.error(f"Fail to generate a result file. :{output_files}")
+            logger.error(f"Fail to generate a result file. : {output_files}")
 
         _str_final_result_log = yaml.safe_dump(result_log, allow_unicode=True, sort_keys=True)
         logger.info(_str_final_result_log)
     except Exception as ex:
-        logger.warning(f"Error to write final report:{ex}")
+        logger.warning(f"Error to write final report: {ex}")
 
     try:
         if not keep_raw_data:
@@ -189,18 +189,18 @@ def download_source(link, out_dir):
         temp_src_dir = os.path.join(
             _output_dir, SRC_DIR_FROM_LINK_PREFIX+start_time)
 
-        logger.info(f"Link to download :{link}")
+        logger.info(f"Link to download: {link}")
         success, msg = cli_download_and_extract(
             link, temp_src_dir, _output_dir)
 
         if success:
-            logger.info(f"Downloaded Dir:{temp_src_dir}")
+            logger.info(f"Downloaded Dir: {temp_src_dir}")
         else:
             temp_src_dir = ""
-            logger.error(f"Download failed:{msg}")
+            logger.error(f"Download failed: {msg}")
     except Exception as ex:
         success = False
-        logger.error(f"Failed to analyze from link:{ex}")
+        logger.error(f"Failed to analyze from link: {ex}")
     return success, temp_src_dir
 
 
@@ -222,7 +222,7 @@ def init(output_path=""):
     _output_dir = os.path.abspath(_output_dir)
 
     log_dir = os.path.join(output_root_dir, "fosslight_log")
-    logger, result_log = init_log(os.path.join(log_dir, _log_file + _start_time + ".txt"),
+    logger, result_log = init_log(os.path.join(log_dir, f"{_log_file}{_start_time}.txt"),
                                   True, logging.INFO, logging.DEBUG, PKG_NAME)
 
     return os.path.isdir(_output_dir), output_root_dir, result_log

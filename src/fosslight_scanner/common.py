@@ -25,7 +25,7 @@ def run_analysis(path_to_run, params, func, str_run_start, output, exe_path):
     return_value = ""
     try:
         if path_to_run != "":
-            logger.info("|--- Path to analyze :" + path_to_run)
+            logger.info(f"|--- Path to analyze : {path_to_run}")
             os.chdir(output)
             sys.argv = params
             return_value = func()
@@ -35,18 +35,18 @@ def run_analysis(path_to_run, params, func, str_run_start, output, exe_path):
     except SystemExit:
         pass
     except Exception as ex:
-        logger.error(str_run_start + ":" + str(ex))
+        logger.error(f"{str_run_start}:{ex}")
     return return_value
 
 
 def call_analysis_api(path_to_run, str_run_start, return_idx, func, *args):
     # return_idx == -1 : Raw return value itself
-    logger.info("## Start to run " + str_run_start)
+    logger.info(f"## Start to run {str_run_start}")
     success = True
     result = []
     try:
         if path_to_run != "":
-            logger.info("|--- Path to analyze :"+path_to_run)
+            logger.info(f"|--- Path to analyze : {path_to_run}")
             result = func(*args)
         else:
             logger.info("Analyzing path is missing...")
@@ -54,7 +54,7 @@ def call_analysis_api(path_to_run, str_run_start, return_idx, func, *args):
         success = False
     except Exception as ex:
         success = False
-        logger.error(str_run_start + ":" + str(ex))
+        logger.error(f"{str_run_start}:{ex}")
     try:
         if success:
             if result and return_idx >= 0:
