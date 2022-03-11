@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.6.10 (11/03/2022)
+## Changes
+## 🔧 Maintenance
+
+- Apply f-string format @bjk7119 (#26)
+
+---
+
 ## v1.6.9 (28/02/2022)
 ## Changes
 ## 🔧 Maintenance
