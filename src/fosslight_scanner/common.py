@@ -7,6 +7,8 @@ import os
 import sys
 import logging
 from shutil import copy
+import re
+import pandas as pd
 import fosslight_util.constant as constant
 
 logger = logging.getLogger(constant.LOGGER_NAME)
@@ -68,3 +70,75 @@ def call_analysis_api(path_to_run, str_run_start, return_idx, func, *args):
     if not result:
         result = []
     return success, result
+
+
+def extract_name_from_link(link):
+    # Github : https://github.com/(owner)/(repo)
+    # npm : www.npmjs.com/package/(package)
+    # npm : https://www.npmjs.com/package/@(group)/(package)
+    # pypi : https://pypi.org/project/(oss_name)
+    # Maven: https://mvnrepository.com/artifact/(group)/(artifact)
+    # pub: https://pub.dev/packages/(package)
+    # Cocoapods: https://cocoapods.org/(package)
+    pkg_pattern = {
+        "github": r'https?:\/\/github.com\/([^\/]+)\/([^\/\.]+)(\.git)?',
+        "pypi": r'https?:\/\/pypi\.org\/project\/([^\/]+)',
+        "maven": r'https?:\/\/mvnrepository\.com\/artifact\/([^\/]+)\/([^\/]+)',
+        "npm": r'https?:\/\/www\.npmjs\.com\/package\/([^\/]+)(\/[^\/]+)?',
+        "pub": r'https?:\/\/pub\.dev\/packages\/([^\/]+)',
+        "pods": r'https?:\/\/cocoapods\.org\/pods\/([^\/]+)'
+    }
+    oss_name = ""
+    if link.startswith("www."):
+        link = link.replace("www.", "https://www.", 1)
+    for key, value in pkg_pattern.items():
+        try:
+            p = re.compile(value)
+            match = p.match(link)
+            if match:
+                group = match.group(1)
+                if key == "github":
+                    repo = match.group(2)
+                    oss_name = f"{group}-{repo}"
+                    break
+                elif key == "pypi":
+                    oss_name = f"pypi:{group}"
+                    break
+                elif key == "maven":
+                    artifact = match.group(2)
+                    oss_name = f"{group}:{artifact}"
+                    break
+                elif key == "npm":
+                    if group.startswith("@"):
+                        pkg = match.group(2)
+                        oss_name = f"npm:{group}{pkg}"
+                    else:
+                        oss_name = f"npm:{group}"
+                    break
+                elif key == "pub":
+                    oss_name = f"pub:{group}"
+                    break
+                elif key == "pods":
+                    oss_name = f"cocoapods:{group}"
+                    break
+        except Exception as ex:
+            logger.debug(f"extract_name_from_link_{key}:{ex}")
+    return oss_name
+
+
+def overwrite_excel(excel_file_path, oss_name, column_name='OSS Name'):
+    if oss_name != "":
+        try:
+            files = os.listdir(excel_file_path)
+            for file in files:
+                if file.endswith(".xlsx"):
+                    file = os.path.join(excel_file_path, file)
+                    excel_file = pd.ExcelFile(file, engine='openpyxl')
+
+                    for sheet_name in excel_file.sheet_names:
+                        df = pd.read_excel(file, sheet_name=sheet_name, engine='openpyxl')
+                        updated = (df[column_name] == '') | (df[column_name].isnull())
+                        df.loc[updated, column_name] = oss_name
+                        df.to_excel(file, sheet_name=sheet_name, index=False)
+        except Exception as ex:
+            logger.debug(f"overwrite_excel:{ex}")

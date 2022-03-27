@@ -23,7 +23,8 @@ from fosslight_util.timer_thread import TimerThread
 import fosslight_util.constant as constant
 from fosslight_util.output_format import check_output_format
 from fosslight_reuse._fosslight_reuse import run_lint as reuse_lint
-from .common import copy_file, call_analysis_api
+from .common import (copy_file, call_analysis_api,
+                     overwrite_excel, extract_name_from_link)
 from fosslight_util.write_excel import merge_excels
 
 OUTPUT_EXCEL_PREFIX = "FOSSLight-Report_"
@@ -90,7 +91,7 @@ def run_dependency(path_to_analyze, output_file_with_path, params=""):
 def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                 run_src=True, run_bin=True, run_dep=True, run_reuse=True,
                 remove_src_data=True, result_log={}, output_file="",
-                output_extension="", num_cores=-1, db_url=""):
+                output_extension="", num_cores=-1, db_url="", default_oss_name=""):
     create_csv = False
     final_excel_dir = output_path
     success = True
@@ -157,6 +158,8 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
     try:
         output_file_without_ext = os.path.join(final_excel_dir, output_file)
         final_report = f"{output_file_without_ext}{output_extension}"
+        if remove_src_data:
+            overwrite_excel(_output_dir, default_oss_name)
         success, output_files = merge_excels(_output_dir, final_report, create_csv)
 
         if success and output_files:
@@ -187,7 +190,7 @@ def download_source(link, out_dir):
     try:
         success, final_excel_dir, result_log = init(out_dir)
         temp_src_dir = os.path.join(
-            _output_dir, SRC_DIR_FROM_LINK_PREFIX+start_time)
+            _output_dir, SRC_DIR_FROM_LINK_PREFIX + start_time)
 
         logger.info(f"Link to download: {link}")
         success, msg = cli_download_and_extract(
@@ -254,6 +257,7 @@ def run_main(mode, src_path, dep_arguments, output_file_or_dir, file_format, url
 
             if url_to_analyze != "":
                 remove_downloaded_source = True
+                default_oss_name = extract_name_from_link(url_to_analyze)
                 success, src_path = download_source(url_to_analyze, output_path)
 
             if mode == "reuse":
@@ -274,7 +278,7 @@ def run_main(mode, src_path, dep_arguments, output_file_or_dir, file_format, url
                 run_scanner(src_path, dep_arguments, output_path, keep_raw_data,
                             run_src, run_bin, run_dep, run_reuse,
                             remove_downloaded_source, {}, output_file,
-                            output_extension, num_cores, db_url)
+                            output_extension, num_cores, db_url, default_oss_name)
 
     except Exception as ex:
         logger.warning(str(ex))
