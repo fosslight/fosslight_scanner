@@ -91,7 +91,8 @@ def run_dependency(path_to_analyze, output_file_with_path, params=""):
 def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                 run_src=True, run_bin=True, run_dep=True, run_reuse=True,
                 remove_src_data=True, result_log={}, output_file="",
-                output_extension="", num_cores=-1, db_url="", default_oss_name=""):
+                output_extension="", num_cores=-1, db_url="",
+                default_oss_name="", url=""):
     create_csv = False
     final_excel_dir = output_path
     success = True
@@ -159,7 +160,8 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
         output_file_without_ext = os.path.join(final_excel_dir, output_file)
         final_report = f"{output_file_without_ext}{output_extension}"
         if remove_src_data:
-            overwrite_excel(_output_dir, default_oss_name)
+            overwrite_excel(_output_dir, default_oss_name, "OSS Name")
+            overwrite_excel(_output_dir, url, "Download Location")
         success, output_files = merge_excels(_output_dir, final_report, create_csv)
 
         if success and output_files:
@@ -278,7 +280,8 @@ def run_main(mode, src_path, dep_arguments, output_file_or_dir, file_format, url
                 run_scanner(src_path, dep_arguments, output_path, keep_raw_data,
                             run_src, run_bin, run_dep, run_reuse,
                             remove_downloaded_source, {}, output_file,
-                            output_extension, num_cores, db_url, default_oss_name)
+                            output_extension, num_cores, db_url,
+                            default_oss_name, url_to_analyze)
 
     except Exception as ex:
         logger.warning(str(ex))
