@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.6.11 (27/03/2022)
+## 🚀 Features
+
+- Print download location when analyzing as link @soimkim (#28)
+- Extract the OSS name from the link @soimkim (#27)
+
+---
+
 ## v1.6.10 (11/03/2022)
 ## Changes
 ## 🔧 Maintenance
