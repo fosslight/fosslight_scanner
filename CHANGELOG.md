@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.6.12 (28/03/2022)
+## 🐛 Hotfixes
+
+- Fix a bug where column names do not match when overwriting an excel @soimkim (#29)
+
+---
+
 ## v1.6.11 (27/03/2022)
 ## 🚀 Features
 
