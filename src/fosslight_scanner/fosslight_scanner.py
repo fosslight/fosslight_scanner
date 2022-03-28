@@ -194,6 +194,7 @@ def download_source(link, out_dir):
         temp_src_dir = os.path.join(
             _output_dir, SRC_DIR_FROM_LINK_PREFIX + start_time)
 
+        link = link.strip()
         logger.info(f"Link to download: {link}")
         success, msg = cli_download_and_extract(
             link, temp_src_dir, _output_dir)
