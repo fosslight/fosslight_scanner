@@ -136,9 +136,13 @@ def overwrite_excel(excel_file_path, oss_name, column_name='OSS Name'):
                     excel_file = pd.ExcelFile(file, engine='openpyxl')
 
                     for sheet_name in excel_file.sheet_names:
-                        df = pd.read_excel(file, sheet_name=sheet_name, engine='openpyxl')
-                        updated = (df[column_name] == '') | (df[column_name].isnull())
-                        df.loc[updated, column_name] = oss_name
-                        df.to_excel(file, sheet_name=sheet_name, index=False)
+                        try:
+                            df = pd.read_excel(file, sheet_name=sheet_name, engine='openpyxl')
+                            if column_name in df.columns:
+                                updated = (df[column_name] == '') | (df[column_name].isnull())
+                                df.loc[updated, column_name] = oss_name
+                                df.to_excel(file, sheet_name=sheet_name, index=False)
+                        except Exception as ex:
+                            logger.debug(f"overwrite_sheet {sheet_name}:{ex}")
         except Exception as ex:
             logger.debug(f"overwrite_excel:{ex}")
