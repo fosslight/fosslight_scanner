@@ -2,7 +2,7 @@
 Copyright (c) 2021 LG Electronics
 SPDX-License-Identifier: Apache-2.0
  -->
-
+TEST
 # FOSSLight Scanner
 <strong>Analyze at once for Open Source Compliance.</strong><br>
 
