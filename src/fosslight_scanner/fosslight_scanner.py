@@ -238,6 +238,7 @@ def run_main(mode, src_path, dep_arguments, output_file_or_dir, file_format, url
              hide_progressbar=False, keep_raw_data=False, num_cores=-1):
     output_file = ""
     output_path = _executed_path
+    default_oss_name = ""
     try:
         success, msg, output_path, output_file, output_extension = check_output_format(output_file_or_dir, file_format)
         if not success:
