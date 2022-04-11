@@ -1,5 +1,18 @@
 # Changelog
 
+## v1.6.13 (11/04/2022)
+## Changes
+## 🐛 Hotfixes
+
+- Fix an errors when parsing with path @soimkim (#33)
+- Fix an error that occur when downloading link @soimkim (#30)
+
+## 🔧 Maintenance
+
+- Add a commit message checker @soimkim (#31)
+
+---
+
 ## v1.6.12 (28/03/2022)
 ## 🐛 Hotfixes
 
