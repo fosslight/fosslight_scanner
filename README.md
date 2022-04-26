@@ -35,6 +35,7 @@ SPDX-License-Identifier: Apache-2.0
     - [Ex 1. Local Source Analysis](#ex-1-local-source-analysis)
     - [Ex 2. Download Link and analyze](#ex-2-download-link-and-analyze)
   - [📁 Result](#-result)
+  - [🐳 How to run using Docker](#-how-to-run-using-docker)
   - [👏 How to report issue](#-how-to-report-issue)
   - [📄 License](#-license)
 
@@ -110,6 +111,17 @@ $ tree
 
 - FOSSLight_Report-[datetime].xlsx : OSS Report format file that outputs source code analysis, binary analysis, and dependency analysis results.
 - fosslight_raw_data_[datetime] directory: Directory in which raw data files are created as a result of analysis
+
+## 🐳 How to run using Docker
+1. Build image using Dockerfile.
+```
+$docker build -t fosslight .
+```
+2. Run with the image you built.      
+ex. Output: /Users/fosslight_source_scanner/test_output, Path to be analyzed: tests/test_files
+```
+$docker run -it -v /Users/fosslight_source_scanner/test_output:/app/output fosslight -p tests/test_files -o output
+```
 
 ## 👏 How to report issue
 
