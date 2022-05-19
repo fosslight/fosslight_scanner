@@ -15,10 +15,18 @@ logger = logging.getLogger(constant.LOGGER_NAME)
 
 
 def copy_file(source, destination):
+    copied_file = ""
     try:
         copy(source, destination)
+        if os.path.isdir(destination):
+            copied_file = os.path.join(destination, os.path.basename(source))
+        else:
+            copied_file = destination
     except Exception as ex:
         logger.debug(f"Failed to copy {source} to {destination}: {ex}")
+        return False, copied_file
+    else:
+        return True, copied_file
 
 
 def run_analysis(path_to_run, params, func, str_run_start, output, exe_path):

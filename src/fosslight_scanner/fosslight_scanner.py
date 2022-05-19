@@ -101,6 +101,7 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
     create_csv = False
     final_excel_dir = output_path
     success = True
+    temp_output_fiiles = []
     if not remove_src_data:
         success, final_excel_dir, result_log = init(output_path)
 
@@ -129,7 +130,9 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                                                     -1, reuse_lint,
                                                     abs_path, "", False,
                                                     output_reuse)
-                copy_file(output_reuse, output_path)
+                success_file, copied_file = copy_file(output_reuse, output_path)
+                if success_file:
+                    temp_output_fiiles.append(copied_file)
 
             if run_src:
                 try:
@@ -161,7 +164,9 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                                                os.path.join(_output_dir, output_files["BIN"]),
                                                "", db_url)
                 if success:
-                    copy_file(os.path.join(_output_dir, output_files["BIN_TXT"]), output_path)
+                    success_file, copied_file = copy_file(os.path.join(_output_dir, output_files["BIN_TXT"]), output_path)
+                    if success_file:
+                        temp_output_fiiles.append(copied_file)
 
             if run_dep:
                 run_dependency(src_path, os.path.join(_output_dir, output_files["DEP"]), dep_arguments)
@@ -180,7 +185,8 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
         success, output_files = merge_excels(_output_dir, final_report, create_csv)
 
         if success and output_files:
-            result_log["Output File"] = output_files.split(",")
+            temp_output_fiiles.extend(output_files.split(","))
+            result_log["Output File"] = temp_output_fiiles
         else:
             logger.error(f"Fail to generate a result file. : {output_files}")
 
@@ -251,9 +257,11 @@ def init(output_path=""):
 
 def run_main(mode, src_path, dep_arguments, output_file_or_dir, file_format, url_to_analyze, db_url,
              hide_progressbar=False, keep_raw_data=False, num_cores=-1):
+    global _executed_path
+
     output_file = ""
-    output_path = _executed_path
     default_oss_name = ""
+    _executed_path = os.getcwd()
     try:
         success, msg, output_path, output_file, output_extension = check_output_format(output_file_or_dir, file_format)
         if not success:
@@ -265,6 +273,8 @@ def run_main(mode, src_path, dep_arguments, output_file_or_dir, file_format, url
             run_dep = False
             run_reuse = False
             remove_downloaded_source = False
+            if output_path == "":
+                output_path = _executed_path
 
             if src_path == "" and url_to_analyze == "":
                 src_path, dep_arguments, url_to_analyze = get_input_mode()
