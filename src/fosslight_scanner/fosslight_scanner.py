@@ -13,8 +13,6 @@ from pathlib import Path
 from shutil import rmtree as rmdir
 from datetime import datetime
 from fosslight_binary import binary_analysis
-from fosslight_source.cli import run_all_scanners as source_analysis
-from fosslight_source.cli import create_report_file
 from fosslight_dependency.run_dependency_scanner import run_dependency_scanner
 from fosslight_util.download import cli_download_and_extract
 from ._get_input import get_input_mode
@@ -26,6 +24,13 @@ from fosslight_reuse._fosslight_reuse import run_lint as reuse_lint
 from .common import (copy_file, call_analysis_api,
                      overwrite_excel, extract_name_from_link)
 from fosslight_util.write_excel import merge_excels
+import subprocess
+fosslight_source_installed = True
+try:
+    from fosslight_source.cli import run_all_scanners as source_analysis
+    from fosslight_source.cli import create_report_file
+except ModuleNotFoundError:
+    fosslight_source_installed = False
 
 OUTPUT_EXCEL_PREFIX = "FOSSLight-Report_"
 OUTPUT_JSON_PREFIX = "Opossum_input_"
@@ -128,14 +133,24 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
 
             if run_src:
                 try:
-                    success, result = call_analysis_api(src_path, "Source Analysis",
-                                                        -1, source_analysis,
-                                                        abs_path,
-                                                        os.path.join(_output_dir, output_files["SRC"]),
-                                                        False, num_cores, True)
-                    if success:
-                        sheet_list["SRC_FL_Source"] = [scan_item.get_row_to_print() for scan_item in result[2]]
-                        create_report_file(0, result[2], result[3], 'all', True, _output_dir, output_files["SRC"], "")
+                    if fosslight_source_installed:
+                        src_output = os.path.join(_output_dir, output_files["SRC"])
+                        success, result = call_analysis_api(src_path, "Source Analysis",
+                                                            -1, source_analysis,
+                                                            abs_path,
+                                                            src_output,
+                                                            False, num_cores, True)
+                        if success:
+                            sheet_list["SRC_FL_Source"] = [scan_item.get_row_to_print() for scan_item in result[2]]
+                            create_report_file(0, result[2], result[3], 'all', True, _output_dir, output_files["SRC"], "")
+                    else:  # Run fosslight_source by using docker image
+                        src_output = os.path.join("output", output_files["SRC"])
+                        output_rel_path = os.path.relpath(abs_path, os.getcwd())
+                        command = f"docker run -it -v {_output_dir}:/app/output "\
+                                  f"fosslight -p {output_rel_path} -o {src_output}.xlsx"
+                        command_result = subprocess.run(command.split(' '), stdout=subprocess.PIPE, text=True)
+                        logger.info(f"Source Analysis Result:{command_result.stdout}")
+
                 except Exception as ex:
                     logger.warning(f"Failed to run source analysis: {ex}")
 
