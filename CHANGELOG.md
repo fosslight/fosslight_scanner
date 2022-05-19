@@ -1,5 +1,18 @@
 # Changelog
 
+## v1.6.14 (19/05/2022)
+## Changes
+## 🚀 Features
+
+- Run fosslight_source without installing it @soimkim (#34)
+- Add a Dockerfile @soimkim (#35)
+
+## 🐛 Hotfixes
+
+- Fix a bug where part of the output file is not created without the -o option @soimkim (#36)
+
+---
+
 ## v1.6.13 (11/04/2022)
 ## Changes
 ## 🐛 Hotfixes
