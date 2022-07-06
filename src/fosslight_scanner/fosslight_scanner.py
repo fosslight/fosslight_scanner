@@ -123,12 +123,12 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                             "BIN": "FL_Binary.xlsx",
                             "BIN_TXT": "FL_Binary.txt",
                             "DEP": "FL_Dependency.xlsx",
-                            "REUSE": "reuse.xml"}
+                            "REUSE": "FL_Reuse.yaml"}
             if run_reuse:
                 output_reuse = os.path.join(_output_dir, output_files["REUSE"])
                 success, result = call_analysis_api(src_path, "Reuse Lint",
                                                     -1, reuse_lint,
-                                                    abs_path, "", False,
+                                                    abs_path, False,
                                                     output_reuse)
                 success_file, copied_file = copy_file(output_reuse, output_path)
                 if success_file:
