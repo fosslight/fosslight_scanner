@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.6.15 (06/07/2022)
+## Changes
+## 🐛 Hotfixes
+
+- Modify reuse input parameter @bjk7119 (#37)
+
+---
+
 ## v1.6.14 (19/05/2022)
 ## Changes
 ## 🚀 Features
