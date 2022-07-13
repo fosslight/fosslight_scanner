@@ -104,6 +104,13 @@ def write_result_html(output_file, compared_result, before_yaml, after_yaml):
                         tr.insert(i, td)
                     table_html.insert(row, tr)
                     row += 1
+                if row >= 102:
+                    p = f.new_tag('p')
+                    p.string = "(!) There are so many different oss.\
+                                See the attached excel file for the full comparison result."
+                    p.attrs = {"style": "font-weight:bold; color:red; font-size:15px"}
+                    table_html.insert_before(p)
+                    break
 
             if row == 2:
                 tr = f.new_tag('tr')
@@ -163,7 +170,13 @@ def write_compared_result(output_file, compared_result, file_ext, before_yaml=''
     if file_ext == "" or file_ext == ".xlsx":
         success = write_result_xlsx(output_file, compared_result)
     elif file_ext == ".html":
+        output_xlsx_file = os.path.splitext(output_file)[0] + ".xlsx"
+        success_xlsx = write_result_xlsx(output_xlsx_file, compared_result)
         success = write_result_html(output_file, compared_result, before_yaml, after_yaml)
+        if not success_xlsx:
+            logger.error("Fail to write comparison excel file.")
+        else:
+            output_file = f"{output_xlsx_file}, {output_file}"
     elif file_ext == ".json":
         success = write_result_json_yaml(output_file, compared_result, file_ext)
     elif file_ext == ".yaml":
@@ -171,18 +184,20 @@ def write_compared_result(output_file, compared_result, file_ext, before_yaml=''
     else:
         logger.info("Not supported file extension")
 
-    return success
+    return success, output_file
 
 
 def run_compare(before_yaml, after_yaml, output_file, file_ext):
     ret = False
     logger.info("Start compare mode")
+    logger.info(f"before file: {before_yaml}")
+    logger.info(f"after file: {after_yaml}")
 
     compared_result = compare_yaml(before_yaml, after_yaml)
     if compared_result != '':
-        ret = write_compared_result(output_file, compared_result, file_ext, before_yaml, after_yaml)
+        ret, result_file = write_compared_result(output_file, compared_result, file_ext, before_yaml, after_yaml)
         if ret:
-            logger.info(f"Success to write compared result: {output_file}")
+            logger.info(f"Success to write compared result: {result_file}")
         else:
             logger.error("Fail to write compared result file.")
 
