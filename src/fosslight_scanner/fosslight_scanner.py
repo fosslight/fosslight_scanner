@@ -239,7 +239,7 @@ def download_source(link, out_dir):
     return success, temp_src_dir
 
 
-def init(output_path=""):
+def init(output_path="", make_outdir=True):
     global _output_dir, _log_file, _start_time, logger
 
     result_log = {}
@@ -253,8 +253,9 @@ def init(output_path=""):
     else:
         output_root_dir = _executed_path
 
-    Path(_output_dir).mkdir(parents=True, exist_ok=True)
-    _output_dir = os.path.abspath(_output_dir)
+    if make_outdir:
+        Path(_output_dir).mkdir(parents=True, exist_ok=True)
+        _output_dir = os.path.abspath(_output_dir)
 
     log_dir = os.path.join(output_root_dir, "fosslight_log")
     logger, result_log = init_log(os.path.join(log_dir, f"{_log_file}{_start_time}.txt"),
@@ -263,17 +264,12 @@ def init(output_path=""):
     return os.path.isdir(_output_dir), output_root_dir, result_log
 
 
-def check_comapre_output_file(output_file_name, format):
+def check_compare_output_file(output_file_name, format):
     CUSTOMIZED_FORMAT_FOR_COMPARE_MODE = {'excel': '.xlsx', 'html': '.html', 'json': '.json', 'yaml': '.yaml'}
-
-    if format == "":
-        logger.info(" * Default result format : excel")
-        format = "excel"
 
     success, msg, output_path, output_file, output_extension = check_output_format(output_file_name, format,
                                                                                    CUSTOMIZED_FORMAT_FOR_COMPARE_MODE)
-    success, final_excel_dir, result_log = init(output_path)
-    rmdir(_output_dir)
+    ret, final_excel_dir, result_log = init(output_path, False)
     if success:
         result_file = ""
         if output_path == "":
@@ -321,7 +317,7 @@ def run_main(mode, src_path, dep_arguments, output_file_or_dir, file_format, url
             if not os.path.exists(os.path.join(_executed_path, after_yaml)):
                 logger.error("Cannot find after yaml file (2nd param with -y option).")
                 return False
-            output_compare_file, output_compare_ext = check_comapre_output_file(output_file_or_dir, file_format)
+            output_compare_file, output_compare_ext = check_compare_output_file(output_file_or_dir, file_format)
             run_compare(os.path.join(_executed_path, before_yaml), os.path.join(_executed_path, after_yaml),
                         output_compare_file, output_compare_ext)
         else:

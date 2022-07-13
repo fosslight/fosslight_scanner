@@ -64,6 +64,7 @@ def get_sample_html():
     RESOURCES_DIR = 'resources'
     SAMPLE_HTML = 'bom_compare.html'
     html_file = os.path.join(RESOURCES_DIR, SAMPLE_HTML)
+    html_f = ''
 
     try:
         base_dir = sys._MEIPASS
@@ -81,29 +82,49 @@ def get_sample_html():
 
 def write_result_html(output_file, compared_result, before_yaml, after_yaml):
     ret = True
+    html_f = get_sample_html()
+    if html_f != '':
+        try:
+            f = BeautifulSoup(html_f.read(), 'html.parser')
+            f.find("li", {"class": "before_f"}).append(before_yaml)
+            f.find("li", {"class": "after_f"}).append(after_yaml)
 
-    f = BeautifulSoup(get_sample_html().read(), 'html.parser')
-    f.find("li", {"class": "before_f"}).append(before_yaml)
-    f.find("li", {"class": "after_f"}).append(after_yaml)
+            table_html = f.find("table", {"id": "comp_result"})
 
-    table_html = f.find("table", {"id": "comp_result"})
+            status = [ADD, DELETE, CHANGE]
+            row = 2
+            for st in status:
+                for oi in compared_result[st]:
+                    compared_row = parse_result_for_table(oi, st)
+                    tr = f.new_tag('tr')
+                    for i, ci in enumerate(compared_row):
+                        td = f.new_tag('td')
+                        td.string = ci
+                        td.attrs = {"style": "padding:5px;"}
+                        tr.insert(i, td)
+                    table_html.insert(row, tr)
+                    row += 1
 
-    status = [ADD, DELETE, CHANGE]
-    row = 2
-    for st in status:
-        for oi in compared_result[st]:
-            compared_row = parse_result_for_table(oi, st)
-            tr = f.new_tag('tr')
-            for i, ci in enumerate(compared_row):
+            if row == 2:
+                tr = f.new_tag('tr')
                 td = f.new_tag('td')
-                td.string = ci
+                td.string = 'Same'
                 td.attrs = {"style": "padding:5px;"}
-                tr.insert(i, td)
-            table_html.insert(row, tr)
-            row += 1
+                tr.insert(0, td)
+                for i in range(1, 5):
+                    td = f.new_tag('td')
+                    td.string = ''
+                    td.attrs = {"style": "padding:5px;"}
+                    tr.insert(i, td)
+                table_html.insert(row, tr)
 
-    with open(output_file, "wb") as f_out:
-        f_out.write(f.prettify("utf-8"))
+            with open(output_file, "wb") as f_out:
+                f_out.write(f.prettify("utf-8"))
+        except Exception as e:
+            logger.error(f'Fail to write html file: {e}')
+            ret = False
+    else:
+        ret = False
     return ret
 
 
@@ -127,8 +148,11 @@ def write_result_xlsx(output_file, compared_result):
                 compared_row = parse_result_for_table(oi, st)
                 worksheet.write_row(row, 0, compared_row)
                 row += 1
+        if row == 1:
+            worksheet.write_row(row, 0, ['Same', '', '', '', ''])
         workbook.close()
-    except Exception:
+    except Exception as e:
+        logger.error(f'Fail to write xlsx file: {e}')
         ret = False
 
     return ret
