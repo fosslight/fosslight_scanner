@@ -32,6 +32,7 @@ if __name__ == "__main__":
                      "Programming Language :: Python :: 3.8",
                      "Programming Language :: Python :: 3.9", ],
         install_requires=required,
+        package_data={'fosslight_scanner': ['resources/bom_compare.html']},
         entry_points={
             "console_scripts": [
                 "fosslight = fosslight_scanner.cli:main",

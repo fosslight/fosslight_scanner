@@ -24,6 +24,7 @@ from fosslight_reuse._fosslight_reuse import run_lint as reuse_lint
 from .common import (copy_file, call_analysis_api,
                      overwrite_excel, extract_name_from_link)
 from fosslight_util.write_excel import merge_excels
+from ._run_compare import run_compare
 import subprocess
 fosslight_source_installed = True
 try:
@@ -34,6 +35,7 @@ except ModuleNotFoundError:
 
 OUTPUT_EXCEL_PREFIX = "FOSSLight-Report_"
 OUTPUT_JSON_PREFIX = "Opossum_input_"
+OUTPUT_YAML_PREFIX = "fosslight-sbom-info_"
 PKG_NAME = "fosslight_scanner"
 logger = logging.getLogger(constant.LOGGER_NAME)
 warnings.simplefilter(action='ignore', category=FutureWarning)
@@ -106,7 +108,12 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
         success, final_excel_dir, result_log = init(output_path)
 
     if output_file == "":
-        output_prefix = OUTPUT_EXCEL_PREFIX if output_extension != ".json" else OUTPUT_JSON_PREFIX
+        if output_extension == ".json":
+            output_prefix = OUTPUT_JSON_PREFIX
+        elif output_extension == ".yaml":
+            output_prefix = OUTPUT_YAML_PREFIX
+        else:
+            output_prefix = OUTPUT_EXCEL_PREFIX
         output_file = output_prefix + _start_time
         create_csv = True
 
@@ -170,6 +177,7 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
 
             if run_dep:
                 run_dependency(src_path, os.path.join(_output_dir, output_files["DEP"]), dep_arguments)
+
         else:
             return
 
@@ -231,7 +239,7 @@ def download_source(link, out_dir):
     return success, temp_src_dir
 
 
-def init(output_path=""):
+def init(output_path="", make_outdir=True):
     global _output_dir, _log_file, _start_time, logger
 
     result_log = {}
@@ -245,8 +253,9 @@ def init(output_path=""):
     else:
         output_root_dir = _executed_path
 
-    Path(_output_dir).mkdir(parents=True, exist_ok=True)
-    _output_dir = os.path.abspath(_output_dir)
+    if make_outdir:
+        Path(_output_dir).mkdir(parents=True, exist_ok=True)
+        _output_dir = os.path.abspath(_output_dir)
 
     log_dir = os.path.join(output_root_dir, "fosslight_log")
     logger, result_log = init_log(os.path.join(log_dir, f"{_log_file}{_start_time}.txt"),
@@ -255,60 +264,109 @@ def init(output_path=""):
     return os.path.isdir(_output_dir), output_root_dir, result_log
 
 
+def check_compare_output_file(output_file_name, format):
+    CUSTOMIZED_FORMAT_FOR_COMPARE_MODE = {'excel': '.xlsx', 'html': '.html', 'json': '.json', 'yaml': '.yaml'}
+
+    success, msg, output_path, output_file, output_extension = check_output_format(output_file_name, format,
+                                                                                   CUSTOMIZED_FORMAT_FOR_COMPARE_MODE)
+    ret, final_excel_dir, result_log = init(output_path, False)
+    if success:
+        result_file = ""
+        if output_path == "":
+            output_path = os.getcwd()
+        else:
+            output_path = os.path.abspath(output_path)
+
+        if output_file != "":
+            result_file = f"{output_file}{output_extension}"
+        else:
+            if output_extension == '.xlsx' or output_extension == "":
+                result_file = f"FOSSLight_Compare_{_start_time}.xlsx"
+            elif output_extension == '.html':
+                result_file = f"FOSSLight_Compare_{_start_time}.html"
+            elif output_extension == '.yaml':
+                result_file = f"FOSSLight_Compare_{_start_time}.yaml"
+            elif output_extension == '.json':
+                result_file = f"FOSSLight_Compare_{_start_time}.json"
+            else:
+                logger.error("Not supported file extension")
+
+        result_file = os.path.join(output_path, result_file)
+    else:
+        logger.error(f"Format error - {msg}")
+        sys.exit(1)
+
+    return result_file, output_extension
+
+
 def run_main(mode, src_path, dep_arguments, output_file_or_dir, file_format, url_to_analyze, db_url,
-             hide_progressbar=False, keep_raw_data=False, num_cores=-1):
+             hide_progressbar=False, keep_raw_data=False, num_cores=-1, before_yaml="", after_yaml=""):
     global _executed_path
 
     output_file = ""
     default_oss_name = ""
     _executed_path = os.getcwd()
     try:
-        success, msg, output_path, output_file, output_extension = check_output_format(output_file_or_dir, file_format)
-        if not success:
-            logger.error(msg)
-            sys.exit(1)
+        if mode == "compare":
+            if before_yaml == '' or after_yaml == '':
+                logger.error("before and after yaml files are necessary.")
+                return False
+            if not os.path.exists(os.path.join(_executed_path, before_yaml)):
+                logger.error("Cannot find before yaml file (1st param with -y option).")
+                return False
+            if not os.path.exists(os.path.join(_executed_path, after_yaml)):
+                logger.error("Cannot find after yaml file (2nd param with -y option).")
+                return False
+            output_compare_file, output_compare_ext = check_compare_output_file(output_file_or_dir, file_format)
+            run_compare(os.path.join(_executed_path, before_yaml), os.path.join(_executed_path, after_yaml),
+                        output_compare_file, output_compare_ext)
         else:
-            run_src = False
-            run_bin = False
-            run_dep = False
-            run_reuse = False
-            remove_downloaded_source = False
-            if output_path == "":
-                output_path = _executed_path
-
-            if src_path == "" and url_to_analyze == "":
-                src_path, dep_arguments, url_to_analyze = get_input_mode()
-
-            if not hide_progressbar:
-                timer = TimerThread()
-                timer.setDaemon(True)
-                timer.start()
-
-            if url_to_analyze != "":
-                remove_downloaded_source = True
-                default_oss_name = extract_name_from_link(url_to_analyze)
-                success, src_path = download_source(url_to_analyze, output_path)
-
-            if mode == "reuse":
-                run_reuse = True
-            elif mode == "binary" or mode == "bin":
-                run_bin = True
-            elif mode == "source" or mode == "src":
-                run_src = True
-            elif mode == "dependency" or mode == "dep":
-                run_dep = True
+            success, msg, output_path, output_file, output_extension = check_output_format(output_file_or_dir, file_format)
+            if not success:
+                logger.error(msg)
+                sys.exit(1)
             else:
-                run_src = True
-                run_bin = True
-                run_dep = True
-                run_reuse = True
+                run_src = False
+                run_bin = False
+                run_dep = False
+                run_reuse = False
+                remove_downloaded_source = False
+                if output_path == "":
+                    output_path = _executed_path
 
-            if src_path != "":
-                run_scanner(src_path, dep_arguments, output_path, keep_raw_data,
-                            run_src, run_bin, run_dep, run_reuse,
-                            remove_downloaded_source, {}, output_file,
-                            output_extension, num_cores, db_url,
-                            default_oss_name, url_to_analyze)
+                if mode == "reuse":
+                    run_reuse = True
+                elif mode == "binary" or mode == "bin":
+                    run_bin = True
+                elif mode == "source" or mode == "src":
+                    run_src = True
+                elif mode == "dependency" or mode == "dep":
+                    run_dep = True
+                else:
+                    run_src = True
+                    run_bin = True
+                    run_dep = True
+                    run_reuse = True
+
+                if src_path == "" and url_to_analyze == "":
+                    src_path, dep_arguments, url_to_analyze = get_input_mode()
+
+                if not hide_progressbar:
+                    timer = TimerThread()
+                    timer.setDaemon(True)
+                    timer.start()
+
+                if url_to_analyze != "":
+                    remove_downloaded_source = True
+                    default_oss_name = extract_name_from_link(url_to_analyze)
+                    success, src_path = download_source(url_to_analyze, output_path)
+
+                if src_path != "":
+                    run_scanner(src_path, dep_arguments, output_path, keep_raw_data,
+                                run_src, run_bin, run_dep, run_reuse,
+                                remove_downloaded_source, {}, output_file,
+                                output_extension, num_cores, db_url,
+                                default_oss_name, url_to_analyze)
 
     except Exception as ex:
         logger.warning(str(ex))

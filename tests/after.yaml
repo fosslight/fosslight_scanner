@@ -1,0 +1,73 @@
+same-oss:
+- version: 0.0.0
+  source name or path:
+  - go.mod
+  license:
+  - BSD-3-Clause
+  download location: https://github.com/alecthomas/template
+  homepage: https://pkg.go.dev/github.com/alecthomas/template
+  comment: transitive, Cannot connect https://pkg.go.dev/github.com/alecthomas/template@v0.0.0-20160405071501-a0175ee3bccc,
+    get info from the latest version.
+add-license-oss:
+- version: 0.5.6
+  source name or path:
+  - go.mod
+  license:
+  - MPL-2.0
+  download location: https://github.com/hashicorp/go-retryablehttp
+  homepage: https://pkg.go.dev/github.com/hashicorp/go-retryablehttp
+  comment: transitive
+- version: 0.5.3
+  source name or path:
+  - go.mod
+  license:
+  - MPL-2.0
+  download location: https://github.com/hashicorp/go-retryablehttp
+  homepage: https://pkg.go.dev/github.com/hashicorp/go-retryablehttp
+  comment: transitive
+- version: 0.5.3
+  source name or path:
+  - go.mod
+  license:
+  - Apache-2.0
+  download location: https://github.com/hashicorp/go-retryablehttp
+  homepage: https://pkg.go.dev/github.com/hashicorp/go-retryablehttp
+  comment: transitive
+- version: 0.5.4
+  source name or path:
+  - go.mod
+  license:
+  - Apache-2.0
+  download location: https://github.com/hashicorp/go-retryablehttp
+  homepage: https://pkg.go.dev/github.com/hashicorp/go-retryablehttp
+  comment: transitive
+remove-version-oss:
+- version: 1.0.1
+  source name or path:
+  - go.mod
+  license:
+  - MIT
+  - Apache-2.0
+  download location: https://github.com/konsorten/go-windows-terminal-sequences
+  homepage: https://pkg.go.dev/github.com/konsorten/go-windows-terminal-sequences
+  comment: transitive
+new-test-oss:
+- version: 1.0.1
+  source name or path:
+  - hi
+  license:
+  - MIT
+  - Apache-2.0
+  download location: https://github.com/new-test-oss/new-test-oss
+  homepage: https://github.com/new-test-oss/new-test-oss
+new-test-oss2:
+- version: 1.0.1
+  source name or path:
+  - hi2
+  license:
+  - MIT
+- version: 1.0.2
+  source name or path:
+  - hi2
+  license:
+  - MIT
