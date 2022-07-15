@@ -76,6 +76,10 @@ def run_dependency(path_to_analyze, output_file_with_path, params=""):
     except Exception as ex:
         logger.warning(f"Set dependency Param: {ex}")
 
+    timer = TimerThread()
+    timer.setDaemon(True)
+    timer.start()
+
     try:
         success, result = call_analysis_api(path_to_analyze, "Dependency Analysis",
                                             1, run_dependency_scanner,
