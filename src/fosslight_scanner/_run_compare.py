@@ -36,21 +36,23 @@ def write_result_json_yaml(output_file, compared_result, file_ext):
 
 def parse_result_for_table(oi, status):
     compared_row = []
-    if status == ADD:
-        oss_after = f"{oi['name']} ({oi['version']})"
-        license_after = f"{', '.join(oi['license'])}"
-        compared_row = [status, '', '', oss_after, license_after]
-    elif status == DELETE:
-        oss_before = f"{oi['name']} ({oi['version']})"
-        license_before = f"{', '.join(oi['license'])}"
-        compared_row = [status, oss_before, license_before, '', '']
+    if status == ADD or status == DELETE:
+        oi_ver = '' if oi['version'] == '' else f"({oi['version']})"
+        oss_info = f"{oi['name']}{oi_ver}"
+        license_info = f"{', '.join(oi['license'])}"
+        if status == ADD:
+            compared_row = [status, '', '', oss_info, license_info]
+        elif status == DELETE:
+            compared_row = [status, oss_info, license_info, '', '']
     elif status == CHANGE:
         oss_before, oss_after, license_before, license_after = [], [], [], []
         for prev_i in oi['prev']:
-            oss_before.append(f"{oi['name']} ({prev_i['version']})")
+            prev_i_ver = '' if prev_i['version'] == '' else f"({prev_i['version']})"
+            oss_before.append(f"{oi['name']}{prev_i_ver}")
             license_before.append(f"{', '.join(prev_i['license'])}")
         for now_i in oi['now']:
-            oss_after.append(f"{oi['name']} ({now_i['version']})")
+            now_i_ver = '' if now_i['version'] == '' else f"({now_i['version']})"
+            oss_after.append(f"{oi['name']}{now_i_ver}")
             license_after.append(f"{', '.join(now_i['license'])}")
         compared_row = [status, ' / '.join(oss_before), ' / '.join(license_before),
                                 ' / '.join(oss_after), ' / '.join(license_after)]
