@@ -93,6 +93,7 @@ def write_result_html(output_file, compared_result, before_yaml, after_yaml):
 
             status = [ADD, DELETE, CHANGE]
             row = 2
+            MIN_ROW_NUM = 100
             for st in status:
                 for oi in compared_result[st]:
                     compared_row = parse_result_for_table(oi, st)
@@ -104,7 +105,7 @@ def write_result_html(output_file, compared_result, before_yaml, after_yaml):
                         tr.insert(i, td)
                     table_html.insert(row, tr)
                     row += 1
-                if row >= 102:
+                if row >= MIN_ROW_NUM + 2:
                     p = f.new_tag('p')
                     p.string = "(!) There are so many different oss.\
                                 See the attached excel file for the full comparison result."
