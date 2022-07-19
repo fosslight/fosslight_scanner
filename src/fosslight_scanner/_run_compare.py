@@ -193,16 +193,37 @@ def write_compared_result(output_file, compared_result, file_ext, before_yaml=''
 
     return success, output_file
 
+def get_comparison_result_filename(output_path, output_file, output_extension, _start_time):
+    result_file = ""
+    if output_file != "":
+        result_file = f"{output_file}{output_extension}"
+    else:
+        if output_extension == '.xlsx' or output_extension == "":
+            result_file = f"FOSSLight_Compare_{_start_time}.xlsx"
+        elif output_extension == '.html':
+            result_file = f"FOSSLight_Compare_{_start_time}.html"
+        elif output_extension == '.yaml':
+            result_file = f"FOSSLight_Compare_{_start_time}.yaml"
+        elif output_extension == '.json':
+            result_file = f"FOSSLight_Compare_{_start_time}.json"
+        else:
+            logger.error("Not supported file extension")
 
-def run_compare(before_yaml, after_yaml, output_file, file_ext):
+    result_file = os.path.join(output_path, result_file)
+
+    return result_file
+
+
+def run_compare(before_yaml, after_yaml, output_path, output_file, file_ext, _start_time):
     ret = False
     logger.info("Start compare mode")
     logger.info(f"before file: {before_yaml}")
     logger.info(f"after file: {after_yaml}")
 
+    result_file = get_comparison_result_filename(output_path, output_file, file_ext, _start_time)
     compared_result = compare_yaml(before_yaml, after_yaml)
     if compared_result != '':
-        ret, result_file = write_compared_result(output_file, compared_result, file_ext, before_yaml, after_yaml)
+        ret, result_file = write_compared_result(result_file, compared_result, file_ext, before_yaml, after_yaml)
         if ret:
             logger.info(f"Success to write compared result: {result_file}")
         else:
