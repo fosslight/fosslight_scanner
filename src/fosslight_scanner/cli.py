@@ -13,7 +13,8 @@ def main():
     parser.add_argument('mode', nargs='?', help='source| dependency| binary| reuse| all| compare', default="all")
     parser.add_argument('--path', '-p', help='Path to analyze', type=str, dest='path', default="")
     parser.add_argument('--wget', '-w', help='Link to be analyzed', type=str, dest='link', default="")
-    parser.add_argument('--file', '-f', help='Output file format (excel, csv, opossum, yaml)', type=str, dest='file', default="")
+    parser.add_argument('--file', '-f', help='Scanner output file format (excel,yaml), Compare mode (excel,html,yaml,json)',
+                        type=str, dest='file', default="")
     parser.add_argument('--output', '-o', help='Output directory or file', type=str, dest='output', default="")
     parser.add_argument('--dependency', '-d', help='Dependency arguments', type=str, dest='dep_argument', default="")
     parser.add_argument('--url', '-u', help="DB Url", type=str, dest='db_url', default="")
