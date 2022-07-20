@@ -189,13 +189,12 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
         if remove_src_data:
             overwrite_excel(_output_dir, default_oss_name, "OSS Name")
             overwrite_excel(_output_dir, url, "Download Location")
-        success, output_files = merge_excels(_output_dir, final_report)
+        success, err_msg = merge_excels(_output_dir, final_report)
 
-        if success and output_files:
-            temp_output_fiiles.extend(output_files.split(","))
-            result_log["Output File"] = temp_output_fiiles
+        if success:
+            result_log["Output File"] = final_report
         else:
-            logger.error(f"Fail to generate a result file. : {output_files}")
+            logger.error(f"Fail to generate a result file({final_report}): {err_msg}")
 
         _str_final_result_log = yaml.safe_dump(result_log, allow_unicode=True, sort_keys=True)
         logger.info(_str_final_result_log)
@@ -275,7 +274,8 @@ def run_main(mode, src_path, dep_arguments, output_file_or_dir, file_format, url
     if mode == "compare":
         CUSTOMIZED_FORMAT = {'excel': '.xlsx', 'html': '.html', 'json': '.json', 'yaml': '.yaml'}
 
-    success, msg, output_path, output_file, output_extension = check_output_format(output_file_or_dir, file_format, CUSTOMIZED_FORMAT)
+    success, msg, output_path, output_file, output_extension = check_output_format(output_file_or_dir, file_format,
+                                                                                   CUSTOMIZED_FORMAT)
     if not success:
         logger.error(msg)
         sys.exit(1)

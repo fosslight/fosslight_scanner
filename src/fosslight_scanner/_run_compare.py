@@ -193,6 +193,7 @@ def write_compared_result(output_file, compared_result, file_ext, before_yaml=''
 
     return success, output_file
 
+
 def get_comparison_result_filename(output_path, output_file, output_extension, _start_time):
     result_file = ""
     if output_file != "":
