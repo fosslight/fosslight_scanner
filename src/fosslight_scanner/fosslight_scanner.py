@@ -262,17 +262,30 @@ def init(output_path="", make_outdir=True):
     return os.path.isdir(_output_dir), output_root_dir, result_log
 
 
-def run_main(mode, src_path, dep_arguments, output_file_or_dir, file_format, url_to_analyze, db_url,
-             hide_progressbar=False, keep_raw_data=False, num_cores=-1, before_yaml="", after_yaml=""):
+def run_main(mode, path_arg, dep_arguments, output_file_or_dir, file_format, url_to_analyze, db_url,
+             hide_progressbar=False, keep_raw_data=False, num_cores=-1):
     global _executed_path, _start_time
 
     output_file = ""
     default_oss_name = ""
+    src_path = ""
     _executed_path = os.getcwd()
 
-    CUSTOMIZED_FORMAT = {'excel': '.xlsx', 'yaml': '.yaml'}
     if mode == "compare":
         CUSTOMIZED_FORMAT = {'excel': '.xlsx', 'html': '.html', 'json': '.json', 'yaml': '.yaml'}
+        if isinstance(path_arg, list) and len(path_arg) == 2:
+            before_yaml = path_arg[0]
+            after_yaml = path_arg[1]
+        else:
+            logger.error("Enter two FOSSLight report file with 'p' option.")
+            return False
+    else:
+        CUSTOMIZED_FORMAT = {'excel': '.xlsx', 'yaml': '.yaml'}
+        if isinstance(path_arg, list):
+            if len(path_arg) == 1:
+                src_path = path_arg[0]
+            else:
+                logger.warning(f"Cannot analyze with multiple path: {path_arg}")
 
     success, msg, output_path, output_file, output_extension = check_output_format(output_file_or_dir, file_format,
                                                                                    CUSTOMIZED_FORMAT)

@@ -22,10 +22,11 @@ _HELP_MESSAGE_SCANNER = """
 
         Options:
             -h\t\t\t    Print help message
-            -p <path>\t\t    Path to analyze
+            -p <path>\t\t    Path to analyze (ex, -p {input_path})
+                                     * Compare mode: Two FOSSLight reports in yaml format (ex, -p {before.yaml} {after.yaml})
             -w <link>\t\t    Link to be analyzed can be downloaded by wget or git clone
             -f <format>\t\t    FOSSLight Report file format (excel, yaml)
-                               \t\t(In compare mode, supports excel, json, yaml, html)
+                                     * Compare mode: supports excel, json, yaml, html
             -o <output>\t\t    Output directory or file
             -c <number>\t\t    Number of processes to analyze source
             -r\t\t\t    Keep raw data
@@ -36,10 +37,7 @@ _HELP_MESSAGE_SCANNER = """
             -u <db_url>\t\t    DB Connection(format :'postgresql://username:password@host:port/database_name')
 
         Options for only 'all' or 'dependency' mode
-            -d <dependency_argument>\t    Additional arguments for running dependency analysis
-
-        Options for only 'compare' mode
-            -y <before yaml> <after yaml>   Two FOSSLight reports in yaml format (ex, -y 'before.yaml' 'after.yaml')"""
+            -d <dependency_argument>\t    Additional arguments for running dependency analysis"""
 
 
 def print_help_msg():
