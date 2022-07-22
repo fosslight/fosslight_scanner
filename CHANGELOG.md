@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.7.1 (22/07/2022)
+## Changes
+## 🐛 Hotfixes
+
+- Change FL Reuse to FL Prechecker @bjk7119 (#43)
+
+---
+
 ## v1.7.0 (22/07/2022)
 ## Changes
 ## 🚀 Features
