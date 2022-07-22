@@ -321,7 +321,7 @@ def run_main(mode, path_arg, dep_arguments, output_file_or_dir, file_format, url
             if output_path == "":
                 output_path = _executed_path
 
-            if mode == "prechecker":
+            if mode == "prechecker" or mode == "reuse":
                 run_prechecker = True
             elif mode == "binary" or mode == "bin":
                 run_bin = True
