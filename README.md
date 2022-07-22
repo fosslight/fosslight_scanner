@@ -11,7 +11,7 @@ SPDX-License-Identifier: Apache-2.0
 
 **FOSSLight Scanner** performs open source analysis after downloading the source by passing a link that can be cloned by wget or git. Instead, open source analysis can be performed for the local source path. The output result is generated in [FOSSLight Report][or] format.
 
-- **[FOSSLight Reuse][re]** Check whether the [source code's copyright and license writing rules][rule] are complied with.
+- **[FOSSLight Prechecker][re]** Check whether the [source code's copyright and license writing rules][rule] are complied with.
 - **[FOSSLight Source Scanner][s]** Extract license and copyright in the source code using [ScanCode][sc].
 - **[FOSSLight Dependency Scanner][d]** Extract dependency and OSS information from the package manager's manifest file.
 - **[FOSSLight Binary Scanner][flbin]** Find binary and print OSS information.
@@ -21,7 +21,7 @@ SPDX-License-Identifier: Apache-2.0
 [sc]: https://github.com/nexB/scancode-toolkit
 [or]: https://fosslight.org/fosslight-guide-en/learn/2_fosslight_report.html
 [flbin]: https://github.com/fosslight/fosslight_binary_scanner
-[re]: https://github.com/fosslight/fosslight_reuse
+[re]: https://github.com/fosslight/fosslight_prechecker
 [rule]: https://oss.lge.com/guide/process/osc_process/1-identification/copyright_license_rule.html
 
 ## Contents
@@ -35,6 +35,7 @@ SPDX-License-Identifier: Apache-2.0
     - [Ex 1. Local Source Analysis](#ex-1-local-source-analysis)
     - [Ex 2. Download Link and analyze](#ex-2-download-link-and-analyze)
   - [📁 Result](#-result)
+  - [🐳 How to run using Docker](#-how-to-run-using-docker)
   - [👏 How to report issue](#-how-to-report-issue)
   - [📄 License](#-license)
 
@@ -64,7 +65,7 @@ Mode
             source            Run FOSSLight Source
             dependency        Run FOSSLight Dependency
             binary            Run FOSSLight Binary
-            reuse             Run FOSSLight Reuse
+            prechecker        Run FOSSLight Prechecker
             all               Run all scanners
 ``` 
 Options:
@@ -110,6 +111,17 @@ $ tree
 
 - FOSSLight_Report-[datetime].xlsx : OSS Report format file that outputs source code analysis, binary analysis, and dependency analysis results.
 - fosslight_raw_data_[datetime] directory: Directory in which raw data files are created as a result of analysis
+
+## 🐳 How to run using Docker
+1. Build image using Dockerfile.
+```
+$docker build -t fosslight .
+```
+2. Run with the image you built.      
+ex. Output: /Users/fosslight_source_scanner/test_output, Path to be analyzed: tests/test_files
+```
+$docker run -it -v /Users/fosslight_source_scanner/test_output:/app/output fosslight -p tests/test_files -o output
+```
 
 ## 👏 How to report issue
 
