@@ -20,7 +20,7 @@ from fosslight_util.set_log import init_log
 from fosslight_util.timer_thread import TimerThread
 import fosslight_util.constant as constant
 from fosslight_util.output_format import check_output_format
-from fosslight_reuse._fosslight_reuse import run_lint as reuse_lint
+from fosslight_prechecker._precheck import run_lint as prechecker_lint
 from .common import (copy_file, call_analysis_api,
                      overwrite_excel, extract_name_from_link)
 from fosslight_util.write_excel import merge_excels
@@ -99,7 +99,7 @@ def run_dependency(path_to_analyze, output_file_with_path, params=""):
 
 
 def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
-                run_src=True, run_bin=True, run_dep=True, run_reuse=True,
+                run_src=True, run_bin=True, run_dep=True, run_prechecker=True,
                 remove_src_data=True, result_log={}, output_file="",
                 output_extension="", num_cores=-1, db_url="",
                 default_oss_name="", url=""):
@@ -128,15 +128,15 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
             output_files = {"SRC": "FL_Source.xlsx",
                             "BIN": "FL_Binary.xlsx",
                             "BIN_TXT": "FL_Binary.txt",
-                            "DEP": "FL_Dependency.xlsx",
-                            "REUSE": "FL_Reuse.yaml"}
-            if run_reuse:
-                output_reuse = os.path.join(_output_dir, output_files["REUSE"])
-                success, result = call_analysis_api(src_path, "Reuse Lint",
-                                                    -1, reuse_lint,
+                            "DEP": f"FL_Dependency{output_extension}",
+                            "PRECHECKER": "FL_Prechecker.yaml"}
+            if run_prechecker:
+                output_prechecker = os.path.join(_output_dir, output_files["PRECHECKER"])
+                success, result = call_analysis_api(src_path, "Prechecker Lint",
+                                                    -1, prechecker_lint,
                                                     abs_path, False,
-                                                    output_reuse)
-                success_file, copied_file = copy_file(output_reuse, output_path)
+                                                    output_prechecker)
+                success_file, copied_file = copy_file(output_prechecker, output_path)
                 if success_file:
                     temp_output_fiiles.append(copied_file)
 
@@ -316,13 +316,13 @@ def run_main(mode, path_arg, dep_arguments, output_file_or_dir, file_format, url
             run_src = False
             run_bin = False
             run_dep = False
-            run_reuse = False
+            run_prechecker = False
             remove_downloaded_source = False
             if output_path == "":
                 output_path = _executed_path
 
-            if mode == "reuse":
-                run_reuse = True
+            if mode == "prechecker" or mode == "reuse":
+                run_prechecker = True
             elif mode == "binary" or mode == "bin":
                 run_bin = True
             elif mode == "source" or mode == "src":
@@ -333,7 +333,7 @@ def run_main(mode, path_arg, dep_arguments, output_file_or_dir, file_format, url
                 run_src = True
                 run_bin = True
                 run_dep = True
-                run_reuse = True
+                run_prechecker = True
 
             if src_path == "" and url_to_analyze == "":
                 src_path, dep_arguments, url_to_analyze = get_input_mode()
@@ -350,7 +350,7 @@ def run_main(mode, path_arg, dep_arguments, output_file_or_dir, file_format, url
 
             if src_path != "":
                 run_scanner(src_path, dep_arguments, output_path, keep_raw_data,
-                            run_src, run_bin, run_dep, run_reuse,
+                            run_src, run_bin, run_dep, run_prechecker,
                             remove_downloaded_source, {}, output_file,
                             output_extension, num_cores, db_url,
                             default_oss_name, url_to_analyze)
