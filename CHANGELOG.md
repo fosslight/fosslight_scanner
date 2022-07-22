@@ -1,5 +1,19 @@
 # Changelog
 
+## v1.7.0 (22/07/2022)
+## Changes
+## 🚀 Features
+
+- Add compare mode @dd-jy (#38)
+
+## 🔧 Maintenance
+
+- Replace 'y' option to 'p' option. @dd-jy (#41)
+- Fix scanner support format and not to create csv. @dd-jy (#40)
+- Print message when comparison rows are over 100. @dd-jy (#39)
+
+---
+
 ## v1.6.15 (06/07/2022)
 ## Changes
 ## 🐛 Hotfixes
