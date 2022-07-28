@@ -1,5 +1,61 @@
 # Changelog
 
+## v1.7.1 (22/07/2022)
+## Changes
+## 🐛 Hotfixes
+
+- Change FL Reuse to FL Prechecker @bjk7119 (#43)
+
+---
+
+## v1.7.0 (22/07/2022)
+## Changes
+## 🚀 Features
+
+- Add compare mode @dd-jy (#38)
+
+## 🔧 Maintenance
+
+- Replace 'y' option to 'p' option. @dd-jy (#41)
+- Fix scanner support format and not to create csv. @dd-jy (#40)
+- Print message when comparison rows are over 100. @dd-jy (#39)
+
+---
+
+## v1.6.15 (06/07/2022)
+## Changes
+## 🐛 Hotfixes
+
+- Modify reuse input parameter @bjk7119 (#37)
+
+---
+
+## v1.6.14 (19/05/2022)
+## Changes
+## 🚀 Features
+
+- Run fosslight_source without installing it @soimkim (#34)
+- Add a Dockerfile @soimkim (#35)
+
+## 🐛 Hotfixes
+
+- Fix a bug where part of the output file is not created without the -o option @soimkim (#36)
+
+---
+
+## v1.6.13 (11/04/2022)
+## Changes
+## 🐛 Hotfixes
+
+- Fix an errors when parsing with path @soimkim (#33)
+- Fix an error that occur when downloading link @soimkim (#30)
+
+## 🔧 Maintenance
+
+- Add a commit message checker @soimkim (#31)
+
+---
+
 ## v1.6.12 (28/03/2022)
 ## 🐛 Hotfixes
 
