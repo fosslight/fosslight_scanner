@@ -159,7 +159,7 @@ def overwrite_excel(excel_file_path, oss_name, column_name='OSS Name'):
             logger.debug(f"overwrite_excel:{ex}")
 
 
-def merge_yamls(_output_dir, merge_yaml_files, final_report):
+def merge_yamls(_output_dir, merge_yaml_files, final_report, remove_src_data=False, default_oss_name='', url=''):
     success = True
     err_msg = ''
 
@@ -169,11 +169,21 @@ def merge_yamls(_output_dir, merge_yaml_files, final_report):
         for mf in merge_yaml_files:
             if os.path.exists(os.path.join(_output_dir, mf)):
                 oss_list, license_list = parsing_yml(os.path.join(_output_dir, mf), _output_dir)
+
+                if remove_src_data:
+                    existed_yaml = {}
+                    for oi in oss_list:
+                        oi.name = default_oss_name if oi.name == '-' else oi.name
+                        oi.download_location = url if oi.download_location == '' else oi.download_location
+                        create_yaml_with_ossitem(oi, existed_yaml)
+                    with open(os.path.join(_output_dir, mf), 'w') as f:
+                        yaml.dump(existed_yaml, f, default_flow_style=False, sort_keys=False)
+
                 oss_total_list.extend(oss_list)
 
         if oss_total_list != []:
-            for oi in oss_total_list:
-                create_yaml_with_ossitem(oi, yaml_dict)
+            for oti in oss_total_list:
+                create_yaml_with_ossitem(oti, yaml_dict)
             with open(os.path.join(_output_dir, final_report), 'w') as f:
                 yaml.dump(yaml_dict, f, default_flow_style=False, sort_keys=False)
         else:

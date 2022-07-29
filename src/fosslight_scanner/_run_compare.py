@@ -19,6 +19,7 @@ logger = logging.getLogger(constant.LOGGER_NAME)
 ADD = "add"
 DELETE = "delete"
 CHANGE = "change"
+COMP_STATUS = [ADD, DELETE, CHANGE]
 
 
 def write_result_json_yaml(output_file, compared_result, file_ext):
@@ -93,10 +94,9 @@ def write_result_html(output_file, compared_result, before_yaml, after_yaml):
 
             table_html = f.find("table", {"id": "comp_result"})
 
-            status = [ADD, DELETE, CHANGE]
             row = 2
             MIN_ROW_NUM = 100
-            for st in status:
+            for st in COMP_STATUS:
                 for oi in compared_result[st]:
                     compared_row = parse_result_for_table(oi, st)
                     tr = f.new_tag('tr')
@@ -155,8 +155,7 @@ def write_result_xlsx(output_file, compared_result):
         worksheet.write_row(0, 0, HEADER, bold)
 
         row = 1
-        status = [ADD, DELETE, CHANGE]
-        for st in status:
+        for st in COMP_STATUS:
             for oi in compared_result[st]:
                 compared_row = parse_result_for_table(oi, st)
                 worksheet.write_row(row, 0, compared_row)
@@ -215,6 +214,16 @@ def get_comparison_result_filename(output_path, output_file, output_extension, _
     return result_file
 
 
+def count_compared_result(compared_result):
+    comp_len = [len(compared_result[st]) for st in COMP_STATUS]
+    if sum(comp_len) == 0:
+        count_str = "all oss lists are the same."
+    else:
+        count_str = f"total {sum(comp_len)} oss updated ("
+        count_str += ', '.join([f"{COMP_STATUS[x]}: {comp_len[x]}" for x in range(0, 3)]) + ")"
+    logger.info(f"Comparison result: {count_str}")
+
+
 def run_compare(before_yaml, after_yaml, output_path, output_file, file_ext, _start_time):
     ret = False
     logger.info("Start compare mode")
@@ -224,6 +233,7 @@ def run_compare(before_yaml, after_yaml, output_path, output_file, file_ext, _st
     result_file = get_comparison_result_filename(output_path, output_file, file_ext, _start_time)
     compared_result = compare_yaml(before_yaml, after_yaml)
     if compared_result != '':
+        count_compared_result(compared_result)
         ret, result_file = write_compared_result(result_file, compared_result, file_ext, before_yaml, after_yaml)
         if ret:
             logger.info(f"Success to write compared result: {result_file}")

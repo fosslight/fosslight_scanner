@@ -130,7 +130,6 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                             "BIN": f"FL_Binary{output_extension}",
                             "BIN_TXT": "FL_Binary.txt",
                             "DEP": f"FL_Dependency{output_extension}",
-
                             "PRECHECKER": "FL_Prechecker.yaml"}
             if run_prechecker:
                 output_prechecker = os.path.join(_output_dir, output_files["PRECHECKER"])
@@ -197,7 +196,8 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
             success, err_msg = merge_excels(_output_dir, final_report)
         elif output_extension == ".yaml":
             merge_yaml_files = [output_files["SRC"], output_files["BIN"], output_files["DEP"]]
-            success, err_msg = merge_yamls(_output_dir, merge_yaml_files, final_report)
+            success, err_msg = merge_yamls(_output_dir, merge_yaml_files, final_report,
+                                           remove_src_data, default_oss_name, url)
 
         if success:
             result_log["Output File"] = final_report
