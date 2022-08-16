@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.7.2 (16/08/2022)
+## Changes
+## 🚀 Features
+
+- Support yaml format of FOSSLight Report @dd-jy (#42)
+
+---
+
 ## v1.7.1 (22/07/2022)
 ## Changes
 ## 🐛 Hotfixes
