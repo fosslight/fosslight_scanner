@@ -9,7 +9,10 @@ import logging
 from shutil import copy
 import re
 import pandas as pd
+import yaml
 import fosslight_util.constant as constant
+from fosslight_util.parsing_yaml import parsing_yml
+from fosslight_util.write_yaml import create_yaml_with_ossitem
 
 logger = logging.getLogger(constant.LOGGER_NAME)
 
@@ -154,3 +157,40 @@ def overwrite_excel(excel_file_path, oss_name, column_name='OSS Name'):
                             logger.debug(f"overwrite_sheet {sheet_name}:{ex}")
         except Exception as ex:
             logger.debug(f"overwrite_excel:{ex}")
+
+
+def merge_yamls(_output_dir, merge_yaml_files, final_report, remove_src_data=False, default_oss_name='', url=''):
+    success = True
+    err_msg = ''
+
+    oss_total_list = []
+    yaml_dict = {}
+    try:
+        for mf in merge_yaml_files:
+            if os.path.exists(os.path.join(_output_dir, mf)):
+                oss_list, license_list = parsing_yml(os.path.join(_output_dir, mf), _output_dir)
+
+                if remove_src_data:
+                    existed_yaml = {}
+                    for oi in oss_list:
+                        oi.name = default_oss_name if oi.name == '-' else oi.name
+                        oi.download_location = url if oi.download_location == '' else oi.download_location
+                        create_yaml_with_ossitem(oi, existed_yaml)
+                    with open(os.path.join(_output_dir, mf), 'w') as f:
+                        yaml.dump(existed_yaml, f, default_flow_style=False, sort_keys=False)
+
+                oss_total_list.extend(oss_list)
+
+        if oss_total_list != []:
+            for oti in oss_total_list:
+                create_yaml_with_ossitem(oti, yaml_dict)
+            with open(os.path.join(_output_dir, final_report), 'w') as f:
+                yaml.dump(yaml_dict, f, default_flow_style=False, sort_keys=False)
+        else:
+            success = False
+            err_msg = "Output file is not created as no oss items detected."
+    except Exception as ex:
+        err_msg = ex
+        success = False
+
+    return success, err_msg

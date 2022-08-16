@@ -22,7 +22,8 @@ import fosslight_util.constant as constant
 from fosslight_util.output_format import check_output_format
 from fosslight_prechecker._precheck import run_lint as prechecker_lint
 from .common import (copy_file, call_analysis_api,
-                     overwrite_excel, extract_name_from_link)
+                     overwrite_excel, extract_name_from_link,
+                     merge_yamls)
 from fosslight_util.write_excel import merge_excels
 from ._run_compare import run_compare
 import subprocess
@@ -125,8 +126,8 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
         abs_path = os.path.abspath(src_path)
 
         if success:
-            output_files = {"SRC": "FL_Source.xlsx",
-                            "BIN": "FL_Binary.xlsx",
+            output_files = {"SRC": f"FL_Source{output_extension}",
+                            "BIN": f"FL_Binary{output_extension}",
                             "BIN_TXT": "FL_Binary.txt",
                             "DEP": f"FL_Dependency{output_extension}",
                             "PRECHECKER": "FL_Prechecker.yaml"}
@@ -151,7 +152,9 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                                                             False, num_cores, True)
                         if success:
                             sheet_list["SRC_FL_Source"] = [scan_item.get_row_to_print() for scan_item in result[2]]
-                            create_report_file(0, result[2], result[3], 'all', True, _output_dir, output_files["SRC"], "")
+                            need_license = True if output_extension == ".xlsx" else False
+                            create_report_file(0, result[2], result[3], 'all', need_license,
+                                               _output_dir, output_files["SRC"].split('.')[0], output_extension)
                     else:  # Run fosslight_source by using docker image
                         src_output = os.path.join("output", output_files["SRC"])
                         output_rel_path = os.path.relpath(abs_path, os.getcwd())
@@ -186,10 +189,15 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
     try:
         output_file_without_ext = os.path.join(final_excel_dir, output_file)
         final_report = f"{output_file_without_ext}{output_extension}"
-        if remove_src_data:
-            overwrite_excel(_output_dir, default_oss_name, "OSS Name")
-            overwrite_excel(_output_dir, url, "Download Location")
-        success, err_msg = merge_excels(_output_dir, final_report)
+        if output_extension == ".xlsx":
+            if remove_src_data:
+                overwrite_excel(_output_dir, default_oss_name, "OSS Name")
+                overwrite_excel(_output_dir, url, "Download Location")
+            success, err_msg = merge_excels(_output_dir, final_report)
+        elif output_extension == ".yaml":
+            merge_yaml_files = [output_files["SRC"], output_files["BIN"], output_files["DEP"]]
+            success, err_msg = merge_yamls(_output_dir, merge_yaml_files, final_report,
+                                           remove_src_data, default_oss_name, url)
 
         if success:
             result_log["Output File"] = final_report
