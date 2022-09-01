@@ -47,7 +47,7 @@ FOSSLight Scanner needs a Python 3.6+.
 ## 🎉 How to install
 
 
-It can be installed using pip3. It is recommended to install it in the [python 3.6 + virtualenv]([etc/guide_virtualenv.md](https://fosslight.org/fosslight-guide-en/scanner/etc/guide_virtualenv.html)) environment.
+It can be installed using pip3. It is recommended to install it in the [python 3.7 + virtualenv]([etc/guide_virtualenv.md](https://fosslight.org/fosslight-guide-en/scanner/etc/guide_virtualenv.html)) environment.
 
 ```
 $ pip3 install fosslight_scanner
