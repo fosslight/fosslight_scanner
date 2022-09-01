@@ -1,5 +1,17 @@
 # Changelog
 
+## v1.7.3 (01/09/2022)
+## Changes
+## 🚀 Features
+
+- Support 'xlsx' report for Compare mode @dd-jy (#46)
+
+## 🔧 Maintenance
+
+- Change the required version of Python to 3.7 @soimkim (#45)
+
+---
+
 ## v1.7.2 (16/08/2022)
 ## Changes
 ## 🚀 Features
