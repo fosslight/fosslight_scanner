@@ -18,15 +18,16 @@ _HELP_MESSAGE_SCANNER = """
             binary\t\t    Run FOSSLight Binary
             prechecker\t\t    Run FOSSLight Prechecker
             all\t\t\t    Run all scanners
-            compare\t\t    Compare two FOSSLight reports in yaml format
+            compare\t\t    Compare two FOSSLight reports
 
         Options:
             -h\t\t\t    Print help message
             -p <path>\t\t    Path to analyze (ex, -p {input_path})
-                                     * Compare mode: Two FOSSLight reports in yaml format (ex, -p {before.yaml} {after.yaml})
+                                     * Compare mode input file: Two FOSSLight reports (supports excel, yaml)
+                                       (ex, -p {before_name}.xlsx {after_name}.xlsx)
             -w <link>\t\t    Link to be analyzed can be downloaded by wget or git clone
             -f <format>\t\t    FOSSLight Report file format (excel, yaml)
-                                     * Compare mode: supports excel, json, yaml, html
+                                     * Compare mode result file: supports excel, json, yaml, html
             -o <output>\t\t    Output directory or file
             -c <number>\t\t    Number of processes to analyze source
             -r\t\t\t    Keep raw data
