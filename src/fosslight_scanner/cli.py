@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # Copyright (c) 2022 LG Electronics Inc.
 # SPDX-License-Identifier: Apache-2.0
+import sys
 from argparse import ArgumentParser
 from ._help import print_help_msg
 from .fosslight_scanner import run_main, PKG_NAME
@@ -28,7 +29,7 @@ def main():
     try:
         args = parser.parse_args()
     except SystemExit:
-        print_help_msg()
+        sys.exit(0)
 
     if args.help:
         print_help_msg()
