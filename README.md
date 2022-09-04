@@ -62,11 +62,12 @@ fosslight [Mode] [option1] <arg1> [option2] <arg2>...
 ### Parameters   
 Mode
 ``` 
+            all               Run all scanners (Default)
             source            Run FOSSLight Source
             dependency        Run FOSSLight Dependency
             binary            Run FOSSLight Binary
             prechecker        Run FOSSLight Prechecker
-            all               Run all scanners
+            compare           Compare two FOSSLight reports
 ``` 
 Options:
 ``` 

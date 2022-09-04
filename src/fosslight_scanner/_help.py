@@ -13,12 +13,12 @@ _HELP_MESSAGE_SCANNER = """
 
     Parameters:
         Mode
+            all\t\t\t    Run all scanners(Default)
             source\t\t    Run FOSSLight Source
             dependency\t\t    Run FOSSLight Dependency
             binary\t\t    Run FOSSLight Binary
             prechecker\t\t    Run FOSSLight Prechecker
-            all\t\t\t    Run all scanners
-            compare\t\t    Compare two FOSSLight reports in yaml format
+            compare\t\t    Compare two FOSSLight reports
 
         Options:
             -h\t\t\t    Print help message
