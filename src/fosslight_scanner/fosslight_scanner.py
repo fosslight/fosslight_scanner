@@ -282,8 +282,8 @@ def run_main(mode, path_arg, dep_arguments, output_file_or_dir, file_format, url
     if mode == "compare":
         CUSTOMIZED_FORMAT = {'excel': '.xlsx', 'html': '.html', 'json': '.json', 'yaml': '.yaml'}
         if isinstance(path_arg, list) and len(path_arg) == 2:
-            before_yaml = path_arg[0]
-            after_yaml = path_arg[1]
+            before_comp_f = path_arg[0]
+            after_comp_f = path_arg[1]
         else:
             logger.error("Enter two FOSSLight report file with 'p' option.")
             return False
@@ -302,23 +302,22 @@ def run_main(mode, path_arg, dep_arguments, output_file_or_dir, file_format, url
         sys.exit(1)
     try:
         if mode == "compare":
-            if before_yaml == '' or after_yaml == '':
-                logger.error("before and after yaml files are necessary.")
+            if before_comp_f == '' or after_comp_f == '':
+                logger.error("before and after files are necessary.")
                 return False
-            if not os.path.exists(os.path.join(_executed_path, before_yaml)):
-                logger.error("Cannot find before yaml file (1st param with -y option).")
+            if not os.path.exists(os.path.join(_executed_path, before_comp_f)):
+                logger.error("Cannot find before FOSSLight report file (1st param with -y option).")
                 return False
-            if not os.path.exists(os.path.join(_executed_path, after_yaml)):
-                logger.error("Cannot find after yaml file (2nd param with -y option).")
+            if not os.path.exists(os.path.join(_executed_path, after_comp_f)):
+                logger.error("Cannot find after FOSSLight report file (2nd param with -y option).")
                 return False
-
             ret, final_excel_dir, result_log = init(output_path, False)
             if output_path == "":
                 output_path = _executed_path
             else:
                 output_path = os.path.abspath(output_path)
 
-            run_compare(os.path.join(_executed_path, before_yaml), os.path.join(_executed_path, after_yaml),
+            run_compare(os.path.join(_executed_path, before_comp_f), os.path.join(_executed_path, after_comp_f),
                         output_path, output_file, output_extension, _start_time)
         else:
             run_src = False

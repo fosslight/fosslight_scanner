@@ -47,7 +47,7 @@ FOSSLight Scanner needs a Python 3.6+.
 ## 🎉 How to install
 
 
-It can be installed using pip3. It is recommended to install it in the [python 3.6 + virtualenv]([etc/guide_virtualenv.md](https://fosslight.org/fosslight-guide-en/scanner/etc/guide_virtualenv.html)) environment.
+It can be installed using pip3. It is recommended to install it in the [python 3.7 + virtualenv]([etc/guide_virtualenv.md](https://fosslight.org/fosslight-guide-en/scanner/etc/guide_virtualenv.html)) environment.
 
 ```
 $ pip3 install fosslight_scanner
@@ -62,26 +62,27 @@ fosslight [Mode] [option1] <arg1> [option2] <arg2>...
 ### Parameters   
 Mode
 ``` 
-            all               Run all scanners (Default)
-            source            Run FOSSLight Source
-            dependency        Run FOSSLight Dependency
-            binary            Run FOSSLight Binary
-            prechecker        Run FOSSLight Prechecker
-            compare           Compare two FOSSLight reports
+        all                     Run all scanners(Default)
+        source                  Run FOSSLight Source
+        dependency              Run FOSSLight Dependency
+        binary                  Run FOSSLight Binary
+        prechecker              Run FOSSLight Prechecker
+        compare                 Compare two FOSSLight reports
 ``` 
 Options:
 ``` 
-    -h                        Print help message
-    -r                        Keep raw data  
-    -t                        Hide the progress bar
-    -v                        Print FOSSLight Scanner version
-    -p <path>                 Path to analyze source
-    -w <link>                 Link to be analyzaed can be downloaded by wget or git clone
-    -o <output>               Output Directory or file
-    -f <format>               Output file format (excel, csv, opossum)
-    -c <cores>                Number of processes to analyze source
-    -d <additional_arg>       Additional arguments for running dependency analysis 
-    -u <db_url>               DB Connection(format :'postgresql://username:password@host:port/database_name')
+        -h                      Print help message
+        -p <path>               Path to analyze (ex, -p {input_path})
+                                 * Compare mode input file: Two FOSSLight reports (supports excel, yaml)
+                                   (ex, -p {before_name}.xlsx {after_name}.xlsx)
+        -w <link>               Link to be analyzed can be downloaded by wget or git clone
+        -f <format>             FOSSLight Report file format (excel, yaml)
+                                 * Compare mode result file: supports excel, json, yaml, html
+        -o <output>             Output directory or file
+        -c <number>             Number of processes to analyze source
+        -r                      Keep raw data
+        -t                      Hide the progress bar
+        -v                      Print FOSSLight Scanner version
 ```
 - Refs. 
     - Additional arguments for running dependency analysis. See the [FOSSLight Dependency Guide][fd_guide] for instructions.
@@ -98,6 +99,11 @@ $ fosslight all -p /home/source_path -d "-a 'source /test/Projects/venv/bin/acti
 ### Ex 2. Download Link and analyze
 ```
 $ fosslight all -o test_result_wget -w "https://github.com/LGE-OSS/example.git"
+```
+
+### Ex 3. Compare the BOM of two FOSSLight reports with yaml or excel format and check the oss status (change/add/delete)
+```
+$ fosslight compare -p FOSSLight_before_proj.yaml FOSSLight_after_proj.yaml -f excel
 ```
 
 ## 📁 Result

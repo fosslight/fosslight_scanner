@@ -15,7 +15,7 @@ with open('requirements.txt', 'r', 'utf-8') as f:
 if __name__ == "__main__":
     setup(
         name='fosslight_scanner',
-        version='1.7.1',
+        version='1.7.3',
         package_dir={"": "src"},
         packages=find_packages(where='src'),
         description='FOSSLight Scanner',
@@ -27,10 +27,10 @@ if __name__ == "__main__":
         download_url='https://github.com/fosslight/fosslight_scanner',
         classifiers=['License :: OSI Approved :: Apache Software License',
                      "Programming Language :: Python :: 3",
-                     "Programming Language :: Python :: 3.6",
                      "Programming Language :: Python :: 3.7",
                      "Programming Language :: Python :: 3.8",
                      "Programming Language :: Python :: 3.9", ],
+        python_requires=">=3.7",
         install_requires=required,
         package_data={'fosslight_scanner': ['resources/bom_compare.html']},
         entry_points={
