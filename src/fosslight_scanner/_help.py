@@ -13,6 +13,7 @@ _HELP_MESSAGE_SCANNER = """
 
     Parameters:
         Mode
+            all\t\t\t    Run all scanners(Default)
             source\t\t    Run FOSSLight Source
             dependency\t\t    Run FOSSLight Dependency
             binary\t\t    Run FOSSLight Binary
