@@ -155,7 +155,7 @@ def write_result_xlsx(output_file, compared_result):
         output_dir = os.path.dirname(output_file)
         Path(output_dir).mkdir(parents=True, exist_ok=True)
 
-        workbook = xlsxwriter.Workbook(os.path.basename(output_file))
+        workbook = xlsxwriter.Workbook(output_file)
         worksheet = workbook.add_worksheet('BOM_compare')
         bold = workbook.add_format({'bold': True})
         worksheet.write_row(0, 0, HEADER, bold)
@@ -201,17 +201,18 @@ def write_compared_result(output_file, compared_result, file_ext, before_f='', a
 
 def get_comparison_result_filename(output_path, output_file, output_extension, _start_time):
     result_file = ""
+    compare_prefix = f"fosslight_compare_{_start_time}"
     if output_file != "":
         result_file = f"{output_file}{output_extension}"
     else:
         if output_extension == XLSX_EXT or output_extension == "":
-            result_file = f"FOSSLight_Compare_{_start_time}{XLSX_EXT}"
+            result_file = f"{compare_prefix}{XLSX_EXT}"
         elif output_extension == HTML_EXT:
-            result_file = f"FOSSLight_Compare_{_start_time}{HTML_EXT}"
+            result_file = f"{compare_prefix}{HTML_EXT}"
         elif output_extension == YAML_EXT:
-            result_file = f"FOSSLight_Compare_{_start_time}{YAML_EXT}"
+            result_file = f"{compare_prefix}{YAML_EXT}"
         elif output_extension == JSON_EXT:
-            result_file = f"FOSSLight_Compare_{_start_time}{JSON_EXT}"
+            result_file = f"{compare_prefix}{JSON_EXT}"
         else:
             logger.error("Not supported file extension")
 
@@ -230,8 +231,10 @@ def count_compared_result(compared_result):
     logger.info(f"Comparison result: {count_str}")
 
 
-def run_compare(before_f, after_f, output_path, output_file, file_ext, _start_time):
+def run_compare(before_f, after_f, output_path, output_file, file_ext, _start_time, _output_dir):
     ret = False
+    before_yaml = ''
+    after_yaml = ''
     logger.info("Start compare mode")
     logger.info(f"before file: {before_f}")
     logger.info(f"after file: {after_f}")
@@ -245,8 +248,10 @@ def run_compare(before_f, after_f, output_path, output_file, file_ext, _start_ti
         logger.error(f"Compare mode only supports 'yaml' or 'xlsx' extension. (input extension:{before_ext})")
         return False
     else:
-        before_yaml = before_f if before_ext == YAML_EXT else f'{before_f.rstrip(XLSX_EXT)}{YAML_EXT}'
-        after_yaml = after_f if after_ext == YAML_EXT else f'{after_f.rstrip(XLSX_EXT)}{YAML_EXT}'
+        tmp_b_yaml = f'{os.path.basename(before_f).rstrip(XLSX_EXT)}{YAML_EXT}'
+        before_yaml = before_f if before_ext == YAML_EXT else os.path.join(_output_dir, tmp_b_yaml)
+        tmp_a_yaml = f'{os.path.basename(after_f).rstrip(XLSX_EXT)}{YAML_EXT}'
+        after_yaml = after_f if after_ext == YAML_EXT else os.path.join(_output_dir, tmp_a_yaml)
 
     result_file = get_comparison_result_filename(output_path, output_file, file_ext, _start_time)
 

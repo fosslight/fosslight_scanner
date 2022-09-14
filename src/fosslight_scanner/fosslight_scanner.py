@@ -34,12 +34,11 @@ try:
 except ModuleNotFoundError:
     fosslight_source_installed = False
 
-OUTPUT_EXCEL_PREFIX = "FOSSLight-Report_"
-OUTPUT_YAML_PREFIX = "fosslight-sbom-info_"
+OUTPUT_REPORT_PREFIX = "fosslight_report_"
 PKG_NAME = "fosslight_scanner"
 logger = logging.getLogger(constant.LOGGER_NAME)
 warnings.simplefilter(action='ignore', category=FutureWarning)
-_output_dir = "fosslight_raw_data_"
+_output_dir = "fosslight_raw_data"
 _log_file = "fosslight_log_"
 _start_time = ""
 _executed_path = ""
@@ -111,11 +110,7 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
         success, final_excel_dir, result_log = init(output_path)
 
     if output_file == "":
-        if output_extension == ".yaml":
-            output_prefix = OUTPUT_YAML_PREFIX
-        else:
-            output_prefix = OUTPUT_EXCEL_PREFIX
-        output_file = output_prefix + _start_time
+        output_file = OUTPUT_REPORT_PREFIX + _start_time
 
     if output_extension == "":
         output_extension = ".xlsx"
@@ -126,11 +121,11 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
         abs_path = os.path.abspath(src_path)
 
         if success:
-            output_files = {"SRC": f"FL_Source{output_extension}",
-                            "BIN": f"FL_Binary{output_extension}",
-                            "BIN_TXT": "FL_Binary.txt",
-                            "DEP": f"FL_Dependency{output_extension}",
-                            "PRECHECKER": "FL_Prechecker.yaml"}
+            output_files = {"SRC": f"fosslight_src_{_start_time}{output_extension}",
+                            "BIN": f"fosslight_bin_{_start_time}{output_extension}",
+                            "BIN_TXT": f"fosslight_binary_{_start_time}.txt",
+                            "DEP": f"fosslight_dep_{_start_time}{output_extension}",
+                            "PRECHECKER": f"fosslight_lint_{_start_time}.yaml"}
             if run_prechecker:
                 output_prechecker = os.path.join(_output_dir, output_files["PRECHECKER"])
                 success, result = call_analysis_api(src_path, "Prechecker Lint",
@@ -210,9 +205,6 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
         logger.warning(f"Error to write final report: {ex}")
 
     try:
-        if not keep_raw_data:
-            logger.debug(f"Remove temporary files: {_output_dir}")
-            rmdir(_output_dir)
         if remove_src_data:
             logger.debug(f"Remove temporary source: {src_path}")
             rmdir(src_path)
@@ -250,9 +242,8 @@ def init(output_path="", make_outdir=True):
 
     result_log = {}
     output_root_dir = ""
-    _start_time = datetime.now().strftime('%Y%m%d_%H%M%S')
+    _start_time = datetime.now().strftime('%y%m%d_%H%M')
 
-    _output_dir = _output_dir + _start_time
     if output_path != "":
         _output_dir = os.path.join(output_path, _output_dir)
         output_root_dir = output_path
@@ -297,6 +288,9 @@ def run_main(mode, path_arg, dep_arguments, output_file_or_dir, file_format, url
 
     success, msg, output_path, output_file, output_extension = check_output_format(output_file_or_dir, file_format,
                                                                                    CUSTOMIZED_FORMAT)
+    if output_path == "":
+        output_path = _executed_path
+
     if not success:
         logger.error(msg)
         sys.exit(1)
@@ -311,22 +305,16 @@ def run_main(mode, path_arg, dep_arguments, output_file_or_dir, file_format, url
             if not os.path.exists(os.path.join(_executed_path, after_comp_f)):
                 logger.error("Cannot find after FOSSLight report file (2nd param with -y option).")
                 return False
-            ret, final_excel_dir, result_log = init(output_path, False)
-            if output_path == "":
-                output_path = _executed_path
-            else:
-                output_path = os.path.abspath(output_path)
+            ret, final_excel_dir, result_log = init(output_path)
 
             run_compare(os.path.join(_executed_path, before_comp_f), os.path.join(_executed_path, after_comp_f),
-                        output_path, output_file, output_extension, _start_time)
+                        final_excel_dir, output_file, output_extension, _start_time, _output_dir)
         else:
             run_src = False
             run_bin = False
             run_dep = False
             run_prechecker = False
             remove_downloaded_source = False
-            if output_path == "":
-                output_path = _executed_path
 
             if mode == "prechecker" or mode == "reuse":
                 run_prechecker = True
@@ -361,7 +349,12 @@ def run_main(mode, path_arg, dep_arguments, output_file_or_dir, file_format, url
                             remove_downloaded_source, {}, output_file,
                             output_extension, num_cores, db_url,
                             default_oss_name, url_to_analyze)
-
+        try:
+            if not keep_raw_data:
+                logger.debug(f"Remove temporary files: {_output_dir}")
+                rmdir(_output_dir)
+        except Exception as ex:
+            logger.debug(f"Error to remove temp files:{ex}")
     except Exception as ex:
         logger.warning(str(ex))
         return False
