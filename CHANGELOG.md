@@ -1,5 +1,14 @@
 # Changelog
 
+## v1.7.4 (15/09/2022)
+## Changes
+## 🔧 Maintenance
+
+- Change the report file name @dd-jy (#48)
+- Modify help msg if invalid input @bjk7119 (#47)
+
+---
+
 ## v1.7.3 (01/09/2022)
 ## Changes
 ## 🚀 Features
