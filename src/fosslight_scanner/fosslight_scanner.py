@@ -168,7 +168,9 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                                                os.path.join(_output_dir, output_files["BIN"]),
                                                "", db_url)
                 if success:
-                    success_file, copied_file = copy_file(os.path.join(_output_dir, output_files["BIN_TXT"]), output_path)
+                    output_binary_txt_raw = f"{output_files['BIN'].split('.')[0]}.txt"
+                    success_file, copied_file = copy_file(os.path.join(_output_dir, output_binary_txt_raw),
+                                                          os.path.join(output_path, output_files["BIN_TXT"]))
                     if success_file:
                         temp_output_fiiles.append(copied_file)
 
