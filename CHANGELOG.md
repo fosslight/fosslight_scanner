@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.7.5 (06/10/2022)
+## Changes
+## 🔧 Maintenance
+
+- Fix the binary text copy issue @dd-jy (#49)
+
+---
+
 ## v1.7.4 (15/09/2022)
 ## Changes
 ## 🔧 Maintenance
