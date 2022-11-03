@@ -25,7 +25,7 @@ def ask_to_run(ask_msg):
     return return_value in return_true_item
 
 
-def get_input_mode(mode="all"):
+def get_input_mode(_executed_path, mode="all"):
     global _PYTHON_VERSION
     _PYTHON_VERSION = sys.version_info[0]
 
@@ -38,7 +38,7 @@ def get_input_mode(mode="all"):
                    2. Local source path\n"):
         url_to_analyze = get_input("Enter the link to analyze:", "")
     else:
-        src_path = get_input("Please enter the path to analyze:", "")
+        src_path = get_input("Please enter the path to analyze:", _executed_path)
 
         if mode == "all" or mode == "dependency" or mode == "dep":
             dep_arguments = get_input(
