@@ -1,5 +1,17 @@
 # Changelog
 
+## v1.7.6 (04/11/2022)
+## Changes
+## 🐛 Hotfixes
+
+- Fix bug about dep. arg input when not dep. running @bjk7119 (#50)
+
+## 🔧 Maintenance
+
+- Analyze current path if not input path @bjk7119 (#51)
+
+---
+
 ## v1.7.5 (06/10/2022)
 ## Changes
 ## 🔧 Maintenance
