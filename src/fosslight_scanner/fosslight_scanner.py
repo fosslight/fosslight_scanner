@@ -197,7 +197,10 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                                            remove_src_data, default_oss_name, url)
 
         if success:
-            result_log["Output File"] = final_report
+            if os.path.isfile(final_report):
+                result_log["Output File"] = final_report
+            else:
+                result_log["Output File"] = 'Nothing is detected from the scanner so output file is not generated.'
         else:
             logger.error(f"Fail to generate a result file({final_report}): {err_msg}")
 
