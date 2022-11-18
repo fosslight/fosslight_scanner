@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.7.7 (18/11/2022)
+## Changes
+## 🔧 Maintenance
+
+- Fix the output file msg if nothing scanned @dd-jy (#52)
+
+---
+
 ## v1.7.6 (04/11/2022)
 ## Changes
 ## 🐛 Hotfixes
