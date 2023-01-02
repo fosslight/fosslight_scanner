@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.7.8 (02/01/2023)
+## Changes
+## 🔧 Maintenance
+
+- Update version of package for actions @bjk7119 (#54)
+
+---
+
 ## v1.7.7 (18/11/2022)
 ## Changes
 ## 🔧 Maintenance
