@@ -1,5 +1,14 @@
 # Changelog
 
+## v1.7.9 (30/01/2023)
+## Changes
+## 🔧 Maintenance
+
+- Change package to get release package @bjk7119 (#56)
+- Add the cron job to check daily build @dd-jy (#55)
+
+---
+
 ## v1.7.8 (02/01/2023)
 ## Changes
 ## 🔧 Maintenance
