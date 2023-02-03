@@ -168,7 +168,7 @@ def merge_yamls(_output_dir, merge_yaml_files, final_report, remove_src_data=Fal
     try:
         for mf in merge_yaml_files:
             if os.path.exists(os.path.join(_output_dir, mf)):
-                oss_list, license_list = parsing_yml(os.path.join(_output_dir, mf), _output_dir)
+                oss_list, license_list, err_reason = parsing_yml(os.path.join(_output_dir, mf), _output_dir)
 
                 if remove_src_data:
                     existed_yaml = {}
