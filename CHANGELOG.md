@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.7.10 (10/02/2023)
+## Changes
+## 🔧 Maintenance
+
+- Apply additional return val of 'parsing_yml' @bjk7119 (#57)
+
+---
+
 ## v1.7.9 (30/01/2023)
 ## Changes
 ## 🔧 Maintenance
