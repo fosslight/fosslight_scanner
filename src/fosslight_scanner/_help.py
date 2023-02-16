@@ -14,11 +14,10 @@ _HELP_MESSAGE_SCANNER = """
     Parameters:
         Mode
             all\t\t\t    Run all scanners(Default)
-            source\t\t    Run FOSSLight Source
-            dependency\t\t    Run FOSSLight Dependency
-            binary\t\t    Run FOSSLight Binary
+            source\t\t    Run FOSSLight Source Scanner
+            dependency\t\t    Run FOSSLight Dependency Scanner
+            binary\t\t    Run FOSSLight Binary Scanner
             prechecker\t\t    Run FOSSLight Prechecker
-            all\t\t\t    Run all scanners
             compare\t\t    Compare two FOSSLight reports
 
         Options:
