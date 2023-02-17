@@ -34,12 +34,12 @@ try:
 except ModuleNotFoundError:
     fosslight_source_installed = False
 
-OUTPUT_REPORT_PREFIX = "fosslight_report_"
+OUTPUT_REPORT_PREFIX = "fosslight_report_all_"
 PKG_NAME = "fosslight_scanner"
 logger = logging.getLogger(constant.LOGGER_NAME)
 warnings.simplefilter(action='ignore', category=FutureWarning)
 _output_dir = "fosslight_raw_data"
-_log_file = "fosslight_log_"
+_log_file = "fosslight_log_all_"
 _start_time = ""
 _executed_path = ""
 SRC_DIR_FROM_LINK_PREFIX = "fosslight_src_dir_"
@@ -123,7 +123,7 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
         if success:
             output_files = {"SRC": f"fosslight_src_{_start_time}{output_extension}",
                             "BIN": f"fosslight_bin_{_start_time}{output_extension}",
-                            "BIN_TXT": f"fosslight_binary_{_start_time}.txt",
+                            "BIN_TXT": f"fosslight_binary_bin_{_start_time}.txt",
                             "DEP": f"fosslight_dep_{_start_time}{output_extension}",
                             "PRECHECKER": f"fosslight_lint_{_start_time}.yaml"}
             if run_prechecker:
