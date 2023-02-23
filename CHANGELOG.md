@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.7.11 (23/02/2023)
+## Changes
+## 🔧 Maintenance
+
+- Add the package name to result file and log @dd-jy (#58)
+
+---
+
 ## v1.7.10 (10/02/2023)
 ## Changes
 ## 🔧 Maintenance
