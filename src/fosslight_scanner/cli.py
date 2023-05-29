@@ -21,10 +21,14 @@ def main():
     parser.add_argument('--dependency', '-d', help='Dependency arguments', type=str, dest='dep_argument', default="")
     parser.add_argument('--url', '-u', help="DB Url", type=str, dest='db_url', default="")
     parser.add_argument('--core', '-c', help='Number of processes to analyze source', type=int, dest='core', default=-1)
-    parser.add_argument('--raw', '-r', help='Keep raw data',  action='store_true', dest='raw', default=False)
-    parser.add_argument('--timer', '-t', help='Hide the progress bar',  action='store_true', dest='timer', default=False)
-    parser.add_argument('--version', '-v', help='Print version',  action='store_true', dest='version', default=False)
+    parser.add_argument('--raw', '-r', help='Keep raw data', action='store_true', dest='raw', default=False)
+    parser.add_argument('--timer', '-t', help='Hide the progress bar', action='store_true', dest='timer', default=False)
+    parser.add_argument('--version', '-v', help='Print version', action='store_true', dest='version', default=False)
     parser.add_argument('--help', '-h', help='Print help message', action='store_true', dest='help')
+    parser.add_argument('--no_correction', help='No correction with sbom-info.yaml',
+                        action='store_true', required=False, default=False)
+    parser.add_argument('--correct_fpath', help='Path to the sbom-info.yaml',
+                        nargs=1, type=str, required=False, default='')
 
     try:
         args = parser.parse_args()
@@ -37,7 +41,8 @@ def main():
         print_package_version(PKG_NAME, "FOSSLight Scanner Version:")
     else:
         run_main(args.mode, args.path, args.dep_argument, args.output, args.file,
-                 args.link, args.db_url, args.timer, args.raw, args.core)
+                 args.link, args.db_url, args.timer, args.raw, args.core,
+                 args.no_correction, args.correct_fpath)
 
 
 if __name__ == "__main__":

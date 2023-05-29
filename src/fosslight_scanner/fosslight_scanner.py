@@ -9,8 +9,8 @@ import warnings
 import re
 import yaml
 import sys
+import shutil
 from pathlib import Path
-from shutil import rmtree as rmdir
 from datetime import datetime
 from fosslight_binary import binary_analysis
 from fosslight_dependency.run_dependency_scanner import run_dependency_scanner
@@ -23,7 +23,7 @@ from fosslight_util.output_format import check_output_format
 from fosslight_prechecker._precheck import run_lint as prechecker_lint
 from .common import (copy_file, call_analysis_api,
                      overwrite_excel, extract_name_from_link,
-                     merge_yamls)
+                     merge_yamls, correct_scanner_result)
 from fosslight_util.write_excel import merge_excels
 from ._run_compare import run_compare
 import subprocess
@@ -102,7 +102,8 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                 run_src=True, run_bin=True, run_dep=True, run_prechecker=True,
                 remove_src_data=True, result_log={}, output_file="",
                 output_extension="", num_cores=-1, db_url="",
-                default_oss_name="", url=""):
+                default_oss_name="", url="",
+                correct_mode=True, correct_fpath=""):
     final_excel_dir = output_path
     success = True
     temp_output_fiiles = []
@@ -114,6 +115,9 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
 
     if output_extension == "":
         output_extension = ".xlsx"
+
+    if not correct_fpath:
+        correct_fpath = src_path
 
     try:
         sheet_list = {}
@@ -149,7 +153,8 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                             sheet_list["SRC_FL_Source"] = [scan_item.get_row_to_print() for scan_item in result[2]]
                             need_license = True if output_extension == ".xlsx" else False
                             create_report_file(0, result[2], result[3], 'all', need_license,
-                                               _output_dir, output_files["SRC"].split('.')[0], output_extension)
+                                               _output_dir, output_files["SRC"].split('.')[0], output_extension,
+                                               correct_mode, correct_fpath, abs_path)
                     else:  # Run fosslight_source by using docker image
                         src_output = os.path.join("output", output_files["SRC"])
                         output_rel_path = os.path.relpath(abs_path, os.getcwd())
@@ -166,7 +171,8 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                                                1, binary_analysis.find_binaries,
                                                abs_path,
                                                os.path.join(_output_dir, output_files["BIN"]),
-                                               "", db_url)
+                                               "", db_url, False,
+                                               correct_mode, correct_fpath)
                 if success:
                     output_binary_txt_raw = f"{output_files['BIN'].split('.')[0]}.txt"
                     success_file, copied_file = copy_file(os.path.join(_output_dir, output_binary_txt_raw),
@@ -186,6 +192,12 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
     try:
         output_file_without_ext = os.path.join(final_excel_dir, output_file)
         final_report = f"{output_file_without_ext}{output_extension}"
+        tmp_dir = 'tmp'
+        if correct_mode:
+            os.makedirs(os.path.join(_output_dir, tmp_dir), exist_ok=True)
+            shutil.copy2(os.path.join(_output_dir, output_files['SRC']), os.path.join(_output_dir, tmp_dir))
+            shutil.copy2(os.path.join(_output_dir, output_files['BIN']), os.path.join(_output_dir, tmp_dir))
+            correct_scanner_result(_output_dir, output_files)
         if output_extension == ".xlsx":
             if remove_src_data:
                 overwrite_excel(_output_dir, default_oss_name, "OSS Name")
@@ -195,7 +207,10 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
             merge_yaml_files = [output_files["SRC"], output_files["BIN"], output_files["DEP"]]
             success, err_msg = merge_yamls(_output_dir, merge_yaml_files, final_report,
                                            remove_src_data, default_oss_name, url)
-
+        if correct_mode:
+            shutil.move(os.path.join(_output_dir, tmp_dir, output_files['SRC']), os.path.join(_output_dir, output_files['SRC']))
+            shutil.move(os.path.join(_output_dir, tmp_dir, output_files['BIN']), os.path.join(_output_dir, output_files['BIN']))
+            shutil.rmtree(os.path.join(_output_dir, tmp_dir), ignore_errors=False)
         if success:
             if os.path.isfile(final_report):
                 result_log["Output File"] = final_report
@@ -212,7 +227,7 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
     try:
         if remove_src_data:
             logger.debug(f"Remove temporary source: {src_path}")
-            rmdir(src_path)
+            shutil.rmtree(src_path)
     except Exception as ex:
         logger.debug(f"Error to remove temp files:{ex}")
 
@@ -267,13 +282,17 @@ def init(output_path="", make_outdir=True):
 
 
 def run_main(mode, path_arg, dep_arguments, output_file_or_dir, file_format, url_to_analyze, db_url,
-             hide_progressbar=False, keep_raw_data=False, num_cores=-1):
+             hide_progressbar=False, keep_raw_data=False, num_cores=-1, no_correction=False, correct_fpath=""):
     global _executed_path, _start_time
 
     output_file = ""
     default_oss_name = ""
     src_path = ""
     _executed_path = os.getcwd()
+    correct_mode = True
+
+    if no_correction:
+        correct_mode = False
 
     if mode == "compare":
         CUSTOMIZED_FORMAT = {'excel': '.xlsx', 'html': '.html', 'json': '.json', 'yaml': '.yaml'}
@@ -348,16 +367,20 @@ def run_main(mode, path_arg, dep_arguments, output_file_or_dir, file_format, url
                 default_oss_name = extract_name_from_link(url_to_analyze)
                 success, src_path = download_source(url_to_analyze, output_path)
 
+            if not correct_fpath:
+                correct_fpath = src_path
+
             if src_path != "":
                 run_scanner(src_path, dep_arguments, output_path, keep_raw_data,
                             run_src, run_bin, run_dep, run_prechecker,
                             remove_downloaded_source, {}, output_file,
                             output_extension, num_cores, db_url,
-                            default_oss_name, url_to_analyze)
+                            default_oss_name, url_to_analyze,
+                            correct_mode, correct_fpath)
         try:
             if not keep_raw_data:
                 logger.debug(f"Remove temporary files: {_output_dir}")
-                rmdir(_output_dir)
+                shutil.rmtree(_output_dir)
         except Exception as ex:
             logger.debug(f"Error to remove temp files:{ex}")
     except Exception as ex:
