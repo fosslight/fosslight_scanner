@@ -28,7 +28,7 @@ def main():
     parser.add_argument('--no_correction', help='No correction with sbom-info.yaml',
                         action='store_true', required=False, default=False)
     parser.add_argument('--correct_fpath', help='Path to the sbom-info.yaml',
-                        nargs=1, type=str, required=False, default='')
+                        type=str, required=False, default='')
 
     try:
         args = parser.parse_args()
@@ -42,7 +42,7 @@ def main():
     else:
         run_main(args.mode, args.path, args.dep_argument, args.output, args.file,
                  args.link, args.db_url, args.timer, args.raw, args.core,
-                 args.no_correction, args.correct_fpath)
+                 not args.no_correction, args.correct_fpath)
 
 
 if __name__ == "__main__":

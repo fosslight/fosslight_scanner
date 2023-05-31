@@ -192,12 +192,19 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
     try:
         output_file_without_ext = os.path.join(final_excel_dir, output_file)
         final_report = f"{output_file_without_ext}{output_extension}"
-        tmp_dir = 'tmp'
+        tmp_dir = f"tmp_{datetime.now().strftime('%y%m%d_%H%M')}"
+        exist_src = False
+        exist_bin = False
         if correct_mode:
             os.makedirs(os.path.join(_output_dir, tmp_dir), exist_ok=True)
-            shutil.copy2(os.path.join(_output_dir, output_files['SRC']), os.path.join(_output_dir, tmp_dir))
-            shutil.copy2(os.path.join(_output_dir, output_files['BIN']), os.path.join(_output_dir, tmp_dir))
-            correct_scanner_result(_output_dir, output_files)
+            if os.path.exists(os.path.join(_output_dir, output_files['SRC'])):
+                exist_src = True
+                shutil.copy2(os.path.join(_output_dir, output_files['SRC']), os.path.join(_output_dir, tmp_dir))
+            if os.path.exists(os.path.join(_output_dir, output_files['BIN'])):
+                exist_bin = True
+                shutil.copy2(os.path.join(_output_dir, output_files['BIN']), os.path.join(_output_dir, tmp_dir))
+            if exist_src or exist_bin:
+                correct_scanner_result(_output_dir, output_files, exist_src, exist_bin)
         if output_extension == ".xlsx":
             if remove_src_data:
                 overwrite_excel(_output_dir, default_oss_name, "OSS Name")
@@ -208,9 +215,13 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
             success, err_msg = merge_yamls(_output_dir, merge_yaml_files, final_report,
                                            remove_src_data, default_oss_name, url)
         if correct_mode:
-            shutil.move(os.path.join(_output_dir, tmp_dir, output_files['SRC']), os.path.join(_output_dir, output_files['SRC']))
-            shutil.move(os.path.join(_output_dir, tmp_dir, output_files['BIN']), os.path.join(_output_dir, output_files['BIN']))
-            shutil.rmtree(os.path.join(_output_dir, tmp_dir), ignore_errors=False)
+            if exist_src:
+                shutil.move(os.path.join(_output_dir, tmp_dir, output_files['SRC']),
+                            os.path.join(_output_dir, output_files['SRC']))
+            if exist_bin:
+                shutil.move(os.path.join(_output_dir, tmp_dir, output_files['BIN']),
+                            os.path.join(_output_dir, output_files['BIN']))
+            shutil.rmtree(os.path.join(_output_dir, tmp_dir), ignore_errors=True)
         if success:
             if os.path.isfile(final_report):
                 result_log["Output File"] = final_report
@@ -282,17 +293,13 @@ def init(output_path="", make_outdir=True):
 
 
 def run_main(mode, path_arg, dep_arguments, output_file_or_dir, file_format, url_to_analyze, db_url,
-             hide_progressbar=False, keep_raw_data=False, num_cores=-1, no_correction=False, correct_fpath=""):
+             hide_progressbar=False, keep_raw_data=False, num_cores=-1, correct_mode=True, correct_fpath=""):
     global _executed_path, _start_time
 
     output_file = ""
     default_oss_name = ""
     src_path = ""
     _executed_path = os.getcwd()
-    correct_mode = True
-
-    if no_correction:
-        correct_mode = False
 
     if mode == "compare":
         CUSTOMIZED_FORMAT = {'excel': '.xlsx', 'html': '.html', 'json': '.json', 'yaml': '.yaml'}
