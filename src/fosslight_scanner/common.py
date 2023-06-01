@@ -6,21 +6,26 @@
 import os
 import sys
 import logging
-from shutil import copy
+import shutil
 import re
 import pandas as pd
 import yaml
+import copy
 import fosslight_util.constant as constant
 from fosslight_util.parsing_yaml import parsing_yml
 from fosslight_util.write_yaml import create_yaml_with_ossitem
+from fosslight_util.read_excel import read_oss_report
+from fosslight_util.output_format import write_output_file
 
 logger = logging.getLogger(constant.LOGGER_NAME)
+SRC_SHEET = 'SRC_FL_Source'
+BIN_SHEET = 'BIN_FL_Binary'
 
 
 def copy_file(source, destination):
     copied_file = ""
     try:
-        copy(source, destination)
+        shutil.copy(source, destination)
         if os.path.isdir(destination):
             copied_file = os.path.join(destination, os.path.basename(source))
         else:
@@ -194,3 +199,102 @@ def merge_yamls(_output_dir, merge_yaml_files, final_report, remove_src_data=Fal
         success = False
 
     return success, err_msg
+
+
+def correct_scanner_result(_output_dir, output_files, exist_src, exist_bin):
+    src_oss_list = []
+    bin_oss_list = []
+    duplicates = False
+
+    if exist_src:
+        src_oss_list = check_exclude_dir(get_osslist_with_xlsx(_output_dir, output_files['SRC'], SRC_SHEET))
+    if exist_bin:
+        bin_oss_list = check_exclude_dir(get_osslist_with_xlsx(_output_dir, output_files['BIN'], BIN_SHEET))
+
+    if exist_src and exist_bin:
+        try:
+            dup_bin_list = []
+            exclude_list = []
+            for src_item in src_oss_list:
+                dup_bin = ''
+                for idx, bin_item in enumerate(bin_oss_list):
+                    if not src_item.source_name_or_path:
+                        continue
+                    if src_item.source_name_or_path[0] == bin_item.source_name_or_path[0]:
+                        dup_bin = copy.deepcopy(bin_item)
+                        if not dup_bin.license:
+                            if dup_bin.exclude:
+                                src_item.exclude = dup_bin.exclude
+                            dup_bin.set_sheet_item(src_item.get_print_array()[0])
+                            if dup_bin.comment:
+                                dup_bin.comment += '/'
+                            dup_bin.comment += 'Loaded from SRC OSS info'
+                            dup_bin_list.append(dup_bin)
+                            exclude_list.append(idx)
+                if dup_bin:
+                    src_item.exclude = True
+                    if src_item.comment:
+                        src_item.comment += '/'
+                    src_item.comment += 'Excluded by duplicated binary within BIN'
+                    duplicates = True
+
+            exclude_list = list(set(exclude_list))
+            for idx in exclude_list:
+                bin_oss_list[idx].exclude = True
+                if bin_oss_list[idx].comment:
+                    bin_oss_list[idx].comment += '/'
+                bin_oss_list[idx].comment += 'Excluded by SRC OSS info'
+            bin_oss_list.extend(dup_bin_list)
+        except Exception as ex:
+            logger.warning(f"correct the scanner result:{ex}")
+
+    try:
+        if exist_src:
+            success, err_msg = write_xlsx_with_osslist(src_oss_list, _output_dir, output_files['SRC'], SRC_SHEET)
+            if not success:
+                logger.warning(err_msg)
+        if exist_bin:
+            success, err_msg = write_xlsx_with_osslist(bin_oss_list, _output_dir, output_files['BIN'], BIN_SHEET)
+            if not success:
+                logger.warning(err_msg)
+        if duplicates:
+            logger.info('Success to correct the src/bin scanner result')
+    except Exception as ex:
+        logger.warning(f"Corrected src/bin scanner result:{ex}")
+    return
+
+
+def write_xlsx_with_osslist(oss_list, output_dir, output_file, sheetname):
+    sheet_list = {}
+    sheet_list[sheetname] = []
+    new_oss_list = []
+
+    for src_item in oss_list:
+        new_oss_list.append(src_item.get_print_array()[0])
+    sheet_list[sheetname].extend(new_oss_list)
+    if os.path.exists(os.path.join(output_dir, output_file)):
+        os.remove(os.path.join(output_dir, output_file))
+    success, err_msg, result_file = write_output_file(os.path.join(output_dir, output_file).rstrip('xlsx'), '.xlsx',
+                                                      sheet_list)
+    return success, err_msg
+
+
+def get_osslist_with_xlsx(_output_dir, output_file, sheet_name):
+    oss_list = []
+    oss_xlsx = os.path.join(_output_dir, output_file)
+
+    if os.path.exists(oss_xlsx):
+        oss_list.extend(read_oss_report(oss_xlsx, sheet_name))
+
+    return oss_list
+
+
+def check_exclude_dir(oss_list):
+    _exclude_dirs = ["venv", "node_modules", "Pods", "Carthage"]
+
+    for oss_item in oss_list:
+        for exclude_dir in _exclude_dirs:
+            if exclude_dir in oss_item.source_name_or_path[0].split(os.path.sep):
+                oss_item.exclude = True
+                break
+    return oss_list

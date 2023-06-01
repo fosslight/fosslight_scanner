@@ -33,6 +33,8 @@ _HELP_MESSAGE_SCANNER = """
             -r\t\t\t    Keep raw data
             -t\t\t\t    Hide the progress bar
             -v\t\t\t    Print FOSSLight Scanner version
+            --no_correction\t    Enter if you don't want to correct OSS information with sbom-info.yaml
+            --correct_fpath <path>  Path to the sbom-info.yaml file
 
         Options for only 'all' or 'bin' mode
             -u <db_url>\t\t    DB Connection(format :'postgresql://username:password@host:port/database_name')
