@@ -148,11 +148,10 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                                                             -1, source_analysis,
                                                             abs_path,
                                                             src_output,
-                                                            False, num_cores, True)
+                                                            False, num_cores)
                         if success:
                             sheet_list["SRC_FL_Source"] = [scan_item.get_row_to_print() for scan_item in result[2]]
-                            need_license = True if output_extension == ".xlsx" else False
-                            create_report_file(0, result[2], result[3], 'all', need_license,
+                            create_report_file(0, result[2], result[3], 'all', False,
                                                _output_dir, output_files["SRC"].split('.')[0], output_extension,
                                                correct_mode, correct_fpath, abs_path)
                     else:  # Run fosslight_source by using docker image
@@ -204,7 +203,7 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                 exist_bin = True
                 shutil.copy2(os.path.join(_output_dir, output_files['BIN']), os.path.join(_output_dir, tmp_dir))
             if exist_src or exist_bin:
-                correct_scanner_result(_output_dir, output_files, exist_src, exist_bin)
+                correct_scanner_result(_output_dir, output_files, output_extension, exist_src, exist_bin)
         if output_extension == ".xlsx":
             if remove_src_data:
                 overwrite_excel(_output_dir, default_oss_name, "OSS Name")
