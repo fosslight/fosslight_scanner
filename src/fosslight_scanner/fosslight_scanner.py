@@ -191,36 +191,39 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
     try:
         output_file_without_ext = os.path.join(final_excel_dir, output_file)
         final_report = f"{output_file_without_ext}{output_extension}"
-        tmp_dir = f"tmp_{datetime.now().strftime('%y%m%d_%H%M')}"
-        exist_src = False
-        exist_bin = False
-        if correct_mode:
-            os.makedirs(os.path.join(_output_dir, tmp_dir), exist_ok=True)
-            if os.path.exists(os.path.join(_output_dir, output_files['SRC'])):
-                exist_src = True
-                shutil.copy2(os.path.join(_output_dir, output_files['SRC']), os.path.join(_output_dir, tmp_dir))
-            if os.path.exists(os.path.join(_output_dir, output_files['BIN'])):
-                exist_bin = True
-                shutil.copy2(os.path.join(_output_dir, output_files['BIN']), os.path.join(_output_dir, tmp_dir))
-            if exist_src or exist_bin:
-                correct_scanner_result(_output_dir, output_files, output_extension, exist_src, exist_bin)
+
         if output_extension == ".xlsx":
+            tmp_dir = f"tmp_{datetime.now().strftime('%y%m%d_%H%M')}"
+            exist_src = False
+            exist_bin = False
+            if correct_mode:
+                os.makedirs(os.path.join(_output_dir, tmp_dir), exist_ok=True)
+                if os.path.exists(os.path.join(_output_dir, output_files['SRC'])):
+                    exist_src = True
+                    shutil.copy2(os.path.join(_output_dir, output_files['SRC']), os.path.join(_output_dir, tmp_dir))
+                if os.path.exists(os.path.join(_output_dir, output_files['BIN'])):
+                    exist_bin = True
+                    shutil.copy2(os.path.join(_output_dir, output_files['BIN']), os.path.join(_output_dir, tmp_dir))
+                if exist_src or exist_bin:
+                    correct_scanner_result(_output_dir, output_files, output_extension, exist_src, exist_bin)
+
             if remove_src_data:
                 overwrite_excel(_output_dir, default_oss_name, "OSS Name")
                 overwrite_excel(_output_dir, url, "Download Location")
             success, err_msg = merge_excels(_output_dir, final_report)
+
+            if correct_mode:
+                if exist_src:
+                    shutil.move(os.path.join(_output_dir, tmp_dir, output_files['SRC']),
+                                os.path.join(_output_dir, output_files['SRC']))
+                if exist_bin:
+                    shutil.move(os.path.join(_output_dir, tmp_dir, output_files['BIN']),
+                                os.path.join(_output_dir, output_files['BIN']))
+                shutil.rmtree(os.path.join(_output_dir, tmp_dir), ignore_errors=True)
         elif output_extension == ".yaml":
             merge_yaml_files = [output_files["SRC"], output_files["BIN"], output_files["DEP"]]
             success, err_msg = merge_yamls(_output_dir, merge_yaml_files, final_report,
                                            remove_src_data, default_oss_name, url)
-        if correct_mode:
-            if exist_src:
-                shutil.move(os.path.join(_output_dir, tmp_dir, output_files['SRC']),
-                            os.path.join(_output_dir, output_files['SRC']))
-            if exist_bin:
-                shutil.move(os.path.join(_output_dir, tmp_dir, output_files['BIN']),
-                            os.path.join(_output_dir, output_files['BIN']))
-            shutil.rmtree(os.path.join(_output_dir, tmp_dir), ignore_errors=True)
         if success:
             if os.path.isfile(final_report):
                 result_log["Output File"] = final_report

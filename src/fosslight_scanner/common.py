@@ -302,6 +302,8 @@ def check_exclude_dir(oss_list):
     _exclude_dirs = ["venv", "node_modules", "Pods", "Carthage"]
 
     for oss_item in oss_list:
+        if not oss_item.source_name_or_path:
+            continue
         for exclude_dir in _exclude_dirs:
             if exclude_dir in oss_item.source_name_or_path[0].split(os.path.sep):
                 oss_item.exclude = True
