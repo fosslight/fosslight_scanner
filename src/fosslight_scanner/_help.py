@@ -34,6 +34,7 @@ _HELP_MESSAGE_SCANNER = """
             -t\t\t\t    Hide the progress bar
             -v\t\t\t    Print FOSSLight Scanner version
             --no_correction\t    Enter if you don't want to correct OSS information with sbom-info.yaml
+                                     * Correction mode only supported xlsx format.
             --correct_fpath <path>  Path to the sbom-info.yaml file
 
         Options for only 'all' or 'bin' mode

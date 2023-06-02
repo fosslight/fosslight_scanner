@@ -201,15 +201,15 @@ def merge_yamls(_output_dir, merge_yaml_files, final_report, remove_src_data=Fal
     return success, err_msg
 
 
-def correct_scanner_result(_output_dir, output_files, exist_src, exist_bin):
+def correct_scanner_result(_output_dir, output_files, output_extension, exist_src, exist_bin):
     src_oss_list = []
     bin_oss_list = []
     duplicates = False
 
     if exist_src:
-        src_oss_list = check_exclude_dir(get_osslist_with_xlsx(_output_dir, output_files['SRC'], SRC_SHEET))
+        src_oss_list = check_exclude_dir(get_osslist(_output_dir, output_files['SRC'], output_extension, SRC_SHEET))
     if exist_bin:
-        bin_oss_list = check_exclude_dir(get_osslist_with_xlsx(_output_dir, output_files['BIN'], BIN_SHEET))
+        bin_oss_list = check_exclude_dir(get_osslist(_output_dir, output_files['BIN'], output_extension, BIN_SHEET))
 
     if exist_src and exist_bin:
         try:
@@ -250,11 +250,13 @@ def correct_scanner_result(_output_dir, output_files, exist_src, exist_bin):
 
     try:
         if exist_src:
-            success, err_msg = write_xlsx_with_osslist(src_oss_list, _output_dir, output_files['SRC'], SRC_SHEET)
+            success, err_msg = write_output_with_osslist(src_oss_list, _output_dir, output_files['SRC'],
+                                                         output_extension, SRC_SHEET)
             if not success:
                 logger.warning(err_msg)
         if exist_bin:
-            success, err_msg = write_xlsx_with_osslist(bin_oss_list, _output_dir, output_files['BIN'], BIN_SHEET)
+            success, err_msg = write_output_with_osslist(bin_oss_list, _output_dir, output_files['BIN'],
+                                                         output_extension, BIN_SHEET)
             if not success:
                 logger.warning(err_msg)
         if duplicates:
@@ -264,28 +266,35 @@ def correct_scanner_result(_output_dir, output_files, exist_src, exist_bin):
     return
 
 
-def write_xlsx_with_osslist(oss_list, output_dir, output_file, sheetname):
+def write_output_with_osslist(oss_list, output_dir, output_file, output_extension, sheetname):
+    new_oss_list = []
     sheet_list = {}
     sheet_list[sheetname] = []
-    new_oss_list = []
 
     for src_item in oss_list:
         new_oss_list.append(src_item.get_print_array()[0])
     sheet_list[sheetname].extend(new_oss_list)
     if os.path.exists(os.path.join(output_dir, output_file)):
         os.remove(os.path.join(output_dir, output_file))
-    success, err_msg, result_file = write_output_file(os.path.join(output_dir, output_file).rstrip('xlsx'), '.xlsx',
-                                                      sheet_list)
+    success, err_msg, _ = write_output_file(os.path.join(output_dir, output_file).rstrip(output_extension),
+                                            output_extension, sheet_list)
     return success, err_msg
 
 
-def get_osslist_with_xlsx(_output_dir, output_file, sheet_name):
+def get_osslist(_output_dir, output_file, output_extension, sheet_name=''):
+    err_reason = ''
     oss_list = []
-    oss_xlsx = os.path.join(_output_dir, output_file)
+    oss_file_with_fullpath = os.path.join(_output_dir, output_file)
 
-    if os.path.exists(oss_xlsx):
-        oss_list.extend(read_oss_report(oss_xlsx, sheet_name))
-
+    if os.path.exists(oss_file_with_fullpath):
+        if output_extension == '.xlsx':
+            oss_list = read_oss_report(oss_file_with_fullpath, sheet_name)
+        elif output_extension == '.yaml':
+            oss_list, _, err_reason = parsing_yml(oss_file_with_fullpath, _output_dir)
+        else:
+            err_reason = f'Not supported extension: {output_extension}'
+    if err_reason:
+        logger.info(f'get_osslist: {err_reason}')
     return oss_list
 
 
@@ -293,6 +302,8 @@ def check_exclude_dir(oss_list):
     _exclude_dirs = ["venv", "node_modules", "Pods", "Carthage"]
 
     for oss_item in oss_list:
+        if not oss_item.source_name_or_path:
+            continue
         for exclude_dir in _exclude_dirs:
             if exclude_dir in oss_item.source_name_or_path[0].split(os.path.sep):
                 oss_item.exclude = True
