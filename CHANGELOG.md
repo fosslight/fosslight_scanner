@@ -1,5 +1,19 @@
 # Changelog
 
+## v1.7.12 (02/06/2023)
+## Changes
+## 🚀 Features
+
+- Correct the source/bin scanner result @dd-jy (#62)
+
+## 🐛 Hotfixes
+
+- Fix the correct mode bug for yaml format @dd-jy (#63)
+- Update the git config for gh action @dd-jy (#61)
+- Update the ubuntu version for deploy action @dd-jy (#60)
+
+---
+
 ## v1.7.11 (23/02/2023)
 ## Changes
 ## 🔧 Maintenance
