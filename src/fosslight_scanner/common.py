@@ -218,7 +218,7 @@ def correct_scanner_result(_output_dir, output_files, output_extension, exist_sr
             for src_item in src_oss_list:
                 dup_bin = ''
                 for idx, bin_item in enumerate(bin_oss_list):
-                    if not src_item.source_name_or_path:
+                    if (not src_item.source_name_or_path) or src_item.exclude or bin_item.exclude:
                         continue
                     if src_item.source_name_or_path[0] == bin_item.source_name_or_path[0]:
                         dup_bin = copy.deepcopy(bin_item)
