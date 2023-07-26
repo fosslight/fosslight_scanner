@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.7.14 (26/07/2023)
+## Changes
+## 🐛 Hotfixes
+
+- Fix the source analysis fail issue @dd-jy (#65)
+
+---
+
 ## v1.7.13 (14/07/2023)
 ## Changes
 ## 🚀 Features
@@ -290,12 +298,3 @@
 ## 🔧 Maintenance
 
 - Change the output path of log, source @soimkim (#5)
-
----
-
-## v1.6.0 (24/09/2021)
-## Changes
-## 🔧 Maintenance
-
-- Change the version related files @soimkim (#2)
-- Add copyright, license for Reuse compliance @soimkim (#1)
