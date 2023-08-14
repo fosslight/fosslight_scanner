@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.7.15 (14/08/2023)
+## Changes
+## 🚀 Features
+
+- Generate ui mode result file @dd-jy (#66)
+
+---
+
 ## v1.7.14 (26/07/2023)
 ## Changes
 ## 🐛 Hotfixes
@@ -286,15 +294,3 @@
 ## 🔧 Maintenance
 
 - Specify the output file name @soimkim (#6)
-
----
-
-## v1.6.1 (01/10/2021)
-## Changes
-## 🐛 Hotfixes
-
-- Add the FOSSLight Util minimum version @soimkim (#4)
-
-## 🔧 Maintenance
-
-- Change the output path of log, source @soimkim (#5)
