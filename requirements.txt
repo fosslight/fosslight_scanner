@@ -5,8 +5,8 @@ openpyxl
 progress
 pyyaml
 beautifulsoup4
-fosslight_util>=1.4.25
-fosslight_source>=1.6.30
+fosslight_util>=1.4.29
+fosslight_source>=1.7.0
 fosslight_dependency>=3.7.4
 fosslight_binary>=4.1.24
 fosslight_prechecker>=3.0.1
