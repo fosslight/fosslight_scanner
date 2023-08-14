@@ -15,8 +15,8 @@ def main():
     parser.add_argument('--path', '-p', help='Path to analyze (In compare mode, two FOSSLight reports',
                         dest='path', nargs='+', default="")
     parser.add_argument('--wget', '-w', help='Link to be analyzed', type=str, dest='link', default="")
-    parser.add_argument('--file', '-f', help='Scanner output file format (excel,yaml), Compare mode (excel,html,yaml,json)',
-                        type=str, dest='file', default="")
+    parser.add_argument('--format', '-f', help='Scanner output file format (excel,yaml), Compare mode (excel,html,yaml,json)',
+                        type=str, dest='format', default="")
     parser.add_argument('--output', '-o', help='Output directory or file', type=str, dest='output', default="")
     parser.add_argument('--dependency', '-d', help='Dependency arguments', type=str, dest='dep_argument', default="")
     parser.add_argument('--url', '-u', help="DB Url", type=str, dest='db_url', default="")
@@ -29,6 +29,7 @@ def main():
                         action='store_true', required=False, default=False)
     parser.add_argument('--correct_fpath', help='Path to the sbom-info.yaml',
                         type=str, required=False, default='')
+    parser.add_argument('--ui', help='Generate UI mode result file', action='store_true', required=False, default=False)
 
     try:
         args = parser.parse_args()
@@ -40,9 +41,9 @@ def main():
     elif args.version:
         print_package_version(PKG_NAME, "FOSSLight Scanner Version:")
     else:
-        run_main(args.mode, args.path, args.dep_argument, args.output, args.file,
+        run_main(args.mode, args.path, args.dep_argument, args.output, args.format,
                  args.link, args.db_url, args.timer, args.raw, args.core,
-                 not args.no_correction, args.correct_fpath)
+                 not args.no_correction, args.correct_fpath, args.ui)
 
 
 if __name__ == "__main__":

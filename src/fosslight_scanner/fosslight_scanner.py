@@ -23,7 +23,8 @@ from fosslight_util.output_format import check_output_format
 from fosslight_prechecker._precheck import run_lint as prechecker_lint
 from .common import (copy_file, call_analysis_api,
                      overwrite_excel, extract_name_from_link,
-                     merge_yamls, correct_scanner_result)
+                     merge_yamls, correct_scanner_result,
+                     create_scancodejson)
 from fosslight_util.write_excel import merge_excels
 from ._run_compare import run_compare
 import subprocess
@@ -103,7 +104,7 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                 remove_src_data=True, result_log={}, output_file="",
                 output_extension="", num_cores=-1, db_url="",
                 default_oss_name="", url="",
-                correct_mode=True, correct_fpath=""):
+                correct_mode=True, correct_fpath="", ui_mode=False):
     final_excel_dir = output_path
     success = True
     temp_output_fiiles = []
@@ -191,6 +192,7 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
     try:
         output_file_without_ext = os.path.join(final_excel_dir, output_file)
         final_report = f"{output_file_without_ext}{output_extension}"
+        merge_files = [output_files["SRC"], output_files["BIN"], output_files["DEP"]]
 
         if output_extension == ".xlsx":
             tmp_dir = f"tmp_{datetime.now().strftime('%y%m%d_%H%M')}"
@@ -210,7 +212,7 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
             if remove_src_data:
                 overwrite_excel(_output_dir, default_oss_name, "OSS Name")
                 overwrite_excel(_output_dir, url, "Download Location")
-            success, err_msg = merge_excels(_output_dir, final_report)
+            success, err_msg = merge_excels(_output_dir, final_report, merge_files)
 
             if correct_mode:
                 if exist_src:
@@ -221,16 +223,24 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                                 os.path.join(_output_dir, output_files['BIN']))
                 shutil.rmtree(os.path.join(_output_dir, tmp_dir), ignore_errors=True)
         elif output_extension == ".yaml":
-            merge_yaml_files = [output_files["SRC"], output_files["BIN"], output_files["DEP"]]
-            success, err_msg = merge_yamls(_output_dir, merge_yaml_files, final_report,
+            success, err_msg = merge_yamls(_output_dir, merge_files, final_report,
                                            remove_src_data, default_oss_name, url)
         if success:
             if os.path.isfile(final_report):
+                logger.info(f'Generated the result file: {final_report}')
                 result_log["Output File"] = final_report
             else:
                 result_log["Output File"] = 'Nothing is detected from the scanner so output file is not generated.'
         else:
             logger.error(f"Fail to generate a result file({final_report}): {err_msg}")
+
+        if ui_mode:
+            ui_mode_report = f"{output_file_without_ext}.json"
+            success, err_msg = create_scancodejson(final_report, output_extension, ui_mode_report)
+            if success and os.path.isfile(ui_mode_report):
+                logger.info(f'Generated the ui mode result file: {ui_mode_report}')
+            else:
+                logger.error(f'Fail to generate a ui mode result file({ui_mode_report}): {err_msg}')
 
         _str_final_result_log = yaml.safe_dump(result_log, allow_unicode=True, sort_keys=True)
         logger.info(_str_final_result_log)
@@ -295,7 +305,7 @@ def init(output_path="", make_outdir=True):
 
 
 def run_main(mode, path_arg, dep_arguments, output_file_or_dir, file_format, url_to_analyze, db_url,
-             hide_progressbar=False, keep_raw_data=False, num_cores=-1, correct_mode=True, correct_fpath=""):
+             hide_progressbar=False, keep_raw_data=False, num_cores=-1, correct_mode=True, correct_fpath="", ui_mode=False):
     global _executed_path, _start_time
 
     output_file = ""
@@ -376,8 +386,12 @@ def run_main(mode, path_arg, dep_arguments, output_file_or_dir, file_format, url
                 default_oss_name = extract_name_from_link(url_to_analyze)
                 success, src_path = download_source(url_to_analyze, output_path)
 
-            if not correct_fpath:
-                correct_fpath = src_path
+            if output_extension == ".yaml":
+                correct_mode = False
+                correct_fpath = ""
+            else:
+                if not correct_fpath:
+                    correct_fpath = src_path
 
             if src_path != "":
                 run_scanner(src_path, dep_arguments, output_path, keep_raw_data,
@@ -385,7 +399,7 @@ def run_main(mode, path_arg, dep_arguments, output_file_or_dir, file_format, url
                             remove_downloaded_source, {}, output_file,
                             output_extension, num_cores, db_url,
                             default_oss_name, url_to_analyze,
-                            correct_mode, correct_fpath)
+                            correct_mode, correct_fpath, ui_mode)
         try:
             if not keep_raw_data:
                 logger.debug(f"Remove temporary files: {_output_dir}")

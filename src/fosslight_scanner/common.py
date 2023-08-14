@@ -14,6 +14,7 @@ import copy
 import fosslight_util.constant as constant
 from fosslight_util.parsing_yaml import parsing_yml
 from fosslight_util.write_yaml import create_yaml_with_ossitem
+from fosslight_util.write_scancodejson import write_scancodejson
 from fosslight_util.read_excel import read_oss_report
 from fosslight_util.output_format import write_output_file
 
@@ -173,7 +174,7 @@ def merge_yamls(_output_dir, merge_yaml_files, final_report, remove_src_data=Fal
     try:
         for mf in merge_yaml_files:
             if os.path.exists(os.path.join(_output_dir, mf)):
-                oss_list, license_list, err_reason = parsing_yml(os.path.join(_output_dir, mf), _output_dir)
+                oss_list, _, _ = parsing_yml(os.path.join(_output_dir, mf), _output_dir)
 
                 if remove_src_data:
                     existed_yaml = {}
@@ -194,6 +195,23 @@ def merge_yamls(_output_dir, merge_yaml_files, final_report, remove_src_data=Fal
         else:
             success = False
             err_msg = "Output file is not created as no oss items detected."
+    except Exception as ex:
+        err_msg = ex
+        success = False
+
+    return success, err_msg
+
+
+def create_scancodejson(final_report, output_extension, ui_mode_report):
+    success = True
+    err_msg = ''
+
+    oss_total_list = []
+    try:
+        oss_total_list = get_osslist(os.path.dirname(final_report), os.path.basename(final_report),
+                                     output_extension, '')
+        write_scancodejson(os.path.dirname(ui_mode_report), os.path.basename(ui_mode_report),
+                           oss_total_list)
     except Exception as ex:
         err_msg = ex
         success = False

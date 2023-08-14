@@ -36,6 +36,7 @@ _HELP_MESSAGE_SCANNER = """
             --no_correction\t    Enter if you don't want to correct OSS information with sbom-info.yaml
                                      * Correction mode only supported xlsx format.
             --correct_fpath <path>  Path to the sbom-info.yaml file
+            --ui\t\t\t  Generate UI mode result file
 
         Options for only 'all' or 'bin' mode
             -u <db_url>\t\t    DB Connection(format :'postgresql://username:password@host:port/database_name')
