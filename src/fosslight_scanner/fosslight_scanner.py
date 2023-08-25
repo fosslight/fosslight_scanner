@@ -10,6 +10,7 @@ import re
 import yaml
 import sys
 import shutil
+import shlex
 from pathlib import Path
 from datetime import datetime
 from fosslight_binary import binary_analysis
@@ -158,9 +159,9 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                     else:  # Run fosslight_source by using docker image
                         src_output = os.path.join("output", output_files["SRC"])
                         output_rel_path = os.path.relpath(abs_path, os.getcwd())
-                        command = f"docker run -it -v {_output_dir}:/app/output "\
-                                  f"fosslight -p {output_rel_path} -o {src_output}.xlsx"
-                        command_result = subprocess.run(command.split(' '), stdout=subprocess.PIPE, text=True)
+                        command = shlex.quote(f"docker run -it -v {_output_dir}:/app/output "
+                                              f"fosslight -p {output_rel_path} -o {src_output}")
+                        command_result = subprocess.run(command, stdout=subprocess.PIPE, text=True)
                         logger.info(f"Source Analysis Result:{command_result.stdout}")
 
                 except Exception as ex:
