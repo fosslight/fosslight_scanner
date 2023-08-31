@@ -237,7 +237,7 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
 
         if ui_mode:
             ui_mode_report = f"{output_file_without_ext}.json"
-            success, err_msg = create_scancodejson(final_report, output_extension, ui_mode_report)
+            success, err_msg = create_scancodejson(final_report, output_extension, ui_mode_report, src_path)
             if success and os.path.isfile(ui_mode_report):
                 logger.info(f'Generated the ui mode result file: {ui_mode_report}')
             else:
