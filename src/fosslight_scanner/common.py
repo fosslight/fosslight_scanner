@@ -17,6 +17,7 @@ from fosslight_util.write_yaml import create_yaml_with_ossitem
 from fosslight_util.write_scancodejson import write_scancodejson
 from fosslight_util.read_excel import read_oss_report
 from fosslight_util.output_format import write_output_file
+from pathlib import Path
 
 logger = logging.getLogger(constant.LOGGER_NAME)
 SRC_SHEET = 'SRC_FL_Source'
@@ -202,14 +203,30 @@ def merge_yamls(_output_dir, merge_yaml_files, final_report, remove_src_data=Fal
     return success, err_msg
 
 
-def create_scancodejson(final_report, output_extension, ui_mode_report):
+def create_scancodejson(final_report, output_extension, ui_mode_report, src_path=""):
     success = True
     err_msg = ''
 
     oss_total_list = []
+    root_dir = ""
+
+    try:
+        parent = os.path.basename(os.path.abspath(src_path))
+        two_depth_parent = os.path.basename(Path(os.path.abspath(src_path)).parents[0])
+        root_dir = os.path.join(two_depth_parent, parent)
+    except Exception:
+        root_dir = ""
+
     try:
         oss_total_list = get_osslist(os.path.dirname(final_report), os.path.basename(final_report),
                                      output_extension, '')
+
+        if root_dir:
+            for oss in oss_total_list:
+                tmp_path_list = oss.source_name_or_path
+                oss.source_name_or_path = ""
+                oss.source_name_or_path = [os.path.join(root_dir, path) for path in tmp_path_list]
+
         write_scancodejson(os.path.dirname(ui_mode_report), os.path.basename(ui_mode_report),
                            oss_total_list)
     except Exception as ex:
