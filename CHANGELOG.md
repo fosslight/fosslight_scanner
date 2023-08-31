@@ -1,5 +1,14 @@
 # Changelog
 
+## v1.7.16 (31/08/2023)
+## Changes
+## 🔧 Maintenance
+
+- Include the parent directory for ScanCode @soimkim (#71)
+- Fix the vulnerability @dd-jy (#69)
+
+---
+
 ## v1.7.15 (14/08/2023)
 ## Changes
 ## 🚀 Features
@@ -286,11 +295,3 @@
 ## 🚀 Features
 
 - Add option -t  for hiding the progress bar @soimkim (#7)
-
----
-
-## v1.6.2 (05/10/2021)
-## Changes
-## 🔧 Maintenance
-
-- Specify the output file name @soimkim (#6)
