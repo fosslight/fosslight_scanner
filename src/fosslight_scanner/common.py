@@ -18,7 +18,6 @@ from fosslight_util.write_scancodejson import write_scancodejson
 from fosslight_util.read_excel import read_oss_report
 from fosslight_util.output_format import write_output_file
 from pathlib import Path
-from fosslight_util.oss_item import OssItem
 
 logger = logging.getLogger(constant.LOGGER_NAME)
 SRC_SHEET = 'SRC_FL_Source'
@@ -219,19 +218,9 @@ def create_scancodejson(final_report, output_extension, ui_mode_report, src_path
         root_dir = ""
 
     try:
-        item_without_oss = OssItem("")
         oss_total_list = get_osslist(os.path.dirname(final_report), os.path.basename(final_report),
                                      output_extension, '')
-        if src_path:
-            for root, dirs, files in os.walk(src_path):
-                for file in files:
-                    item_path = os.path.join(root, file)
-                    item_path = item_path.replace(parent + os.path.sep, '', 1)
-                    included = any(item_path in x.source_name_or_path for x in oss_total_list)
-                    if not included:
-                        item_without_oss.source_name_or_path = item_path
-            if len(item_without_oss.source_name_or_path) > 0:
-                oss_total_list.append(item_without_oss)
+
         if root_dir:
             for oss in oss_total_list:
                 tmp_path_list = oss.source_name_or_path
