@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.7.17 (01/09/2023)
+## Changes
+## 🔧 Maintenance
+
+- Print even files that were not detected @soimkim (#72)
+
+---
+
 ## v1.7.16 (31/08/2023)
 ## Changes
 ## 🔧 Maintenance
@@ -287,11 +295,3 @@
 ## 🔧 Maintenance
 
 - Change sheet name of Dependency Scan result @soimkim (#8)
-
----
-
-## v1.6.3 (06/10/2021)
-## Changes
-## 🚀 Features
-
-- Add option -t  for hiding the progress bar @soimkim (#7)
