@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.7.18 (05/09/2023)
+## Changes
+## 🐛 Hotfixes
+
+- Fix absolute path related bugs @soimkim (#75)
+
+---
+
 ## v1.7.17 (01/09/2023)
 ## Changes
 ## 🔧 Maintenance
@@ -287,11 +295,3 @@
 
 - Add the -f option and change way to create output @soimkim (#10)
 - Change the parameters related to the scanner path @soimkim (#9)
-
----
-
-## v1.6.4 (07/10/2021)
-## Changes
-## 🔧 Maintenance
-
-- Change sheet name of Dependency Scan result @soimkim (#8)
