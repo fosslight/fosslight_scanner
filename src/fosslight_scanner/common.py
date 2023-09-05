@@ -210,10 +210,12 @@ def create_scancodejson(final_report, output_extension, ui_mode_report, src_path
 
     oss_total_list = []
     root_dir = ""
-
+    root_strip = ""
     try:
-        parent = os.path.basename(os.path.abspath(src_path))
-        two_depth_parent = os.path.basename(Path(os.path.abspath(src_path)).parents[0])
+        src_path = os.path.abspath(src_path)
+        parent = os.path.basename(src_path)
+        root_strip = src_path.replace(parent, "")
+        two_depth_parent = os.path.basename(Path(src_path).parents[0])
         root_dir = os.path.join(two_depth_parent, parent)
     except Exception:
         root_dir = ""
@@ -224,6 +226,7 @@ def create_scancodejson(final_report, output_extension, ui_mode_report, src_path
                                      output_extension, '')
         if src_path:
             for root, dirs, files in os.walk(src_path):
+                root = root.replace(root_strip, "")
                 for file in files:
                     item_path = os.path.join(root, file)
                     item_path = item_path.replace(parent + os.path.sep, '', 1)
