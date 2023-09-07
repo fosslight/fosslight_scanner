@@ -31,8 +31,7 @@ from ._run_compare import run_compare
 import subprocess
 fosslight_source_installed = True
 try:
-    from fosslight_source.cli import run_all_scanners as source_analysis
-    from fosslight_source.cli import create_report_file
+    from fosslight_source.cli import run_scanners as source_analysis
 except ModuleNotFoundError:
     fosslight_source_installed = False
 
@@ -122,7 +121,6 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
         correct_fpath = src_path
 
     try:
-        sheet_list = {}
         final_excel_dir = os.path.abspath(final_excel_dir)
         abs_path = os.path.abspath(src_path)
 
@@ -150,12 +148,7 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                                                             -1, source_analysis,
                                                             abs_path,
                                                             src_output,
-                                                            False, num_cores)
-                        if success:
-                            sheet_list["SRC_FL_Source"] = [scan_item.get_row_to_print() for scan_item in result[2]]
-                            create_report_file(0, result[2], result[3], result[4], 'all', False,
-                                               _output_dir, output_files["SRC"].split('.')[0], output_extension,
-                                               correct_mode, correct_fpath, abs_path)
+                                                            False, num_cores, False)
                     else:  # Run fosslight_source by using docker image
                         src_output = os.path.join("output", output_files["SRC"])
                         output_rel_path = os.path.relpath(abs_path, os.getcwd())
