@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.7.19 (15/09/2023)
+## Changes
+## 🔧 Maintenance
+
+- Fix importing from  fl source @JustinWonjaePark (#76)
+
+---
+
 ## v1.7.18 (05/09/2023)
 ## Changes
 ## 🐛 Hotfixes
@@ -286,12 +294,3 @@
 ## 🚀 Features
 
 - Add number of process to analyze as parameter @soimkim (#11)
-
----
-
-## v1.6.5 (21/10/2021)
-## Changes
-## 🔧 Maintenance
-
-- Add the -f option and change way to create output @soimkim (#10)
-- Change the parameters related to the scanner path @soimkim (#9)
