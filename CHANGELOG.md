@@ -1,5 +1,15 @@
 # Changelog
 
+## v1.7.20 (30/10/2023)
+## Changes
+## 🔧 Maintenance
+
+- Update supported python version @dd-jy (#80)
+- Fetch base-check-commit-message.yml from fosslight/.github @cookienc (#78)
+- Upgrade Python minimum version to 3.8 @JustinWonjaePark (#79)
+
+---
+
 ## v1.7.19 (15/09/2023)
 ## Changes
 ## 🔧 Maintenance
@@ -286,11 +296,3 @@
 ## 🔧 Maintenance
 
 - Print output file instead of path @soimkim (#13)
-
----
-
-## v1.6.6 (04/11/2021)
-## Changes
-## 🚀 Features
-
-- Add number of process to analyze as parameter @soimkim (#11)
