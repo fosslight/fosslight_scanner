@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.7.21 (06/11/2023)
+## Changes
+## 🐛 Hotfixes
+
+- Fix the fs output path @dd-jy (#81)
+
+---
+
 ## v1.7.20 (30/10/2023)
 ## Changes
 ## 🔧 Maintenance
@@ -288,11 +296,3 @@
 - Modify to print output file name @bjk7119 (#22)
 - Create a result file of FOSSLight Source @soimkim (#20)
 - Move the binary analysis result file to output @soimkim (#18)
-
----
-
-## v1.6.7 (25/11/2021)
-## Changes
-## 🔧 Maintenance
-
-- Print output file instead of path @soimkim (#13)
