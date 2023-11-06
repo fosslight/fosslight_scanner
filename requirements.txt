@@ -1,6 +1,5 @@
 future
 pandas
-xlrd
 openpyxl
 progress
 pyyaml

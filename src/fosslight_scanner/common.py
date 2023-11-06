@@ -17,7 +17,6 @@ from fosslight_util.write_yaml import create_yaml_with_ossitem
 from fosslight_util.write_scancodejson import write_scancodejson
 from fosslight_util.read_excel import read_oss_report
 from fosslight_util.output_format import write_output_file
-from pathlib import Path
 from fosslight_util.oss_item import OssItem
 
 logger = logging.getLogger(constant.LOGGER_NAME)
@@ -215,8 +214,7 @@ def create_scancodejson(final_report, output_extension, ui_mode_report, src_path
         src_path = os.path.abspath(src_path)
         parent = os.path.basename(src_path)
         root_strip = src_path.replace(parent, "")
-        two_depth_parent = os.path.basename(Path(src_path).parents[0])
-        root_dir = os.path.join(two_depth_parent, parent)
+        root_dir = parent
     except Exception:
         root_dir = ""
 
