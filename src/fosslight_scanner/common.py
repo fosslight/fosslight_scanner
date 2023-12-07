@@ -101,6 +101,7 @@ def extract_name_from_link(link):
     pkg_pattern = {
         "github": r'https?:\/\/github.com\/([^\/]+)\/([^\/\.]+)(\.git)?',
         "pypi": r'https?:\/\/pypi\.org\/project\/([^\/]+)',
+        "pypi2": r'https?:\/\/files\.pythonhosted\.org\/packages\/source\/[\w]\/([^\/]+)\/([^\/]+)',
         "maven": r'https?:\/\/mvnrepository\.com\/artifact\/([^\/]+)\/([^\/]+)',
         "npm": r'https?:\/\/www\.npmjs\.com\/package\/([^\/]+)(\/[^\/]+)?',
         "pub": r'https?:\/\/pub\.dev\/packages\/([^\/]+)',
@@ -119,7 +120,7 @@ def extract_name_from_link(link):
                     repo = match.group(2)
                     oss_name = f"{group}-{repo}"
                     break
-                elif key == "pypi":
+                elif (key == "pypi") or (key == "pypi2"):
                     oss_name = f"pypi:{group}"
                     break
                 elif key == "maven":
