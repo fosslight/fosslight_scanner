@@ -95,6 +95,7 @@ def extract_name_from_link(link):
     # npm : www.npmjs.com/package/(package)
     # npm : https://www.npmjs.com/package/@(group)/(package)
     # pypi : https://pypi.org/project/(oss_name)
+    # pypi2 : https://files.pythonhosted.org/packages/source/(alphabet)/(oss_name)/(oss_name)-(version).tar.gz
     # Maven: https://mvnrepository.com/artifact/(group)/(artifact)
     # pub: https://pub.dev/packages/(package)
     # Cocoapods: https://cocoapods.org/(package)
@@ -122,6 +123,7 @@ def extract_name_from_link(link):
                     break
                 elif (key == "pypi") or (key == "pypi2"):
                     oss_name = f"pypi:{group}"
+                    oss_name = re.sub(r"[-_.]+", "-", oss_name).lower()
                     break
                 elif key == "maven":
                     artifact = match.group(2)
