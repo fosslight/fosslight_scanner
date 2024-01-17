@@ -14,6 +14,8 @@ jobs:
       envPAT: ${{ secrets.GITHUB_TOKEN }}
   build:
     runs-on: ubuntu-latest
+    env:
+      ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
     strategy:
       matrix:
         python-version: [3.8]
