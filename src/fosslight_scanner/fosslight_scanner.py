@@ -44,6 +44,7 @@ _log_file = "fosslight_log_all_"
 _start_time = ""
 _executed_path = ""
 SRC_DIR_FROM_LINK_PREFIX = "fosslight_src_dir_"
+SCANNER_MODE = ["compare", "reuse", "prechecker", "binary", "bin", "src", "source", "dependency", "dep"]
 
 
 def run_dependency(path_to_analyze, output_file_with_path, params=""):
@@ -353,6 +354,7 @@ def run_main(mode, path_arg, dep_arguments, output_file_or_dir, file_format, url
             run_prechecker = False
             remove_downloaded_source = False
             mode_list = []
+
             if mode:
                 mode_list = mode.split(',')
                 mode_list = [item.strip() for item in mode_list]
@@ -374,6 +376,11 @@ def run_main(mode, path_arg, dep_arguments, output_file_or_dir, file_format, url
                     run_src = True
                 if "dependency" in mode_list or "dep" in mode_list:
                     run_dep = True
+                mode_not_supported = list(set(mode_list).difference(SCANNER_MODE))
+                if len(mode_not_supported) > 0:
+                    logger.error(f"An unsupported mode was entered.:{mode_not_supported}")
+                    sys.exit(1)
+
             if run_dep or run_src or run_bin or run_prechecker:
                 if src_path == "" and url_to_analyze == "":
                     src_path, dep_arguments, url_to_analyze = get_input_mode(_executed_path, mode)
