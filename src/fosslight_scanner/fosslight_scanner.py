@@ -44,6 +44,7 @@ _log_file = "fosslight_log_all_"
 _start_time = ""
 _executed_path = ""
 SRC_DIR_FROM_LINK_PREFIX = "fosslight_src_dir_"
+SCANNER_MODE = ["compare", "reuse", "prechecker", "binary", "bin", "src", "source", "dependency", "dep"]
 
 
 def run_dependency(path_to_analyze, output_file_with_path, params=""):
@@ -352,48 +353,64 @@ def run_main(mode, path_arg, dep_arguments, output_file_or_dir, file_format, url
             run_dep = False
             run_prechecker = False
             remove_downloaded_source = False
+            mode_list = []
 
-            if mode == "prechecker" or mode == "reuse":
-                run_prechecker = True
-            elif mode == "binary" or mode == "bin":
-                run_bin = True
-            elif mode == "source" or mode == "src":
+            if mode:
+                mode_list = mode.split(',')
+                mode_list = [item.strip() for item in mode_list]
+
+            if "compare" in mode_list:
+                logger.error("Compare mode cannot be run together with other modes.")
+                sys.exit(1)
+            elif "all" in mode_list or (not mode):
                 run_src = True
-            elif mode == "dependency" or mode == "dep":
-                run_dep = True
-            else:
-                run_src = True
                 run_bin = True
                 run_dep = True
                 run_prechecker = True
-
-            if src_path == "" and url_to_analyze == "":
-                src_path, dep_arguments, url_to_analyze = get_input_mode(_executed_path, mode)
-
-            if not hide_progressbar:
-                timer = TimerThread()
-                timer.setDaemon(True)
-                timer.start()
-
-            if url_to_analyze != "":
-                remove_downloaded_source = True
-                default_oss_name = extract_name_from_link(url_to_analyze)
-                success, src_path = download_source(url_to_analyze, output_path)
-
-            if output_extension == ".yaml":
-                correct_mode = False
-                correct_fpath = ""
             else:
-                if not correct_fpath:
-                    correct_fpath = src_path
+                if "prechecker" in mode_list or "reuse" in mode_list:
+                    run_prechecker = True
+                if "binary" in mode_list or "bin" in mode_list:
+                    run_bin = True
+                if "source" in mode_list or "src" in mode_list:
+                    run_src = True
+                if "dependency" in mode_list or "dep" in mode_list:
+                    run_dep = True
+                mode_not_supported = list(set(mode_list).difference(SCANNER_MODE))
+                if len(mode_not_supported) > 0:
+                    logger.error(f"An unsupported mode was entered.:{mode_not_supported}")
+                    sys.exit(1)
 
-            if src_path != "":
-                run_scanner(src_path, dep_arguments, output_path, keep_raw_data,
-                            run_src, run_bin, run_dep, run_prechecker,
-                            remove_downloaded_source, {}, output_file,
-                            output_extension, num_cores, db_url,
-                            default_oss_name, url_to_analyze,
-                            correct_mode, correct_fpath, ui_mode)
+            if run_dep or run_src or run_bin or run_prechecker:
+                if src_path == "" and url_to_analyze == "":
+                    src_path, dep_arguments, url_to_analyze = get_input_mode(_executed_path, mode)
+
+                if not hide_progressbar:
+                    timer = TimerThread()
+                    timer.setDaemon(True)
+                    timer.start()
+
+                if url_to_analyze != "":
+                    remove_downloaded_source = True
+                    default_oss_name = extract_name_from_link(url_to_analyze)
+                    success, src_path = download_source(url_to_analyze, output_path)
+
+                if output_extension == ".yaml":
+                    correct_mode = False
+                    correct_fpath = ""
+                else:
+                    if not correct_fpath:
+                        correct_fpath = src_path
+
+                if src_path != "":
+                    run_scanner(src_path, dep_arguments, output_path, keep_raw_data,
+                                run_src, run_bin, run_dep, run_prechecker,
+                                remove_downloaded_source, {}, output_file,
+                                output_extension, num_cores, db_url,
+                                default_oss_name, url_to_analyze,
+                                correct_mode, correct_fpath, ui_mode)
+            else:
+                logger.error("No mode has been selected for analysis.")
         try:
             if not keep_raw_data:
                 logger.debug(f"Remove temporary files: {_output_dir}")

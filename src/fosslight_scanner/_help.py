@@ -12,7 +12,7 @@ _HELP_MESSAGE_SCANNER = """
     Usage: fosslight [Mode] [option1] <arg1> [option2] <arg2>...
 
     Parameters:
-        Mode
+        Mode: Multiple modes can be entered by separating them with , (ex. source,binary)
             all\t\t\t    Run all scanners(Default)
             source\t\t    Run FOSSLight Source Scanner
             dependency\t\t    Run FOSSLight Dependency Scanner
