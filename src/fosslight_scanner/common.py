@@ -7,13 +7,9 @@ import os
 import sys
 import logging
 import shutil
-import re
 import pandas as pd
 import yaml
 import copy
-import requests
-from npm.bindings import npm_run
-from lastversion import latest
 import fosslight_util.constant as constant
 from fosslight_util.parsing_yaml import parsing_yml
 from fosslight_util.write_yaml import create_yaml_with_ossitem
@@ -91,94 +87,6 @@ def call_analysis_api(path_to_run, str_run_start, return_idx, func, *args):
     if not result:
         result = []
     return success, result
-
-
-def extract_name_version_from_link(link):
-    # Github : https://github.com/(owner)/(repo)
-    # npm : https://www.npmjs.com/package/(package)/v/(version)
-    # npm2 : https://www.npmjs.com/package/@(group)/(package)/v/(version)
-    # pypi : https://pypi.org/project/(oss_name)/(version)
-    # pypi2 : https://files.pythonhosted.org/packages/source/(alphabet)/(oss_name)/(oss_name)-(version).tar.gz
-    # Maven: https://mvnrepository.com/artifact/(group)/(artifact)/(version)
-    # pub: https://pub.dev/packages/(package)/versions/(version)
-    # Cocoapods: https://cocoapods.org/(package)
-    pkg_pattern = {
-        "github": r'https?:\/\/github.com\/([^\/]+)\/([^\/\.]+)(\.git)?',
-        "pypi": r'https?:\/\/pypi\.org\/project\/([^\/]+)[\/]?([^\/]*)',
-        "pypi2": r'https?:\/\/files\.pythonhosted\.org\/packages\/source\/[\w]\/([^\/]+)\/[\S]+-([^\-]+)\.tar\.gz',
-        "maven": r'https?:\/\/mvnrepository\.com\/artifact\/([^\/]+)\/([^\/]+)\/?([^\/]*)',
-        "npm": r'https?:\/\/www\.npmjs\.com\/package\/([^\/\@]+)(?:\/v\/)?([^\/]*)',
-        "npm2": r'https?:\/\/www\.npmjs\.com\/package\/(\@[^\/]+\/[^\/]+)(?:\/v\/)?([^\/]*)',
-        "pub": r'https?:\/\/pub\.dev\/packages\/([^\/]+)(?:\/versions\/)?([^\/]*)',
-        "pods": r'https?:\/\/cocoapods\.org\/pods\/([^\/]+)'
-    }
-    oss_name = ""
-    oss_version = ""
-    if link.startswith("www."):
-        link = link.replace("www.", "https://www.", 1)
-    for key, value in pkg_pattern.items():
-        p = re.compile(value)
-        match = p.match(link)
-        if match:
-            try:
-                origin_name = match.group(1)
-                if key == "github":
-                    repo = match.group(2)
-                    oss_name = f"{origin_name}-{repo}"
-                elif (key == "pypi") or (key == "pypi2"):
-                    oss_name = f"pypi:{origin_name}"
-                    oss_name = re.sub(r"[-_.]+", "-", oss_name).lower()
-                    oss_version = match.group(2)
-                elif key == "maven":
-                    artifact = match.group(2)
-                    oss_name = f"{origin_name}:{artifact}"
-                    origin_name = oss_name
-                    oss_version = match.group(3)
-                elif key == "npm" or key == "npm2":
-                    oss_name = f"npm:{origin_name}"
-                    oss_version = match.group(2)
-                elif key == "pub":
-                    oss_name = f"pub:{origin_name}"
-                    oss_version = match.group(2)
-                elif key == "pods":
-                    oss_name = f"cocoapods:{origin_name}"
-            except Exception as ex:
-                logger.info(f"extract_name_version_from_link {key}:{ex}")
-            if oss_name and (not oss_version):
-                if key in ["pypi", "maven", "npm", "npm2", "pub"]:
-                    oss_version, link = get_latest_package_version(link, key, origin_name)
-                    logger.debug(f'Try to download with the latest version:{link}')
-            break
-    return oss_name, oss_version, link
-
-
-def get_latest_package_version(link, pkg_type, oss_name):
-    find_version = ''
-    link_with_version = link
-
-    try:
-        if pkg_type in ['npm', 'npm2']:
-            stderr, stdout = npm_run('view', oss_name, 'version')
-            if stdout:
-                find_version = stdout.strip()
-            link_with_version = f'https://www.npmjs.com/package/{oss_name}/v/{find_version}'
-        elif pkg_type == 'pypi':
-            find_version = str(latest(oss_name, at='pip', output_format='version', pre_ok=True))
-            link_with_version = f'https://pypi.org/project/{oss_name}/{find_version}'
-        elif pkg_type == 'maven':
-            maven_response = requests.get(f'https://api.deps.dev/v3alpha/systems/maven/packages/{oss_name}')
-            if maven_response.status_code == 200:
-                find_version = maven_response.json().get('versions')[-1].get('versionKey').get('version')
-            oss_name = oss_name.replace(':', '/')
-            link_with_version = f'https://mvnrepository.com/artifact/{oss_name}/{find_version}'
-        elif pkg_type == 'pub':
-            pub_response = requests.get(f'https://pub.dev/api/packages/{oss_name}')
-            if pub_response.status_code == 200:
-                find_version = pub_response.json().get('latest').get('version')
-            link_with_version = f'https://pub.dev/packages/{oss_name}/versions/{find_version}'
-    except Exception as e:
-        logger.debug(f'Fail to get latest package version({link}:{e})')
-    return find_version, link_with_version
 
 
 def overwrite_excel(excel_file_path, oss_name, column_name='OSS Name'):

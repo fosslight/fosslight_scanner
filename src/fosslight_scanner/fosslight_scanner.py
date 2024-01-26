@@ -23,7 +23,7 @@ import fosslight_util.constant as constant
 from fosslight_util.output_format import check_output_format
 from fosslight_prechecker._precheck import run_lint as prechecker_lint
 from .common import (copy_file, call_analysis_api,
-                     overwrite_excel, extract_name_version_from_link,
+                     overwrite_excel,
                      merge_yamls, correct_scanner_result,
                      create_scancodejson)
 from fosslight_util.write_excel import merge_excels
@@ -255,6 +255,8 @@ def download_source(link, out_dir):
     start_time = datetime.now().strftime('%Y%m%d_%H%M%S')
     success = False
     temp_src_dir = ""
+    oss_name = ""
+    oss_version = ""
     try:
         success, final_excel_dir, result_log = init(out_dir)
         temp_src_dir = os.path.join(
@@ -262,7 +264,7 @@ def download_source(link, out_dir):
 
         link = link.strip()
         logger.info(f"Link to download: {link}")
-        success, msg = cli_download_and_extract(
+        success, msg, oss_name, oss_version = cli_download_and_extract(
             link, temp_src_dir, _output_dir)
 
         if success:
@@ -273,7 +275,7 @@ def download_source(link, out_dir):
     except Exception as ex:
         success = False
         logger.error(f"Failed to analyze from link: {ex}")
-    return success, temp_src_dir
+    return success, temp_src_dir, oss_name, oss_version
 
 
 def init(output_path="", make_outdir=True):
@@ -394,8 +396,7 @@ def run_main(mode, path_arg, dep_arguments, output_file_or_dir, file_format, url
 
                 if url_to_analyze != "":
                     remove_downloaded_source = True
-                    default_oss_name, default_oss_version, url_to_analyze = extract_name_version_from_link(url_to_analyze)
-                    success, src_path = download_source(url_to_analyze, output_path)
+                    success, src_path, default_oss_name, default_oss_version = download_source(url_to_analyze, output_path)
 
                 if output_extension == ".yaml":
                     correct_mode = False
