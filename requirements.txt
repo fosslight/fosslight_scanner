@@ -9,3 +9,5 @@ fosslight_source>=1.7.3
 fosslight_dependency>=3.7.4
 fosslight_binary>=4.1.24
 fosslight_prechecker>=3.0.1
+npm
+requests
