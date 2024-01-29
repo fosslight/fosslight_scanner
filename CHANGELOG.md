@@ -1,5 +1,20 @@
 # Changelog
 
+## v1.7.22 (29/01/2024)
+## Changes
+## 🚀 Features
+
+- Download the latest version of package url @dd-jy (#86)
+- Supports multiple input modes @soimkim (#85)
+
+## 🔧 Maintenance
+
+- Normalize pypi package name (PEP 0503) @dd-jy (#83)
+- Support oss name with files.pythonhosted.org url @dd-jy (#82)
+- Optimize Dockerfile to reduce image size @cookienc (#68)
+
+---
+
 ## v1.7.21 (06/11/2023)
 ## Changes
 ## 🐛 Hotfixes
@@ -275,24 +290,3 @@
 - Change the result generation method to merging @soimkim (#25)
 - Add an inputable value to mode @soimkim (#24)
 - Update the README with additional Scanners @soimkim (#23)
-
----
-
-## v1.6.8 (10/02/2022)
-## Changes
-## 🚀 Features
-
-- Change the options when analyzing the source @soimkim (#19)
-- Support analysis mode @soimkim (#17)
-- Add a FOSSLight Reuse @soimkim (#16)
-- Add a FOSSLight Binary @soimkim (#14)
-
-## 🐛 Hotfixes
-
-- Fix the bug that the raw folder is not deleted when analyzing with a link @soimkim (#21)
-
-## 🔧 Maintenance
-
-- Modify to print output file name @bjk7119 (#22)
-- Create a result file of FOSSLight Source @soimkim (#20)
-- Move the binary analysis result file to output @soimkim (#18)
