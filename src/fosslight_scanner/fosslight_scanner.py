@@ -23,7 +23,7 @@ import fosslight_util.constant as constant
 from fosslight_util.output_format import check_output_format
 from fosslight_prechecker._precheck import run_lint as prechecker_lint
 from .common import (copy_file, call_analysis_api,
-                     overwrite_excel, extract_name_from_link,
+                     overwrite_excel,
                      merge_yamls, correct_scanner_result,
                      create_scancodejson)
 from fosslight_util.write_excel import merge_excels
@@ -104,7 +104,7 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                 run_src=True, run_bin=True, run_dep=True, run_prechecker=True,
                 remove_src_data=True, result_log={}, output_file="",
                 output_extension="", num_cores=-1, db_url="",
-                default_oss_name="", url="",
+                default_oss_name="", default_oss_version="", url="",
                 correct_mode=True, correct_fpath="", ui_mode=False):
     final_excel_dir = output_path
     success = True
@@ -206,6 +206,7 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
 
             if remove_src_data:
                 overwrite_excel(_output_dir, default_oss_name, "OSS Name")
+                overwrite_excel(_output_dir, default_oss_version, "OSS Version")
                 overwrite_excel(_output_dir, url, "Download Location")
             success, err_msg = merge_excels(_output_dir, final_report, merge_files)
 
@@ -219,7 +220,7 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                 shutil.rmtree(os.path.join(_output_dir, tmp_dir), ignore_errors=True)
         elif output_extension == ".yaml":
             success, err_msg = merge_yamls(_output_dir, merge_files, final_report,
-                                           remove_src_data, default_oss_name, url)
+                                           remove_src_data, default_oss_name, default_oss_version, url)
         if success:
             if os.path.isfile(final_report):
                 logger.info(f'Generated the result file: {final_report}')
@@ -254,6 +255,8 @@ def download_source(link, out_dir):
     start_time = datetime.now().strftime('%Y%m%d_%H%M%S')
     success = False
     temp_src_dir = ""
+    oss_name = ""
+    oss_version = ""
     try:
         success, final_excel_dir, result_log = init(out_dir)
         temp_src_dir = os.path.join(
@@ -261,7 +264,7 @@ def download_source(link, out_dir):
 
         link = link.strip()
         logger.info(f"Link to download: {link}")
-        success, msg = cli_download_and_extract(
+        success, msg, oss_name, oss_version = cli_download_and_extract(
             link, temp_src_dir, _output_dir)
 
         if success:
@@ -272,7 +275,7 @@ def download_source(link, out_dir):
     except Exception as ex:
         success = False
         logger.error(f"Failed to analyze from link: {ex}")
-    return success, temp_src_dir
+    return success, temp_src_dir, oss_name, oss_version
 
 
 def init(output_path="", make_outdir=True):
@@ -305,6 +308,7 @@ def run_main(mode, path_arg, dep_arguments, output_file_or_dir, file_format, url
 
     output_file = ""
     default_oss_name = ""
+    default_oss_version = ""
     src_path = ""
     _executed_path = os.getcwd()
 
@@ -392,8 +396,7 @@ def run_main(mode, path_arg, dep_arguments, output_file_or_dir, file_format, url
 
                 if url_to_analyze != "":
                     remove_downloaded_source = True
-                    default_oss_name = extract_name_from_link(url_to_analyze)
-                    success, src_path = download_source(url_to_analyze, output_path)
+                    success, src_path, default_oss_name, default_oss_version = download_source(url_to_analyze, output_path)
 
                 if output_extension == ".yaml":
                     correct_mode = False
@@ -407,7 +410,7 @@ def run_main(mode, path_arg, dep_arguments, output_file_or_dir, file_format, url
                                 run_src, run_bin, run_dep, run_prechecker,
                                 remove_downloaded_source, {}, output_file,
                                 output_extension, num_cores, db_url,
-                                default_oss_name, url_to_analyze,
+                                default_oss_name, default_oss_version, url_to_analyze,
                                 correct_mode, correct_fpath, ui_mode)
             else:
                 logger.error("No mode has been selected for analysis.")

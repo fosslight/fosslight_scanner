@@ -7,7 +7,6 @@ import os
 import sys
 import logging
 import shutil
-import re
 import pandas as pd
 import yaml
 import copy
@@ -90,63 +89,6 @@ def call_analysis_api(path_to_run, str_run_start, return_idx, func, *args):
     return success, result
 
 
-def extract_name_from_link(link):
-    # Github : https://github.com/(owner)/(repo)
-    # npm : www.npmjs.com/package/(package)
-    # npm : https://www.npmjs.com/package/@(group)/(package)
-    # pypi : https://pypi.org/project/(oss_name)
-    # pypi2 : https://files.pythonhosted.org/packages/source/(alphabet)/(oss_name)/(oss_name)-(version).tar.gz
-    # Maven: https://mvnrepository.com/artifact/(group)/(artifact)
-    # pub: https://pub.dev/packages/(package)
-    # Cocoapods: https://cocoapods.org/(package)
-    pkg_pattern = {
-        "github": r'https?:\/\/github.com\/([^\/]+)\/([^\/\.]+)(\.git)?',
-        "pypi": r'https?:\/\/pypi\.org\/project\/([^\/]+)',
-        "pypi2": r'https?:\/\/files\.pythonhosted\.org\/packages\/source\/[\w]\/([^\/]+)\/([^\/]+)',
-        "maven": r'https?:\/\/mvnrepository\.com\/artifact\/([^\/]+)\/([^\/]+)',
-        "npm": r'https?:\/\/www\.npmjs\.com\/package\/([^\/]+)(\/[^\/]+)?',
-        "pub": r'https?:\/\/pub\.dev\/packages\/([^\/]+)',
-        "pods": r'https?:\/\/cocoapods\.org\/pods\/([^\/]+)'
-    }
-    oss_name = ""
-    if link.startswith("www."):
-        link = link.replace("www.", "https://www.", 1)
-    for key, value in pkg_pattern.items():
-        try:
-            p = re.compile(value)
-            match = p.match(link)
-            if match:
-                group = match.group(1)
-                if key == "github":
-                    repo = match.group(2)
-                    oss_name = f"{group}-{repo}"
-                    break
-                elif (key == "pypi") or (key == "pypi2"):
-                    oss_name = f"pypi:{group}"
-                    oss_name = re.sub(r"[-_.]+", "-", oss_name).lower()
-                    break
-                elif key == "maven":
-                    artifact = match.group(2)
-                    oss_name = f"{group}:{artifact}"
-                    break
-                elif key == "npm":
-                    if group.startswith("@"):
-                        pkg = match.group(2)
-                        oss_name = f"npm:{group}{pkg}"
-                    else:
-                        oss_name = f"npm:{group}"
-                    break
-                elif key == "pub":
-                    oss_name = f"pub:{group}"
-                    break
-                elif key == "pods":
-                    oss_name = f"cocoapods:{group}"
-                    break
-        except Exception as ex:
-            logger.debug(f"extract_name_from_link_{key}:{ex}")
-    return oss_name
-
-
 def overwrite_excel(excel_file_path, oss_name, column_name='OSS Name'):
     if oss_name != "":
         try:
@@ -169,7 +111,8 @@ def overwrite_excel(excel_file_path, oss_name, column_name='OSS Name'):
             logger.debug(f"overwrite_excel:{ex}")
 
 
-def merge_yamls(_output_dir, merge_yaml_files, final_report, remove_src_data=False, default_oss_name='', url=''):
+def merge_yamls(_output_dir, merge_yaml_files, final_report, remove_src_data=False,
+                default_oss_name='', default_oss_version='', url=''):
     success = True
     err_msg = ''
 
@@ -183,7 +126,8 @@ def merge_yamls(_output_dir, merge_yaml_files, final_report, remove_src_data=Fal
                 if remove_src_data:
                     existed_yaml = {}
                     for oi in oss_list:
-                        oi.name = default_oss_name if oi.name == '-' else oi.name
+                        oi.name = default_oss_name if oi.name == '' else oi.name
+                        oi.version = default_oss_version if oi.version == '' else oi.version
                         oi.download_location = url if oi.download_location == '' else oi.download_location
                         create_yaml_with_ossitem(oi, existed_yaml)
                     with open(os.path.join(_output_dir, mf), 'w') as f:
