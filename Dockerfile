@@ -1,6 +1,6 @@
 # Copyright (c) 2022 LG Electronics Inc.
 # SPDX-License-Identifier: Apache-2.0
-FROM python:3.8-slim-buster
+FROM python:3.13-rc-slim-bookworm
 
 COPY . /app
 WORKDIR	/app
