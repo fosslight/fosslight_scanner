@@ -101,7 +101,7 @@ def run_dependency(path_to_analyze, output_file_with_path, params=""):
 
 
 def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
-                run_src=True, run_bin=True, run_dep=True, run_prechecker=True,
+                run_src=True, run_bin=True, run_dep=True, run_prechecker=False,
                 remove_src_data=True, result_log={}, output_file="",
                 output_extension="", num_cores=-1, db_url="",
                 default_oss_name="", default_oss_version="", url="",
@@ -370,7 +370,7 @@ def run_main(mode, path_arg, dep_arguments, output_file_or_dir, file_format, url
                 run_src = True
                 run_bin = True
                 run_dep = True
-                run_prechecker = True
+                run_prechecker = False
             else:
                 if "prechecker" in mode_list or "reuse" in mode_list:
                     run_prechecker = True

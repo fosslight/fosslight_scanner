@@ -17,7 +17,6 @@ _HELP_MESSAGE_SCANNER = """
             source\t\t    Run FOSSLight Source Scanner
             dependency\t\t    Run FOSSLight Dependency Scanner
             binary\t\t    Run FOSSLight Binary Scanner
-            prechecker\t\t    Run FOSSLight Prechecker
             compare\t\t    Compare two FOSSLight reports
 
         Options:

@@ -11,7 +11,7 @@ from fosslight_util.help import print_package_version
 
 def main():
     parser = ArgumentParser(description='FOSSLight Scanner', prog='fosslight_scanner', add_help=False)
-    parser.add_argument('mode', nargs='?', help='source| dependency| binary| prechecker| all| compare', default="all")
+    parser.add_argument('mode', nargs='?', help='source| dependency| binary| all| compare', default="all")
     parser.add_argument('--path', '-p', help='Path to analyze (In compare mode, two FOSSLight reports',
                         dest='path', nargs='+', default="")
     parser.add_argument('--wget', '-w', help='Link to be analyzed', type=str, dest='link', default="")
