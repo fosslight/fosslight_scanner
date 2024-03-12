@@ -141,6 +141,9 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                 if success_file:
                     temp_output_fiiles.append(copied_file)
 
+            if run_dep:
+                run_dependency(src_path, os.path.join(_output_dir, output_files["DEP"]), dep_arguments)
+
             if run_src:
                 try:
                     if fosslight_source_installed:
@@ -174,10 +177,6 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                                                           os.path.join(output_path, output_files["BIN_TXT"]))
                     if success_file:
                         temp_output_fiiles.append(copied_file)
-
-            if run_dep:
-                run_dependency(src_path, os.path.join(_output_dir, output_files["DEP"]), dep_arguments)
-
         else:
             return
 
