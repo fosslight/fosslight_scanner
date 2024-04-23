@@ -11,6 +11,7 @@ import yaml
 import sys
 import shutil
 import shlex
+import subprocess
 from pathlib import Path
 from datetime import datetime
 from fosslight_binary import binary_analysis
@@ -26,9 +27,9 @@ from .common import (copy_file, call_analysis_api,
                      overwrite_excel,
                      merge_yamls, correct_scanner_result,
                      create_scancodejson)
-from fosslight_util.write_excel import merge_excels
+from fosslight_util.write_excel import merge_excels, merge_cover_comment
 from ._run_compare import run_compare
-import subprocess
+from fosslight_util.cover import CoverItem
 fosslight_source_installed = True
 try:
     from fosslight_source.cli import run_scanners as source_analysis
@@ -188,6 +189,10 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
         output_file_without_ext = os.path.join(final_excel_dir, output_file)
         final_report = f"{output_file_without_ext}{output_extension}"
         merge_files = [output_files["SRC"], output_files["BIN"], output_files["DEP"]]
+        cover = CoverItem(tool_name=PKG_NAME,
+                          start_time=_start_time,
+                          input_path=abs_path)
+        cover.comment = merge_cover_comment(_output_dir, merge_files)
 
         if output_extension == ".xlsx":
             tmp_dir = f"tmp_{datetime.now().strftime('%y%m%d_%H%M')}"
@@ -208,7 +213,7 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                 overwrite_excel(_output_dir, default_oss_name, "OSS Name")
                 overwrite_excel(_output_dir, default_oss_version, "OSS Version")
                 overwrite_excel(_output_dir, url, "Download Location")
-            success, err_msg = merge_excels(_output_dir, final_report, merge_files)
+            success, err_msg = merge_excels(_output_dir, final_report, merge_files, cover)
 
             if correct_mode:
                 if exist_src:

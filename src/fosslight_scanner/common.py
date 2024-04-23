@@ -21,6 +21,11 @@ from fosslight_util.oss_item import OssItem
 logger = logging.getLogger(constant.LOGGER_NAME)
 SRC_SHEET = 'SRC_FL_Source'
 BIN_SHEET = 'BIN_FL_Binary'
+BIN_EXT_HEADER = {'BIN_FL_Binary': ['ID', 'Binary Name', 'OSS Name',
+                                    'OSS Version', 'License', 'Download Location',
+                                    'Homepage', 'Copyright Text', 'Exclude',
+                                    'Comment', 'Vulnerability Link', 'TLSH', 'SHA1']}
+BIN_HIDDEN_HEADER = {'TLSH', "SHA1"}
 
 
 def copy_file(source, destination):
@@ -250,7 +255,7 @@ def correct_scanner_result(_output_dir, output_files, output_extension, exist_sr
                 logger.warning(err_msg)
         if exist_bin:
             success, err_msg = write_output_with_osslist(bin_oss_list, _output_dir, output_files['BIN'],
-                                                         output_extension, BIN_SHEET)
+                                                         output_extension, BIN_SHEET, BIN_EXT_HEADER, BIN_HIDDEN_HEADER)
             if not success:
                 logger.warning(err_msg)
         if duplicates:
@@ -260,18 +265,19 @@ def correct_scanner_result(_output_dir, output_files, output_extension, exist_sr
     return
 
 
-def write_output_with_osslist(oss_list, output_dir, output_file, output_extension, sheetname):
+def write_output_with_osslist(oss_list, output_dir, output_file, output_extension, sheetname, extended_hdr={}, hidden_hdr={}):
     new_oss_list = []
     sheet_list = {}
     sheet_list[sheetname] = []
 
     for src_item in oss_list:
-        new_oss_list.append(src_item.get_print_array()[0])
+        scanner_name = constant.supported_sheet_and_scanner[sheetname]
+        new_oss_list.append(src_item.get_print_array(scanner_name)[0])
     sheet_list[sheetname].extend(new_oss_list)
     if os.path.exists(os.path.join(output_dir, output_file)):
         os.remove(os.path.join(output_dir, output_file))
     success, err_msg, _ = write_output_file(os.path.join(output_dir, output_file).rstrip(output_extension),
-                                            output_extension, sheet_list)
+                                            output_extension, sheet_list, extended_hdr, hidden_hdr)
     return success, err_msg
 
 
