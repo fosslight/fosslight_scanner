@@ -15,7 +15,7 @@ with open('requirements.txt', 'r', 'utf-8') as f:
 if __name__ == "__main__":
     setup(
         name='fosslight_scanner',
-        version='1.7.22',
+        version='1.7.24',
         package_dir={"": "src"},
         packages=find_packages(where='src'),
         description='FOSSLight Scanner',

@@ -1,5 +1,21 @@
 # Changelog
 
+## v1.7.24 (26/04/2024)
+## Changes
+## 🚀 Features
+
+- Add detection summary message (cover sheet) @dd-jy (#89)
+
+---
+
+## v1.7.23 (12/03/2024)
+## Changes
+## 🔧 Maintenance
+
+- Remove FL Prechecker mode @bjk7119 (#88)
+
+---
+
 ## v1.7.22 (29/01/2024)
 ## Changes
 ## 🚀 Features
@@ -272,21 +288,3 @@
 
 - Print download location when analyzing as link @soimkim (#28)
 - Extract the OSS name from the link @soimkim (#27)
-
----
-
-## v1.6.10 (11/03/2022)
-## Changes
-## 🔧 Maintenance
-
-- Apply f-string format @bjk7119 (#26)
-
----
-
-## v1.6.9 (28/02/2022)
-## Changes
-## 🔧 Maintenance
-
-- Change the result generation method to merging @soimkim (#25)
-- Add an inputable value to mode @soimkim (#24)
-- Update the README with additional Scanners @soimkim (#23)
