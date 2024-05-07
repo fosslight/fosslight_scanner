@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.7.25 (07/05/2024)
+## Changes
+## 🚀 Features
+
+- Add TLSH, SHA1 column for binary analysis @bjk7119 (#90)
+
+---
+
 ## v1.7.24 (26/04/2024)
 ## Changes
 ## 🚀 Features
@@ -280,11 +288,3 @@
 ## 🐛 Hotfixes
 
 - Fix a bug where column names do not match when overwriting an excel @soimkim (#29)
-
----
-
-## v1.6.11 (27/03/2022)
-## 🚀 Features
-
-- Print download location when analyzing as link @soimkim (#28)
-- Extract the OSS name from the link @soimkim (#27)
