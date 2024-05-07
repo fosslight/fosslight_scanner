@@ -7,5 +7,5 @@ beautifulsoup4
 fosslight_util>=1.4.41
 fosslight_source>=1.7.3
 fosslight_dependency>=3.7.4
-fosslight_binary>=4.1.28
+fosslight_binary>=4.1.29
 fosslight_prechecker>=3.0.1
