@@ -48,7 +48,7 @@ SRC_DIR_FROM_LINK_PREFIX = "fosslight_src_dir_"
 SCANNER_MODE = ["all", "compare", "reuse", "prechecker", "binary", "bin", "src", "source", "dependency", "dep"]
 
 
-def run_dependency(path_to_analyze, output_file_with_path, params=""):
+def run_dependency(path_to_analyze, output_file_with_path, params="", path_to_exclude=[]):
     result_list = []
 
     package_manager = ""
@@ -90,7 +90,7 @@ def run_dependency(path_to_analyze, output_file_with_path, params=""):
                                             output_file_with_path,
                                             pip_activate_cmd, pip_deactivate_cmd,
                                             output_custom_dir, app_name,
-                                            github_token)
+                                            github_token, path_to_exclude=path_to_exclude)
         if success:
             result_list = result.get('SRC_FL_Dependency')
     except Exception as ex:
@@ -106,7 +106,7 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                 remove_src_data=True, result_log={}, output_file="",
                 output_extension="", num_cores=-1, db_url="",
                 default_oss_name="", default_oss_version="", url="",
-                correct_mode=True, correct_fpath="", ui_mode=False):
+                correct_mode=True, correct_fpath="", ui_mode=False, path_to_exclude=[]):
     final_excel_dir = output_path
     success = True
     temp_output_fiiles = []
@@ -136,8 +136,8 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                 output_prechecker = os.path.join(_output_dir, output_files["PRECHECKER"])
                 success, result = call_analysis_api(src_path, "Prechecker Lint",
                                                     -1, prechecker_lint,
-                                                    abs_path, False,
-                                                    output_prechecker)
+                                                    abs_path, False, output_prechecker,
+                                                    exclude_path=path_to_exclude)
                 success_file, copied_file = copy_file(output_prechecker, output_path)
                 if success_file:
                     temp_output_fiiles.append(copied_file)
@@ -150,12 +150,15 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                                                             -1, source_analysis,
                                                             abs_path,
                                                             src_output,
-                                                            False, num_cores, False)
+                                                            False, num_cores, False,
+                                                            path_to_exclude=path_to_exclude)
                     else:  # Run fosslight_source by using docker image
                         src_output = os.path.join("output", output_files["SRC"])
                         output_rel_path = os.path.relpath(abs_path, os.getcwd())
                         command = shlex.quote(f"docker run -it -v {_output_dir}:/app/output "
                                               f"fosslight -p {output_rel_path} -o {src_output}")
+                        if path_to_exclude:
+                            command += f" -e {' '.join(path_to_exclude)}"
                         command_result = subprocess.run(command, stdout=subprocess.PIPE, text=True)
                         logger.info(f"Source Analysis Result:{command_result.stdout}")
 
@@ -168,7 +171,8 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                                                abs_path,
                                                os.path.join(_output_dir, output_files["BIN"]),
                                                "", db_url, False,
-                                               correct_mode, correct_fpath)
+                                               correct_mode, correct_fpath,
+                                               path_to_exclude=path_to_exclude)
                 if success:
                     output_binary_txt_raw = f"{output_files['BIN'].split('.')[0]}.txt"
                     success_file, copied_file = copy_file(os.path.join(_output_dir, output_binary_txt_raw),
@@ -177,7 +181,7 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                         temp_output_fiiles.append(copied_file)
 
             if run_dep:
-                run_dependency(src_path, os.path.join(_output_dir, output_files["DEP"]), dep_arguments)
+                run_dependency(src_path, os.path.join(_output_dir, output_files["DEP"]), dep_arguments, path_to_exclude)
 
         else:
             return
@@ -191,7 +195,8 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
         merge_files = [output_files["SRC"], output_files["BIN"], output_files["DEP"]]
         cover = CoverItem(tool_name=PKG_NAME,
                           start_time=_start_time,
-                          input_path=abs_path)
+                          input_path=abs_path,
+                          exclude_path=path_to_exclude)
         cover.comment = merge_cover_comment(_output_dir, merge_files)
 
         if output_extension == ".xlsx":
@@ -307,8 +312,9 @@ def init(output_path="", make_outdir=True):
     return os.path.isdir(_output_dir), output_root_dir, result_log
 
 
-def run_main(mode_list, path_arg, dep_arguments, output_file_or_dir, file_format, url_to_analyze, db_url,
-             hide_progressbar=False, keep_raw_data=False, num_cores=-1, correct_mode=True, correct_fpath="", ui_mode=False):
+def run_main(mode_list, path_arg, dep_arguments, output_file_or_dir, file_format, url_to_analyze,
+             db_url, hide_progressbar=False, keep_raw_data=False, num_cores=-1,
+             correct_mode=True, correct_fpath="", ui_mode=False, path_to_exclude=[]):
     global _executed_path, _start_time
 
     output_file = ""
@@ -417,7 +423,7 @@ def run_main(mode_list, path_arg, dep_arguments, output_file_or_dir, file_format
                                 remove_downloaded_source, {}, output_file,
                                 output_extension, num_cores, db_url,
                                 default_oss_name, default_oss_version, url_to_analyze,
-                                correct_mode, correct_fpath, ui_mode)
+                                correct_mode, correct_fpath, ui_mode, path_to_exclude)
             else:
                 logger.error("No mode has been selected for analysis.")
         try:

@@ -25,6 +25,7 @@ def main():
     parser.add_argument('--timer', '-t', help='Hide the progress bar', action='store_true', dest='timer', default=False)
     parser.add_argument('--version', '-v', help='Print version', action='store_true', dest='version', default=False)
     parser.add_argument('--help', '-h', help='Print help message', action='store_true', dest='help')
+    parser.add_argument('--exclude', '-e', help='Path to exclude from analysis', dest='exclude_path', nargs='*', default=[])
     parser.add_argument('--no_correction', help='No correction with sbom-info.yaml',
                         action='store_true', required=False, default=False)
     parser.add_argument('--correct_fpath', help='Path to the sbom-info.yaml',
@@ -45,7 +46,7 @@ def main():
             args.mode = ['all']
         run_main(args.mode, args.path, args.dep_argument, args.output, args.format,
                  args.link, args.db_url, args.timer, args.raw, args.core,
-                 not args.no_correction, args.correct_fpath, args.ui)
+                 not args.no_correction, args.correct_fpath, args.ui, args.exclude_path)
 
 
 if __name__ == "__main__":
