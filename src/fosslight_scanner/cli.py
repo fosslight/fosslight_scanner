@@ -11,7 +11,7 @@ from fosslight_util.help import print_package_version
 
 def main():
     parser = ArgumentParser(description='FOSSLight Scanner', prog='fosslight_scanner', add_help=False)
-    parser.add_argument('mode', nargs='?', help='source| dependency| binary| all| compare', default="all")
+    parser.add_argument('mode', nargs='*', help='source| dependency| binary| all| compare', default="")
     parser.add_argument('--path', '-p', help='Path to analyze (In compare mode, two FOSSLight reports',
                         dest='path', nargs='+', default="")
     parser.add_argument('--wget', '-w', help='Link to be analyzed', type=str, dest='link', default="")
@@ -41,6 +41,8 @@ def main():
     elif args.version:
         print_package_version(PKG_NAME, "FOSSLight Scanner Version:")
     else:
+        if not args.mode:
+            args.mode = ['all']
         run_main(args.mode, args.path, args.dep_argument, args.output, args.format,
                  args.link, args.db_url, args.timer, args.raw, args.core,
                  not args.no_correction, args.correct_fpath, args.ui)
