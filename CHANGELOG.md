@@ -1,5 +1,14 @@
 # Changelog
 
+## v1.7.26 (29/05/2024)
+## Changes
+## 🔧 Maintenance
+
+- Update the requirements.txt @bjk7119 (#93)
+- Modify FL Binary required ver. to 4.1.29 @bjk7119 (#91)
+
+---
+
 ## v1.7.25 (07/05/2024)
 ## Changes
 ## 🚀 Features
@@ -281,10 +290,3 @@
 ## 🔧 Maintenance
 
 - Add a commit message checker @soimkim (#31)
-
----
-
-## v1.6.12 (28/03/2022)
-## 🐛 Hotfixes
-
-- Fix a bug where column names do not match when overwriting an excel @soimkim (#29)
