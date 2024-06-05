@@ -45,7 +45,7 @@ _log_file = "fosslight_log_all_"
 _start_time = ""
 _executed_path = ""
 SRC_DIR_FROM_LINK_PREFIX = "fosslight_src_dir_"
-SCANNER_MODE = ["compare", "reuse", "prechecker", "binary", "bin", "src", "source", "dependency", "dep"]
+SCANNER_MODE = ["all", "compare", "reuse", "prechecker", "binary", "bin", "src", "source", "dependency", "dep"]
 
 
 def run_dependency(path_to_analyze, output_file_with_path, params=""):
@@ -307,7 +307,7 @@ def init(output_path="", make_outdir=True):
     return os.path.isdir(_output_dir), output_root_dir, result_log
 
 
-def run_main(mode, path_arg, dep_arguments, output_file_or_dir, file_format, url_to_analyze, db_url,
+def run_main(mode_list, path_arg, dep_arguments, output_file_or_dir, file_format, url_to_analyze, db_url,
              hide_progressbar=False, keep_raw_data=False, num_cores=-1, correct_mode=True, correct_fpath="", ui_mode=False):
     global _executed_path, _start_time
 
@@ -317,7 +317,18 @@ def run_main(mode, path_arg, dep_arguments, output_file_or_dir, file_format, url
     src_path = ""
     _executed_path = os.getcwd()
 
-    if mode == "compare":
+    mode_not_supported = list(set(mode_list).difference(SCANNER_MODE))
+    if mode_not_supported:
+        logger.error(f"[Error]: An unsupported mode was entered.:{mode_not_supported}")
+        sys.exit(1)
+    if len(mode_list) > 2:
+        logger.error("[Error]: Enter no more than two modes.")
+        sys.exit(1)
+    if ("compare" in mode_list) and (len(mode_list) > 1) and (mode_list != ["compare", "compare"]):
+        logger.error("[Error]: Compare mode cannot be run together with other modes.")
+        sys.exit(1)
+
+    if "compare" in mode_list:
         CUSTOMIZED_FORMAT = {'excel': '.xlsx', 'html': '.html', 'json': '.json', 'yaml': '.yaml'}
         if isinstance(path_arg, list) and len(path_arg) == 2:
             before_comp_f = path_arg[0]
@@ -342,7 +353,7 @@ def run_main(mode, path_arg, dep_arguments, output_file_or_dir, file_format, url
         logger.error(msg)
         sys.exit(1)
     try:
-        if mode == "compare":
+        if "compare" in mode_list:
             if before_comp_f == '' or after_comp_f == '':
                 logger.error("before and after files are necessary.")
                 return False
@@ -362,20 +373,14 @@ def run_main(mode, path_arg, dep_arguments, output_file_or_dir, file_format, url
             run_dep = False
             run_prechecker = False
             remove_downloaded_source = False
-            mode_list = []
 
-            if mode:
-                mode_list = mode.split(',')
-                mode_list = [item.strip() for item in mode_list]
-
-            if "compare" in mode_list:
-                logger.error("Compare mode cannot be run together with other modes.")
-                sys.exit(1)
-            elif "all" in mode_list or (not mode):
+            if "all" in mode_list or (not mode_list):
                 run_src = True
                 run_bin = True
                 run_dep = True
                 run_prechecker = False
+                if "prechecker" in mode_list or "reuse" in mode_list:
+                    run_prechecker = True
             else:
                 if "prechecker" in mode_list or "reuse" in mode_list:
                     run_prechecker = True
@@ -385,14 +390,10 @@ def run_main(mode, path_arg, dep_arguments, output_file_or_dir, file_format, url
                     run_src = True
                 if "dependency" in mode_list or "dep" in mode_list:
                     run_dep = True
-                mode_not_supported = list(set(mode_list).difference(SCANNER_MODE))
-                if len(mode_not_supported) > 0:
-                    logger.error(f"An unsupported mode was entered.:{mode_not_supported}")
-                    sys.exit(1)
 
             if run_dep or run_src or run_bin or run_prechecker:
                 if src_path == "" and url_to_analyze == "":
-                    src_path, dep_arguments, url_to_analyze = get_input_mode(_executed_path, mode)
+                    src_path, dep_arguments, url_to_analyze = get_input_mode(_executed_path, mode_list)
 
                 if not hide_progressbar:
                     timer = TimerThread()
