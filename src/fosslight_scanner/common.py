@@ -9,7 +9,6 @@ import logging
 import shutil
 import pandas as pd
 import yaml
-import copy
 import fosslight_util.constant as constant
 from fosslight_util.parsing_yaml import parsing_yml
 from fosslight_util.write_yaml import create_yaml_with_ossitem
@@ -212,38 +211,26 @@ def correct_scanner_result(_output_dir, output_files, output_extension, exist_sr
 
     if exist_src and exist_bin:
         try:
-            dup_bin_list = []
-            exclude_list = []
-            for src_item in src_oss_list:
-                dup_bin = ''
-                for idx, bin_item in enumerate(bin_oss_list):
-                    if (not src_item.source_name_or_path) or src_item.exclude or bin_item.exclude:
+            remove_src_idx_list = []
+            for idx_src, src_item in enumerate(src_oss_list):
+                dup_flag = False
+                for bin_item in bin_oss_list:
+                    if (not src_item.source_name_or_path):
                         continue
                     if src_item.source_name_or_path[0] == bin_item.source_name_or_path[0]:
-                        dup_bin = copy.deepcopy(bin_item)
-                        if not dup_bin.license:
-                            if dup_bin.exclude:
-                                src_item.exclude = dup_bin.exclude
-                            dup_bin.set_sheet_item(src_item.get_print_array()[0])
-                            if dup_bin.comment:
-                                dup_bin.comment += '/'
-                            dup_bin.comment += 'Loaded from SRC OSS info'
-                            dup_bin_list.append(dup_bin)
-                            exclude_list.append(idx)
-                if dup_bin:
-                    src_item.exclude = True
-                    if src_item.comment:
-                        src_item.comment += '/'
-                    src_item.comment += 'Excluded by duplicated binary within BIN'
-                    duplicates = True
-
-            exclude_list = list(set(exclude_list))
-            for idx in exclude_list:
-                bin_oss_list[idx].exclude = True
-                if bin_oss_list[idx].comment:
-                    bin_oss_list[idx].comment += '/'
-                bin_oss_list[idx].comment += 'Excluded by SRC OSS info'
-            bin_oss_list.extend(dup_bin_list)
+                        dup_flag = True
+                        if not bin_item.license and src_item.license:
+                            src_item.exclude = bin_item.exclude
+                            bin_item.set_sheet_item(src_item.get_print_array(constant.FL_BINARY)[0])
+                            if bin_item.comment:
+                                bin_item.comment += '/'
+                            bin_item.comment += 'Loaded from SRC OSS info'
+                if dup_flag:
+                    remove_src_idx_list.append(idx_src)
+            if remove_src_idx_list:
+                duplicates = True
+                for i in sorted(remove_src_idx_list, reverse=True):
+                    del src_oss_list[i]
         except Exception as ex:
             logger.warning(f"correct the scanner result:{ex}")
 
