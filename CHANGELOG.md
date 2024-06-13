@@ -1,5 +1,21 @@
 # Changelog
 
+## v1.7.27 (13/06/2024)
+## Changes
+## 🚀 Features
+
+- Supports for multiple modes @SeongjunJo (#92)
+
+## 🐛 Hotfixes
+
+- When merging src to bin, remove src info instead of excluding @dd-jy (#96)
+
+## 🔧 Maintenance
+
+- Modify column name @bjk7119 (#94)
+
+---
+
 ## v1.7.26 (29/05/2024)
 ## Changes
 ## 🔧 Maintenance
@@ -277,16 +293,3 @@
 ## 🐛 Hotfixes
 
 - Fix a bug where part of the output file is not created without the -o option @soimkim (#36)
-
----
-
-## v1.6.13 (11/04/2022)
-## Changes
-## 🐛 Hotfixes
-
-- Fix an errors when parsing with path @soimkim (#33)
-- Fix an error that occur when downloading link @soimkim (#30)
-
-## 🔧 Maintenance
-
-- Add a commit message checker @soimkim (#31)
