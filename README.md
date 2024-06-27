@@ -80,6 +80,7 @@ Options:
                                  * Compare mode result file: supports excel, json, yaml, html
         -o <output>             Output directory or file
         -c <number>             Number of processes to analyze source
+        -e <path>               Path to exclude from analysis (ex, -e {dir} {file})
         -r                      Keep raw data
         -t                      Hide the progress bar
         -v                      Print FOSSLight Scanner version
@@ -96,12 +97,21 @@ Options:
 $ fosslight all -p /home/source_path -d "-a 'source /test/Projects/venv/bin/activate' -d 'deactivate'"
 ```
 
-### Ex 2. Download Link and analyze
+### Ex 2. Local Source Analysis with Path to Exclude
+```
+$ fosslight all -p /home/source_path -e temp_dir src/temp.py
+```
+
+### Ex 3. Download Link and analyze
 ```
 $ fosslight all -o test_result_wget -w "https://github.com/LGE-OSS/example.git"
 ```
+If you want to analyze private repository, set your github token like below.
+```
+$ fosslight all -w "https://my_github_token@github.com/Foo/private_repo
+```
 
-### Ex 3. Compare the BOM of two FOSSLight reports with yaml or excel format and check the oss status (change/add/delete)
+### Ex 4. Compare the BOM of two FOSSLight reports with yaml or excel format and check the oss status (change/add/delete)
 ```
 $ fosslight compare -p FOSSLight_before_proj.yaml FOSSLight_after_proj.yaml -f excel
 ```

@@ -27,6 +27,7 @@ _HELP_MESSAGE_SCANNER = """
             -w <link>\t\t    Link to be analyzed can be downloaded by wget or git clone
             -f <format>\t\t    FOSSLight Report file format (excel, yaml)
                                      * Compare mode result file: supports excel, json, yaml, html
+            -e <path>\t\t    Path to exclude from analysis (ex, -e {dir} {file})
             -o <output>\t\t    Output directory or file
             -c <number>\t\t    Number of processes to analyze source
             -r\t\t\t    Keep raw data
