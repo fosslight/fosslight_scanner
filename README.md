@@ -84,6 +84,9 @@ Options:
         -r                      Keep raw data
         -t                      Hide the progress bar
         -v                      Print FOSSLight Scanner version
+        -s <path>               Path to apply setting from json file (check format with 'setting.json' in this repository)
+                                 * Direct cli flags have higher priority than setting file
+                                   (ex, '-f yaml -s setting.json' - result file extension is .yaml)
 ```
 - Refs. 
     - Additional arguments for running dependency analysis. See the [FOSSLight Dependency Guide][fd_guide] for instructions.
