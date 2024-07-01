@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.7.28 (01/07/2024)
+## Changes
+## 🚀 Features
+
+- Supports for excluding paths from analysis @SeongjunJo (#95)
+
+---
+
 ## v1.7.27 (13/06/2024)
 ## Changes
 ## 🚀 Features
@@ -280,16 +288,3 @@
 ## 🐛 Hotfixes
 
 - Modify reuse input parameter @bjk7119 (#37)
-
----
-
-## v1.6.14 (19/05/2022)
-## Changes
-## 🚀 Features
-
-- Run fosslight_source without installing it @soimkim (#34)
-- Add a Dockerfile @soimkim (#35)
-
-## 🐛 Hotfixes
-
-- Fix a bug where part of the output file is not created without the -o option @soimkim (#36)
