@@ -9,11 +9,12 @@ from ._help import print_help_msg
 from .fosslight_scanner import run_main, PKG_NAME
 from ._parse_setting import parse_setting_json
 from fosslight_util.help import print_package_version
+import os.path
 
 
 def set_args(mode, path, dep_argument, output, format, link, db_url, timer,
              raw, core, no_correction, correct_fpath, ui, setting, exclude_path):
-    if (setting):
+    if setting and os.path.isfile(setting):
         try:
             with open(setting, 'r', encoding='utf-8') as file:
                 data = json.load(file)
