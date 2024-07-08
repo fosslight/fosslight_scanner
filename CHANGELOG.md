@@ -1,5 +1,18 @@
 # Changelog
 
+## v1.7.29 (08/07/2024)
+## Changes
+## 🚀 Features
+
+- Supports for applying setting from json file @SeongjunJo (#97)
+
+## 🔧 Maintenance
+
+- Change the json key and value format @soimkim (#99)
+- Allow more than two modes to be entered @soimkim (#98)
+
+---
+
 ## v1.7.28 (01/07/2024)
 ## Changes
 ## 🚀 Features
@@ -280,11 +293,3 @@
 - Replace 'y' option to 'p' option. @dd-jy (#41)
 - Fix scanner support format and not to create csv. @dd-jy (#40)
 - Print message when comparison rows are over 100. @dd-jy (#39)
-
----
-
-## v1.6.15 (06/07/2022)
-## Changes
-## 🐛 Hotfixes
-
-- Modify reuse input parameter @bjk7119 (#37)
