@@ -327,10 +327,7 @@ def run_main(mode_list, path_arg, dep_arguments, output_file_or_dir, file_format
     if mode_not_supported:
         logger.error(f"[Error]: An unsupported mode was entered.:{mode_not_supported}")
         sys.exit(1)
-    if len(mode_list) > 2:
-        logger.error("[Error]: Enter no more than two modes.")
-        sys.exit(1)
-    if ("compare" in mode_list) and (len(mode_list) > 1) and (mode_list != ["compare", "compare"]):
+    if "compare" in mode_list and len(mode_list) > 1:
         logger.error("[Error]: Compare mode cannot be run together with other modes.")
         sys.exit(1)
 
