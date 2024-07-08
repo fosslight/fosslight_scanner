@@ -33,6 +33,9 @@ _HELP_MESSAGE_SCANNER = """
             -r\t\t\t    Keep raw data
             -t\t\t\t    Hide the progress bar
             -v\t\t\t    Print FOSSLight Scanner version
+            -s <path>\t            Path to apply setting from file (check format with 'setting.json' in this repository)
+                                     * Direct cli flags have higher priority than setting file
+                                       (ex, '-f yaml -s setting.json' - result file extension is .yaml)
             --no_correction\t    Enter if you don't want to correct OSS information with sbom-info.yaml
                                      * Correction mode only supported xlsx format.
             --correct_fpath <path>  Path to the sbom-info.yaml file
