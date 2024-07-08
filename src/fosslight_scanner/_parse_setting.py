@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 # Copyright (c) 2021 LG Electronics Inc.
 # SPDX-License-Identifier: Apache-2.0
-import os
 
 
 def parse_setting_json(data):
@@ -10,10 +9,9 @@ def parse_setting_json(data):
     mode = data.get('mode', [])
     path = data.get('path', [])
     dep_argument = data.get('dep_argument', '')
-    outputDir = data.get('outputDir', '')
-    outputFile = data.get('outputFile', '')
+    output = data.get('output', '')
     format = data.get('format', '')
-    link = data.get('link', [])
+    link = data.get('link', "")
     db_url = data.get('db_url', '')
     timer = data.get('timer', False)
     raw = data.get('raw', False)
@@ -21,10 +19,10 @@ def parse_setting_json(data):
     no_correction = data.get('no_correction', False)
     correct_fpath = data.get('correct_fpath', '')
     ui = data.get('ui', False)
-    exclude_path = data.get('exclude_path', [])
+    exclude_path = data.get('exclude', [])
 
-    str_lists = [mode, path, link, exclude_path]
-    strings = [dep_argument, outputDir, outputFile, format, db_url, correct_fpath]
+    str_lists = [mode, path, exclude_path]
+    strings = [dep_argument, output, format, db_url, correct_fpath, link]
     booleans = [timer, raw, no_correction, ui]
     is_incorrect = False
 
@@ -48,16 +46,8 @@ def parse_setting_json(data):
         is_incorrect = True
         core = -1
 
-    if (is_incorrect):
+    if is_incorrect:
         print('Ignoring some values with incorrect format in the setting file.')
 
-    if not mode:
-        mode = ['all']
-    final_mode = mode[0].split()
-    if (not ("compare" in final_mode) and (len(path) > 0)):
-        path = [path[0]]
-    link = link[0] if (link and not path) else ''
-    output = os.path.join(outputDir, outputFile)
-
-    return final_mode, path, dep_argument, output, format, link, db_url, timer, \
+    return mode, path, dep_argument, output, format, link, db_url, timer, \
         raw, core, no_correction, correct_fpath, ui, exclude_path
