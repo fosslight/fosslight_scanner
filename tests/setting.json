@@ -1,11 +1,10 @@
 {
-  "mode": ["binary source"],
+  "mode": ["binary", "source"],
   "path": ["tests"],
-  "link": [],
+  "link": "",
   "dep_argument": "",
-  "outputDir": "test_result_parse_setting",
-  "outputFile": "",
-  "exclude_path": ["test", "sample_license.txt"],
+  "output": "test_result_dir",
+  "exclude": ["test", "sample_license.txt"],
   "format": "excel",
   "db_url": "",
   "timer": false,
@@ -13,6 +12,5 @@
   "core": -1,
   "no_correction": false,
   "correct_fpath": "",
-  "ui": false,
-  "type": "analyze"
+  "ui": false
 }
