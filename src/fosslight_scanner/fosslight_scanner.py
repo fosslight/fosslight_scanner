@@ -129,7 +129,6 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
         if success:
             output_files = {"SRC": f"fosslight_src_{_start_time}{output_extension}",
                             "BIN": f"fosslight_bin_{_start_time}{output_extension}",
-                            "BIN_TXT": f"fosslight_binary_bin_{_start_time}.txt",
                             "DEP": f"fosslight_dep_{_start_time}{output_extension}",
                             "PRECHECKER": f"fosslight_lint_{_start_time}.yaml"}
             if run_prechecker:
@@ -173,12 +172,6 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                                                "", db_url, False,
                                                correct_mode, correct_fpath,
                                                path_to_exclude=path_to_exclude)
-                if success:
-                    output_binary_txt_raw = f"{output_files['BIN'].split('.')[0]}.txt"
-                    success_file, copied_file = copy_file(os.path.join(_output_dir, output_binary_txt_raw),
-                                                          os.path.join(output_path, output_files["BIN_TXT"]))
-                    if success_file:
-                        temp_output_fiiles.append(copied_file)
 
             if run_dep:
                 run_dependency(src_path, os.path.join(_output_dir, output_files["DEP"]), dep_arguments, path_to_exclude)
