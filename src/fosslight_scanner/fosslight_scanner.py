@@ -17,7 +17,9 @@ from datetime import datetime
 
 from fosslight_binary import binary_analysis
 from fosslight_dependency.run_dependency_scanner import run_dependency_scanner
-from fosslight_util.download import cli_download_and_extract
+from fosslight_util.download import cli_download_and_extract, compression_extension
+from fosslight_util.download import extract_compressed_file as extract_file
+from ._get_input import get_input_mode
 from fosslight_util.set_log import init_log
 from fosslight_util.timer_thread import TimerThread
 import fosslight_util.constant as constant
@@ -341,6 +343,7 @@ def run_main(mode_list, path_arg, dep_arguments, output_file_or_dir, file_format
     default_oss_version = ""
     src_path = ""
     _executed_path = os.getcwd()
+    extract_folder = ""
 
     mode_not_supported = list(set(mode_list).difference(SCANNER_MODE))
     if mode_not_supported:
@@ -363,6 +366,17 @@ def run_main(mode_list, path_arg, dep_arguments, output_file_or_dir, file_format
         if isinstance(path_arg, list):
             if len(path_arg) == 1:
                 src_path = path_arg[0]
+
+                for ext in compression_extension:
+                    if src_path.endswith(ext):
+                        temp_folder = f"temp_extract_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+                        Path(temp_folder).mkdir(parents=True, exist_ok=True)
+
+                        extract_success = extract_file(src_path, temp_folder, False)
+                        if extract_success:
+                            src_path = os.path.join(_executed_path, temp_folder)
+                            extract_folder = src_path
+                        break
             else:
                 logger.warning(f"Cannot analyze with multiple path: {path_arg}")
 
@@ -439,8 +453,10 @@ def run_main(mode_list, path_arg, dep_arguments, output_file_or_dir, file_format
                                 remove_downloaded_source, {}, output_file,
                                 output_extension, num_cores, db_url,
                                 default_oss_name, default_oss_version, url_to_analyze,
-                                correct_mode, correct_fpath, ui_mode, path_to_exclude,
-                                selected_source_scanner, source_write_json_file)
+                                correct_mode, correct_fpath, ui_mode, path_to_exclude)
+
+                if extract_folder:
+                    shutil.rmtree(extract_folder)
             else:
                 logger.error("No mode has been selected for analysis.")
         try:
