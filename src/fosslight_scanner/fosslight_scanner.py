@@ -213,7 +213,8 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
         cover = CoverItem(tool_name=PKG_NAME,
                           start_time=_start_time,
                           input_path=abs_path,
-                          exclude_path=path_to_exclude)
+                          exclude_path=path_to_exclude,
+                          simple_mode=False)
         cover.comment = merge_cover_comment(_output_dir, merge_files)
 
         if output_extension == ".xlsx":
