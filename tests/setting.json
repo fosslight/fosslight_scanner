@@ -12,5 +12,6 @@
   "core": -1,
   "no_correction": false,
   "correct_fpath": "",
-  "ui": false
+  "ui": false,
+  "selected_source_scanner": "all"  
 }

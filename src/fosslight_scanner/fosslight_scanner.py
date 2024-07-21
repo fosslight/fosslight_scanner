@@ -100,13 +100,16 @@ def run_dependency(path_to_analyze, output_file_with_path, params="", path_to_ex
         result_list = []
     return result_list
 
+def source_analysis_wrapper(*args, **kwargs):
+    selected_scanner = kwargs.pop('selected_scanner', 'all')
+    return source_analysis(*args, selected_scanner=selected_scanner, **kwargs)
 
 def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                 run_src=True, run_bin=True, run_dep=True, run_prechecker=False,
                 remove_src_data=True, result_log={}, output_file="",
                 output_extension="", num_cores=-1, db_url="",
                 default_oss_name="", default_oss_version="", url="",
-                correct_mode=True, correct_fpath="", ui_mode=False, path_to_exclude=[]):
+                correct_mode=True, correct_fpath="", ui_mode=False, path_to_exclude=[], selected_source_scanner="all"):
     final_excel_dir = output_path
     success = True
     temp_output_fiiles = []
@@ -146,16 +149,19 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                     if fosslight_source_installed:
                         src_output = os.path.join(_output_dir, output_files["SRC"])
                         success, result = call_analysis_api(src_path, "Source Analysis",
-                                                            -1, source_analysis,
+                                                            -1, source_analysis_wrapper,
                                                             abs_path,
                                                             src_output,
                                                             False, num_cores, False,
-                                                            path_to_exclude=path_to_exclude)
+                                                            path_to_exclude=path_to_exclude,
+                                                            selected_scanner = selected_source_scanner)
+                        
                     else:  # Run fosslight_source by using docker image
                         src_output = os.path.join("output", output_files["SRC"])
                         output_rel_path = os.path.relpath(abs_path, os.getcwd())
                         command = shlex.quote(f"docker run -it -v {_output_dir}:/app/output "
-                                              f"fosslight -p {output_rel_path} -o {src_output}")
+                                              f"fosslight -p {output_rel_path} -o {src_output}" 
+                                              f"--selected_scanner {selected_source_scanner}") 
                         if path_to_exclude:
                             command += f" -e {' '.join(path_to_exclude)}"
                         command_result = subprocess.run(command, stdout=subprocess.PIPE, text=True)
@@ -307,7 +313,7 @@ def init(output_path="", make_outdir=True):
 
 def run_main(mode_list, path_arg, dep_arguments, output_file_or_dir, file_format, url_to_analyze,
              db_url, hide_progressbar=False, keep_raw_data=False, num_cores=-1,
-             correct_mode=True, correct_fpath="", ui_mode=False, path_to_exclude=[]):
+             correct_mode=True, correct_fpath="", ui_mode=False, path_to_exclude=[], selected_source_scanner="all"):
     global _executed_path, _start_time
 
     output_file = ""
@@ -413,7 +419,7 @@ def run_main(mode_list, path_arg, dep_arguments, output_file_or_dir, file_format
                                 remove_downloaded_source, {}, output_file,
                                 output_extension, num_cores, db_url,
                                 default_oss_name, default_oss_version, url_to_analyze,
-                                correct_mode, correct_fpath, ui_mode, path_to_exclude)
+                                correct_mode, correct_fpath, ui_mode, path_to_exclude, selected_source_scanner)
             else:
                 logger.error("No mode has been selected for analysis.")
         try:

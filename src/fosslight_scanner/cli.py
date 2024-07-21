@@ -13,13 +13,13 @@ import os.path
 
 
 def set_args(mode, path, dep_argument, output, format, link, db_url, timer,
-             raw, core, no_correction, correct_fpath, ui, setting, exclude_path):
+             raw, core, no_correction, correct_fpath, ui, setting, exclude_path, selected_source_scanner):
     if setting and os.path.isfile(setting):
         try:
             with open(setting, 'r', encoding='utf-8') as file:
                 data = json.load(file)
             s_mode, s_path, s_dep_argument, s_output, s_format, s_link, s_db_url, s_timer, s_raw, s_core, \
-                s_no_correction, s_correct_fpath, s_ui, s_exclude_path = parse_setting_json(data)
+                s_no_correction, s_correct_fpath, s_ui, s_exclude_path, s_selected_source_scanner = parse_setting_json(data)
 
             # direct cli arguments have higher priority than setting file
             mode = mode if mode else s_mode
@@ -36,11 +36,13 @@ def set_args(mode, path, dep_argument, output, format, link, db_url, timer,
             correct_fpath = correct_fpath if correct_fpath else s_correct_fpath
             ui = ui if ui else s_ui
             exclude_path = exclude_path if exclude_path else s_exclude_path
+            selected_source_scanner = selected_source_scanner if selected_source_scanner else s_selected_source_scanner  
+
 
         except Exception as e:
             print(f"Cannot open setting file: {e}")
     return mode, path, dep_argument, output, format, link, db_url, timer, \
-        raw, core, no_correction, correct_fpath, ui, exclude_path
+        raw, core, no_correction, correct_fpath, ui, exclude_path, selected_source_scanner
 
 
 def main():
@@ -78,12 +80,12 @@ def main():
         print_package_version(PKG_NAME, "FOSSLight Scanner Version:")
     else:
         mode, path, dep_argument, output, format, link, db_url, timer, raw, core, no_correction, correct_fpath, \
-          ui, exclude_path = set_args(args.mode, args.path, args.dep_argument, args.output, args.format,
+          ui, exclude_path, selected_source_scanner = set_args(args.mode, args.path, args.dep_argument, args.output, args.format,
                                       args.link, args.db_url, args.timer, args.raw, args.core, args.no_correction,
-                                      args.correct_fpath, args.ui, args.setting, args.exclude_path)
+                                      args.correct_fpath, args.ui, args.setting, args.exclude_path, args.selected_source_scanner)
 
         run_main(mode, path, dep_argument, output, format, link, db_url, timer,
-                 raw, core, not no_correction, correct_fpath, ui, exclude_path)
+                 raw, core, not no_correction, correct_fpath, ui, exclude_path, selected_source_scanner)
 
 
 if __name__ == "__main__":
