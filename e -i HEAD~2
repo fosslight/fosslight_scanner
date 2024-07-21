@@ -1,0 +1,2094 @@
+[33mcommit 1a44353b5262ecfae06efa5f34f9050844fbd25c[m[33m ([m[1;36mHEAD[m[33m)[m
+Author: 심채현 <sarahshim03@naver.com>
+Date:   Sat Jul 20 15:23:54 2024 +0900
+
+    Remove incorrectly added submodule and add files correctly
+
+[33mcommit b0210a16bea05f2b136aa31ec6793f8764a18dd4[m
+Author: 심채현 <sarahshim03@naver.com>
+Date:   Sat Jul 20 14:43:51 2024 +0900
+
+    Add guide for git clone authentication (#59)
+
+[33mcommit 870d90b1be78c7265392fafbc54e2097b2d412a9[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mmain[m[33m)[m
+Merge: a653297 f8666f3
+Author: Jkbang <81218204+bjk7119@users.noreply.github.com>
+Date:   Fri Jul 12 16:16:52 2024 +0900
+
+    Merge pull request #100 from fosslight/develop
+    
+    Remove to create bin.txt
+
+[33mcommit f8666f3f12d2f2f4d1a3ccdfa458528f14725692[m
+Author: Jaekwon Bang <jaekwon.bang@lge.com>
+Date:   Tue Jul 9 16:12:00 2024 +0900
+
+    Remove to create bin.txt
+
+[33mcommit a65329729b6e561b87097ae7a1f9895baa0233d6[m
+Author: github-actions[bot] <fosslight-dev@lge.com>
+Date:   Mon Jul 8 06:41:10 2024 +0000
+
+    Update ChangeLog
+
+[33mcommit 64ca7c828b7c2c0a8c54e4aecc6aa11939f6b5d5[m
+Author: github-actions[bot] <fosslight-dev@lge.com>
+Date:   Mon Jul 8 06:40:57 2024 +0000
+
+    Bump version: 1.7.28 → 1.7.29
+
+[33mcommit e889cf96cd7b25db6c0b9f86dfd9f2724391f1af[m
+Merge: 64ab926 44c6882
+Author: Soim <soim.kim@lge.com>
+Date:   Mon Jul 8 15:36:00 2024 +0900
+
+    Merge pull request #99 from fosslight/apply_setting_from_json
+    
+    Change the json key and value format
+
+[33mcommit 44c6882fe6b3cf69e4368ac4d6685acac1d4c157[m
+Author: Soim <soim.kim@lge.com>
+Date:   Mon Jul 8 14:42:33 2024 +0900
+
+    Change the json key and value format
+
+[33mcommit 64ab926f3ec9be30bd975552afbae25c8d7c4f26[m
+Merge: ae06c2f 5c6f6dd
+Author: Soim <soim.kim@lge.com>
+Date:   Mon Jul 8 15:23:49 2024 +0900
+
+    Merge pull request #97 from SeongjunJo/apply_setting_from_json
+    
+    Supports for applying setting from json file
+
+[33mcommit ae06c2f87e844ae7b36242f04e6153f22e2407c7[m
+Merge: 29c039f 78dee51
+Author: Soim <soim.kim@lge.com>
+Date:   Mon Jul 8 14:03:10 2024 +0900
+
+    Merge pull request #98 from fosslight/mode
+    
+    Allow more than two modes to be entered
+
+[33mcommit 78dee51a330fa1e17c002b2b130f6ca8bd17f1ec[m
+Author: Soim <soim.kim@lge.com>
+Date:   Mon Jul 8 13:57:40 2024 +0900
+
+    Allow more than two modes to be entered
+
+[33mcommit 29c039f0a71e97850ad07d852e3688f896a0b165[m
+Author: github-actions[bot] <fosslight-dev@lge.com>
+Date:   Mon Jul 1 06:39:41 2024 +0000
+
+    Update ChangeLog
+
+[33mcommit 5d93638a3998564fe192f3e9a89caad3ac9bcebc[m
+Author: github-actions[bot] <fosslight-dev@lge.com>
+Date:   Mon Jul 1 06:39:29 2024 +0000
+
+    Bump version: 1.7.27 → 1.7.28
+
+[33mcommit 5c6f6dd0cd541364f7c6e7f687d6131e59094010[m
+Author: SeongjunJo <gukcvts679@snu.ac.kr>
+Date:   Wed Jun 19 17:55:11 2024 +0900
+
+    Supports for applying setting from json file
+    
+    Signed-off-by: SeongjunJo <gukcvts679@snu.ac.kr>
+
+[33mcommit a81b042933811171b6db93ebcb45d8b7abded247[m
+Merge: 1692f3c 85cebc4
+Author: Soim <soim.kim@lge.com>
+Date:   Thu Jun 27 11:10:43 2024 +0900
+
+    Merge pull request #95 from SeongjunJo/exclude_path
+    
+    Supports for excluding paths from analysis
+
+[33mcommit 1692f3c2c76cf089c503e764aa17bfab9deea5ca[m
+Author: github-actions[bot] <fosslight-dev@lge.com>
+Date:   Thu Jun 13 07:58:11 2024 +0000
+
+    Update ChangeLog
+
+[33mcommit 91aec628c07ecab6bf2ba2a8b16552df627eac4c[m
+Author: github-actions[bot] <fosslight-dev@lge.com>
+Date:   Thu Jun 13 07:58:00 2024 +0000
+
+    Bump version: 1.7.26 → 1.7.27
+
+[33mcommit 85cebc42c633d19d9ccfcf242eb6ba7aa1b687a8[m
+Author: SeongjunJo <gukcvts679@snu.ac.kr>
+Date:   Mon May 13 01:27:07 2024 +0900
+
+    Supports for excluding paths from analysis
+    
+    Signed-off-by: SeongjunJo <gukcvts679@snu.ac.kr>
+
+[33mcommit dbbeb09d1308d71b7aa7601fec0408b41bc900a7[m
+Merge: be4de7c 0c4e5ca
+Author: Jiyeong Seok <50347670+dd-jy@users.noreply.github.com>
+Date:   Mon Jun 10 18:40:07 2024 +0900
+
+    Merge pull request #96 from fosslight/correct_fix
+    
+    When merging src to bin, remove src info instead of excluding
+
+[33mcommit 0c4e5ca514b4f106da57fec0cd71f26671bc7707[m
+Author: jiyeong.seok <jiyeong.seok@lge.com>
+Date:   Mon Jun 10 18:06:53 2024 +0900
+
+    When merging src to bin, remove src info
+    
+    Signed-off-by: jiyeong.seok <jiyeong.seok@lge.com>
+
+[33mcommit be4de7c7761fe5ecbc8ce0c7571815505d214fa5[m
+Merge: 89c7d07 844ba10
+Author: Soim <soim.kim@lge.com>
+Date:   Wed Jun 5 18:25:35 2024 +0900
+
+    Merge pull request #94 from fosslight/develop
+    
+    Modify column name
+
+[33mcommit 89c7d074b71b864b1c487a43443d0f6d84657cd4[m
+Merge: dfe56b9 bd15f58
+Author: Soim <soim.kim@lge.com>
+Date:   Wed Jun 5 18:15:20 2024 +0900
+
+    Merge pull request #92 from SeongjunJo/multi_mode
+    
+    Supports for multiple modes
+
+[33mcommit 844ba1082233e103d623d4871e3d7aa93708d09b[m
+Author: Jaekwon Bang <jaekwon.bang@lge.com>
+Date:   Tue Jun 4 16:53:56 2024 +0900
+
+    Modify column name
+
+[33mcommit bd15f585d544b316f047c15963202a831d9b57db[m
+Merge: 0f646ba dfe56b9
+Author: Soim <soim.kim@lge.com>
+Date:   Tue Jun 4 10:59:21 2024 +0900
+
+    Merge branch 'main' into multi_mode
+
+[33mcommit 0f646ba1b7082f6ba46f9f626fb21c481774c3d7[m
+Author: SeongjunJo <gukcvts679@snu.ac.kr>
+Date:   Tue May 14 14:30:40 2024 +0900
+
+    Supports for multiple modes
+    
+    Signed-off-by: SeongjunJo <gukcvts679@snu.ac.kr>
+
+[33mcommit dfe56b94f42ec0ae87e3afae85753529aa2b5887[m
+Author: github-actions[bot] <fosslight-dev@lge.com>
+Date:   Wed May 29 01:52:09 2024 +0000
+
+    Update ChangeLog
+
+[33mcommit f1968bf8ebed4aad3de6bdd54c018b91cd748552[m
+Author: github-actions[bot] <fosslight-dev@lge.com>
+Date:   Wed May 29 01:52:00 2024 +0000
+
+    Bump version: 1.7.25 → 1.7.26
+
+[33mcommit 634366a9ccf002e987363e47ccdf5f0e71853bdd[m
+Merge: 3e87122 ac13e6a
+Author: Jkbang <81218204+bjk7119@users.noreply.github.com>
+Date:   Wed May 29 10:48:44 2024 +0900
+
+    Merge pull request #93 from fosslight/develop
+    
+    Update the requirements.txt
+
+[33mcommit ac13e6aa090d41ea61f1bfd8103c71aa27e33537[m
+Author: Jaekwon Bang <jaekwon.bang@lge.com>
+Date:   Wed May 29 10:47:53 2024 +0900
+
+    Update the requirements.txt
+
+[33mcommit 999d3bb9e2d4a2d11d4475b85318d65c129b5658[m
+Author: Jaekwon Bang <jaekwon.bang@lge.com>
+Date:   Tue May 7 16:34:28 2024 +0900
+
+    Modify FL Binary required ver. to 4.1.29
+
+[33mcommit 3e871221c6885fcdc368dce80bc50da26d589078[m
+Merge: ade3093 999d3bb
+Author: Jkbang <81218204+bjk7119@users.noreply.github.com>
+Date:   Tue May 7 16:23:16 2024 +0900
+
+    Merge pull request #91 from fosslight/develop
+    
+    Modify FL Binary required ver. to 4.1.29
+
+[33mcommit ade3093828086b7602dfaa6746f1648037849614[m
+Author: github-actions[bot] <fosslight-dev@lge.com>
+Date:   Tue May 7 07:03:37 2024 +0000
+
+    Update ChangeLog
+
+[33mcommit adad0456c4e555198616581c90a3645225b7afa7[m
+Author: github-actions[bot] <fosslight-dev@lge.com>
+Date:   Tue May 7 07:03:24 2024 +0000
+
+    Bump version: 1.7.24 → 1.7.25
+
+[33mcommit 4855eee8d4ed79f5a375b9f8ea04e234713873d9[m
+Merge: 1ef6608 97c3a75
+Author: Jkbang <81218204+bjk7119@users.noreply.github.com>
+Date:   Tue May 7 16:02:39 2024 +0900
+
+    Merge pull request #90 from fosslight/develop
+    
+    Add TLSH, SHA1 column for binary analysis
+
+[33mcommit 97c3a75f2a9ba7cc45ab4bb3bcd98fff96426141[m
+Merge: 8d9100f 1ef6608
+Author: Jkbang <81218204+bjk7119@users.noreply.github.com>
+Date:   Tue May 7 15:52:40 2024 +0900
+
+    Merge branch 'main' into develop
+
+[33mcommit 8d9100ff730e9083732483d10ef2720d0ebf8a92[m
+Author: Jaekwon Bang <jaekwon.bang@lge.com>
+Date:   Tue Apr 23 14:38:23 2024 +0900
+
+    Add TLSH, SHA1 column for binary analysis
+
+[33mcommit 1ef660883292287587c1f11c92eec34d8fdb1662[m
+Author: github-actions[bot] <fosslight-dev@lge.com>
+Date:   Fri Apr 26 07:02:57 2024 +0000
+
+    Update ChangeLog
+
+[33mcommit bae292fb9ed775d109f3fbb9d68efa7300771513[m
+Author: github-actions[bot] <fosslight-dev@lge.com>
+Date:   Fri Apr 26 07:02:48 2024 +0000
+
+    Bump version: 1.7.23 → 1.7.24
+
+[33mcommit 72e8f28b0277b938ff5d224c6570e62e49a631f7[m
+Merge: fe1bce8 5c8f577
+Author: Jiyeong Seok <50347670+dd-jy@users.noreply.github.com>
+Date:   Fri Apr 26 11:19:54 2024 +0900
+
+    Merge pull request #89 from fosslight/cover
+    
+    Add detection summary message (cover sheet)
+
+[33mcommit 5c8f577eab89954594e9c72ecdd580d99be74d94[m
+Author: jiyeong.seok <jiyeong.seok@lge.com>
+Date:   Fri Apr 19 15:12:13 2024 +0900
+
+    Add detection summary message (cover sheet)
+    
+    Signed-off-by: jiyeong.seok <jiyeong.seok@lge.com>
+
+[33mcommit fe1bce894c5b8cb110b95fe4820def182d23b8c0[m
+Author: github-actions[bot] <fosslight-dev@lge.com>
+Date:   Tue Mar 12 22:18:58 2024 +0000
+
+    Update ChangeLog
+
+[33mcommit 126e3a66ce1addd7dd7060058ced977ce2509a55[m
+Author: github-actions[bot] <fosslight-dev@lge.com>
+Date:   Tue Mar 12 22:18:48 2024 +0000
+
+    Bump version: 1.7.22 → 1.7.23
+
+[33mcommit d0d91e2a96d17349c4a6a61ac5915fd4d2e7ef44[m
+Merge: 96c3626 01d28f6
+Author: Jkbang <81218204+bjk7119@users.noreply.github.com>
+Date:   Wed Mar 13 07:18:01 2024 +0900
+
+    Merge pull request #88 from fosslight/develop
+    
+    Remove FL Prechecker mode
+
+[33mcommit 01d28f6b1d280573ded25607074020b1bab57bc1[m
+Author: Jaekwon Bang <jaekwon.bang@lge.com>
+Date:   Tue Mar 12 15:14:27 2024 +0900
+
+    Restore excution order
+
+[33mcommit a838b285cc739a83be91192e666593ed11179ace[m
+Author: Jaekwon Bang <jaekwon.bang@lge.com>
+Date:   Tue Mar 12 15:10:57 2024 +0900
+
+    Change the execution order for scanners
+
+[33mcommit 59858f80a216fc5bf4805ea2967e251d640b22bd[m
+Author: Jaekwon Bang <jaekwon.bang@lge.com>
+Date:   Tue Mar 12 15:02:41 2024 +0900
+
+    Remove FL Prechecker when all scanners runs
+
+[33mcommit 96c362650474e34116d035bd2429a5d6fad0d83a[m
+Author: github-actions[bot] <fosslight-dev@lge.com>
+Date:   Mon Jan 29 04:35:52 2024 +0000
+
+    Update ChangeLog
+
+[33mcommit 2359e27e809a5191fa680e74cf6079f0a2883a92[m
+Author: github-actions[bot] <fosslight-dev@lge.com>
+Date:   Mon Jan 29 04:35:44 2024 +0000
+
+    Bump version: 1.7.21 → 1.7.22
+
+[33mcommit 270874212b1d65e344bf271561c51937c5fbf102[m
+Merge: 6f269b8 aa11349
+Author: Jiyeong Seok <50347670+dd-jy@users.noreply.github.com>
+Date:   Mon Jan 29 13:30:01 2024 +0900
+
+    Merge pull request #86 from fosslight/latest_version
+    
+    Download the latest version of package url
+
+[33mcommit aa113490deb3495528c7fd5128bc8dbdc2bbe2e3[m
+Author: Jiyeong Seok <jiyeong.seok@lge.com>
+Date:   Mon Jan 29 10:01:25 2024 +0900
+
+    Update fosslight_util min version
+
+[33mcommit 882aa6f874bff7aa3b871a581ecf62014ecce2f6[m
+Author: Jiyeong Seok <jiyeong.seok@lge.com>
+Date:   Fri Jan 26 18:13:42 2024 +0900
+
+    Remove the oss name checking with url
+    
+    Signed-off-by: Jiyeong Seok <jiyeong.seok@lge.com>
+
+[33mcommit 8f61441ea532387c4c71d5bc2b1948d732da77ec[m
+Author: Jiyeong Seok <jiyeong.seok@lge.com>
+Date:   Fri Jan 26 10:51:22 2024 +0900
+
+    Download the latest version of package url
+    
+    Signed-off-by: Jiyeong Seok <jiyeong.seok@lge.com>
+
+[33mcommit 6f269b820c48b950319aef233824cced7faa6ef8[m
+Merge: 1120edd 1e3f77c
+Author: Soim <soim.kim@lge.com>
+Date:   Thu Jan 25 14:42:27 2024 +0900
+
+    Merge pull request #85 from fosslight/multiple
+    
+    Supports multiple input modes
+
+[33mcommit 1e3f77c6a68c2869e1c74f6f56e901734caa98f7[m
+Author: Soim <soim.kim@lge.com>
+Date:   Thu Jan 25 14:17:08 2024 +0900
+
+    Print out unsupported modes
+
+[33mcommit 1120edd23f6001169c608e6c8e88877d705fba63[m
+Merge: 4304a21 a12590a
+Author: Jiyeong Seok <50347670+dd-jy@users.noreply.github.com>
+Date:   Thu Jan 25 13:19:07 2024 +0900
+
+    Merge pull request #83 from fosslight/pep0503
+    
+    Normalize pypi package name (PEP 0503)
+
+[33mcommit 9cc8a16ab4e4b8c13a5a2b2dad0f8848ef236848[m
+Author: Soim <soim.kim@lge.com>
+Date:   Thu Jan 25 11:26:06 2024 +0900
+
+    Supports multiple input modes
+
+[33mcommit a12590af047f5aaa38c5227e5251e9ed5e2bed8d[m
+Author: Jiyeong Seok <jiyeong.seok@lge.com>
+Date:   Tue Dec 12 14:57:05 2023 +0900
+
+    Normalize pypi package name (PEP 0503)
+    
+    Signed-off-by: Jiyeong Seok <jiyeong.seok@lge.com>
+
+[33mcommit 4304a21fd9c18f586794a10e8087ddf0d73ade09[m
+Merge: 0c47e43 c67795f
+Author: Jiyeong Seok <50347670+dd-jy@users.noreply.github.com>
+Date:   Mon Dec 11 17:23:01 2023 +0900
+
+    Merge pull request #82 from fosslight/feature/ossname
+    
+    Support oss name with files.pythonhosted.org url
+
+[33mcommit c67795f34f8a0f65148291498adb012683d74d7d[m
+Author: Jiyeong Seok <jiyeong.seok@lge.com>
+Date:   Thu Dec 7 14:36:31 2023 +0900
+
+    Support oss name with files.pythonhosted.org url
+    
+    Signed-off-by: Jiyeong Seok <jiyeong.seok@lge.com>
+
+[33mcommit 0c47e43ae61ba33362f3c861fc5582b685132e8a[m
+Merge: 82f26f5 8679f46
+Author: Soim <soim.kim@lge.com>
+Date:   Sat Dec 2 17:10:23 2023 +0900
+
+    Merge pull request #68 from cookienc/optimize
+    
+    Optimize Dockerfile to reduce image size
+
+[33mcommit 82f26f59efc1ea8bca5db85307bcfaa60dfd1697[m
+Author: github-actions[bot] <fosslight-dev@lge.com>
+Date:   Mon Nov 6 04:57:38 2023 +0000
+
+    Update ChangeLog
+
+[33mcommit c9278a1cfd8df1f6656623a4497378ea067169aa[m
+Author: github-actions[bot] <fosslight-dev@lge.com>
+Date:   Mon Nov 6 04:57:26 2023 +0000
+
+    Bump version: 1.7.20 → 1.7.21
+
+[33mcommit 21cc16a54dfcd1b9faab21dbff2c137f5389107a[m
+Merge: ad1238a 572902f
+Author: Soim <soim.kim@lge.com>
+Date:   Mon Nov 6 13:51:45 2023 +0900
+
+    Merge pull request #81 from fosslight/develop
+    
+    Fix the fs output path
+
+[33mcommit 572902fcd1f52edcee5f2a3a4206f5f7cae216df[m
+Author: Jiyeong Seok <jiyeong.seok@lge.com>
+Date:   Fri Nov 3 18:00:52 2023 +0900
+
+    Fix the fs output path
+    
+    Signed-off-by: Jiyeong Seok <jiyeong.seok@lge.com>
+
+[33mcommit ad1238a23fa836a89c2c89fabd9c79ed7ae99746[m
+Author: github-actions[bot] <fosslight-dev@lge.com>
+Date:   Mon Oct 30 06:53:30 2023 +0000
+
+    Update ChangeLog
+
+[33mcommit 61b49855b5c96d8b75a47119bcd403f87203d4ee[m
+Author: github-actions[bot] <fosslight-dev@lge.com>
+Date:   Mon Oct 30 06:53:19 2023 +0000
+
+    Bump version: 1.7.19 → 1.7.20
+
+[33mcommit ddd9cea6d950fccc951339121bdbc2e29d82aad3[m
+Merge: eccdfa9 a524acc
+Author: Jiyeong Seok <50347670+dd-jy@users.noreply.github.com>
+Date:   Tue Oct 17 18:06:51 2023 +0900
+
+    Merge pull request #80 from fosslight/daily
+    
+    Update supported python version
+
+[33mcommit a524acc05182704f7a9d9cafcd646b474dc9809f[m
+Author: Jiyeong Seok <jiyeong.seok@lge.com>
+Date:   Tue Oct 17 17:53:40 2023 +0900
+
+    Update supported python version
+    
+    Signed-off-by: Jiyeong Seok <jiyeong.seok@lge.com>
+
+[33mcommit 8679f4693e9960eae04b8c7a846c172ad6dd6afa[m
+Author: Ethan <kim76744dev@gmail.com>
+Date:   Wed Aug 23 16:36:31 2023 +0900
+
+    Optimize Dockerfile to reduce image size
+    
+    Signed-off-by: Ethan <kim76744dev@gmail.com>
+
+[33mcommit eccdfa9c5022f5d753ccc42bbb0a2b4cec08a326[m
+Merge: 21f6902 cb72196
+Author: Soim <soim.kim@lge.com>
+Date:   Fri Oct 13 09:57:12 2023 +0900
+
+    Merge pull request #78 from cookienc/main
+    
+    Fetch base-check-commit-message.yml from fosslight/.github
+
+[33mcommit 21f690254f37611d947c1895a5da51eaa7cd660e[m
+Merge: de0c69e 55820bf
+Author: Soim <soim.kim@lge.com>
+Date:   Fri Oct 13 09:39:01 2023 +0900
+
+    Merge pull request #79 from fosslight/dev_pythonVersion
+    
+    Python version update
+
+[33mcommit 55820bf8c2f013729e46d36451a4910c44d49493[m
+Author: Wonjae Park <wonjae.park@lge.com>
+Date:   Thu Oct 12 17:35:37 2023 +0900
+
+    Update python version in github actions
+    
+    Signed-off-by: Wonjae Park <wonjae.park@lge.com>
+
+[33mcommit 029a0e1f8169d93589d088762a483eebf1e02564[m
+Author: Wonjae Park <wonjae.park@lge.com>
+Date:   Thu Oct 12 17:34:45 2023 +0900
+
+    Remove python 3.7 and add 3.10, 3.11
+    
+    Signed-off-by: Wonjae Park <wonjae.park@lge.com>
+
+[33mcommit cb72196a0aaa6f31ab641f95e01003ceb39b27f1[m
+Author: Ethan <kim76744dev@gmail.com>
+Date:   Sat Sep 23 17:54:08 2023 +0900
+
+    fetch the base-check-commit-message.yml from the .github
+    
+    Signed-off-by: Ethan <kim76744dev@gmail.com>
+
+[33mcommit de0c69ecd9a170daa2a864e978bf27d2ba5f8ec6[m
+Author: github-actions[bot] <fosslight-dev@lge.com>
+Date:   Fri Sep 15 00:03:34 2023 +0000
+
+    Update ChangeLog
+
+[33mcommit d04000717db9b2f6e59523bb4fb8a3a698e256f7[m
+Author: github-actions[bot] <fosslight-dev@lge.com>
+Date:   Fri Sep 15 00:03:24 2023 +0000
+
+    Bump version: 1.7.18 → 1.7.19
+
+[33mcommit dd68bfe30fd3ac5336b68a280586a97cb12f8a51[m
+Merge: 0d9a728 fac2c44
+Author: Wonjae Park <wonjae.park@lge.com>
+Date:   Fri Sep 15 09:02:17 2023 +0900
+
+    Merge pull request #76 from fosslight/dev_adopt_flsource_api
+    
+    Fix importing from  fl source
+
+[33mcommit fac2c4454b235091a3ead7d0021a0ed58f75cef1[m
+Author: Wonjae Park <wonjae.park@lge.com>
+Date:   Thu Sep 7 15:01:23 2023 +0900
+
+    Fix importing from  fl source
+    
+    Signed-off-by: Wonjae Park <wonjae.park@lge.com>
+
+[33mcommit 0d9a72841f675a7eac6cf0148537e56c59ad56c8[m
+Author: github-actions[bot] <fosslight-dev@lge.com>
+Date:   Tue Sep 5 01:23:02 2023 +0000
+
+    Update ChangeLog
+
+[33mcommit fce03247c8dfe04fcdce27af7c5bb34dc6c4ba9a[m
+Author: github-actions[bot] <fosslight-dev@lge.com>
+Date:   Tue Sep 5 01:22:51 2023 +0000
+
+    Bump version: 1.7.17 → 1.7.18
+
+[33mcommit 24830a8543acb212a225028d8e841605d13322d3[m
+Merge: 6b5a414 d7626bf
+Author: Soim <soim.kim@lge.com>
+Date:   Tue Sep 5 10:22:08 2023 +0900
+
+    Merge pull request #75 from fosslight/scancode
+    
+    Fix absolute path related bugs
+
+[33mcommit d7626bf293e26b65a5da16341560dd348e70ca9e[m
+Author: Soim <soim.kim@lge.com>
+Date:   Tue Sep 5 10:14:59 2023 +0900
+
+    Fix absolute path related bugs
+
+[33mcommit 6b5a414c6fddf363eba078cebaf56f3efdd1eff5[m
+Author: github-actions[bot] <fosslight-dev@lge.com>
+Date:   Fri Sep 1 05:46:18 2023 +0000
+
+    Update ChangeLog
+
+[33mcommit 7e1fbc043ea7fd699afe93cf5a61e5863c4af0bc[m
+Author: github-actions[bot] <fosslight-dev@lge.com>
+Date:   Fri Sep 1 05:46:03 2023 +0000
+
+    Bump version: 1.7.16 → 1.7.17
+
+[33mcommit ffd3f0cc6fc58c47f0def437c2b9ab94d75833b2[m
+Merge: 205d0a0 1da18a3
+Author: Soim <soim.kim@lge.com>
+Date:   Fri Sep 1 14:44:53 2023 +0900
+
+    Merge pull request #72 from fosslight/scan_dev
+    
+    Print even files that were not detected
+
+[33mcommit 1da18a3abb59ab51cf43a3ef7c4286bb0b0d6ab1[m
+Author: Soim <soim.kim@lge.com>
+Date:   Fri Sep 1 14:37:15 2023 +0900
+
+    Print even files that were not detected
+
+[33mcommit 205d0a06958f64cecd30d1cd0d3533ac86154d7b[m
+Author: github-actions[bot] <fosslight-dev@lge.com>
+Date:   Thu Aug 31 14:37:47 2023 +0000
+
+    Update ChangeLog
+
+[33mcommit a8fd619a7876694695025a3ed948d60826fe86cf[m
+Author: github-actions[bot] <fosslight-dev@lge.com>
+Date:   Thu Aug 31 14:37:38 2023 +0000
+
+    Bump version: 1.7.15 → 1.7.16
+
+[33mcommit e8098aa06987beff59e89a7d82c668617debb958[m
+Merge: 14060bb ad4d843
+Author: Soim <soim.kim@lge.com>
+Date:   Thu Aug 31 23:36:50 2023 +0900
+
+    Merge pull request #71 from fosslight/io
+    
+    Include the parent directory for ScanCode
+
+[33mcommit ad4d84338aff7f496d8a05d9b4134dc3f027f80a[m
+Author: Soim <soim.kim@lge.com>
+Date:   Thu Aug 31 23:20:40 2023 +0900
+
+    Include the parent directory for ScanCode
+
+[33mcommit 14060bb645055c81b7a5b97b13ced3cf7cf51b1c[m
+Merge: 4cfff6d 3b20544
+Author: Jiyeong Seok <50347670+dd-jy@users.noreply.github.com>
+Date:   Fri Aug 25 17:40:04 2023 +0900
+
+    Merge pull request #69 from fosslight/develop
+    
+    Fix the vulnerability
+
+[33mcommit 3b205447f72835e490dd6c0dd9a3b3649a7e08f0[m
+Author: Jiyeong Seok <jiyeong.seok@lge.com>
+Date:   Fri Aug 25 17:27:08 2023 +0900
+
+    Fix the vulnerability
+    
+    Signed-off-by: Jiyeong Seok <jiyeong.seok@lge.com>
+
+[33mcommit 4cfff6de13f27fcdc6819117a75c3049b0f1499e[m
+Author: github-actions[bot] <fosslight-dev@lge.com>
+Date:   Mon Aug 14 07:11:39 2023 +0000
+
+    Update ChangeLog
+
+[33mcommit 7acc703534132fb4b35f9a2afe1be22a6e5ff2aa[m
+Author: github-actions[bot] <fosslight-dev@lge.com>
+Date:   Mon Aug 14 07:11:25 2023 +0000
+
+    Bump version: 1.7.14 → 1.7.15
+
+[33mcommit 7ce6a3a46ab2269902ca2c462da51c5c76b648c8[m
+Merge: 60d8db5 0b3f89f
+Author: Jiyeong Seok <50347670+dd-jy@users.noreply.github.com>
+Date:   Mon Aug 14 16:09:38 2023 +0900
+
+    Merge pull request #66 from fosslight/develop
+    
+    Generate ui mode result file
+
+[33mcommit 0b3f89f7618b119644595e808fda5239a3dba3b6[m
+Author: Jiyeong Seok <jiyeong.seok@lge.com>
+Date:   Mon Aug 14 10:42:07 2023 +0900
+
+    Generate ui mode result file
+    
+    Signed-off-by: Jiyeong Seok <jiyeong.seok@lge.com>
+
+[33mcommit 60d8db591324cf1f86cbf9a74412c47ddbb39fd1[m
+Author: github-actions[bot] <fosslight-dev@lge.com>
+Date:   Wed Jul 26 08:24:59 2023 +0000
+
+    Update ChangeLog
+
+[33mcommit e8282d70277106439a9bd1de40f8a646bc88826d[m
+Author: github-actions[bot] <fosslight-dev@lge.com>
+Date:   Wed Jul 26 08:24:39 2023 +0000
+
+    Bump version: 1.7.13 → 1.7.14
+
+[33mcommit a40d7b5101ee83ecfc6b3451c5afe0208e047fd7[m
+Merge: be55ca2 1be1932
+Author: Jiyeong Seok <50347670+dd-jy@users.noreply.github.com>
+Date:   Wed Jul 26 17:23:37 2023 +0900
+
+    Merge pull request #65 from fosslight/develop
+    
+    Fix the source analysis fail issue
+
+[33mcommit 1be193203ef6a67eb69a967e823b9654560171ec[m
+Author: Jiyeong Seok <jiyeong.seok@lge.com>
+Date:   Wed Jul 26 16:27:38 2023 +0900
+
+    Fix the source analysis fail issue
+    
+    Signed-off-by: Jiyeong Seok <jiyeong.seok@lge.com>
+
+[33mcommit be55ca2a87cb7f5d7edda75648de398280ca549d[m
+Author: github-actions[bot] <fosslight-dev@lge.com>
+Date:   Fri Jul 14 02:40:55 2023 +0000
+
+    Update ChangeLog
+
+[33mcommit 0c8ed1c2c0c759834eb89073e86a3445792153ca[m
+Author: github-actions[bot] <fosslight-dev@lge.com>
+Date:   Fri Jul 14 02:40:46 2023 +0000
+
+    Bump version: 1.7.12 → 1.7.13
+
+[33mcommit e2dd50b7c38672846da84a74802ff7490d6c626d[m
+Merge: 180a7ef 92c9726
+Author: Jiyeong Seok <50347670+dd-jy@users.noreply.github.com>
+Date:   Fri Jul 14 11:35:48 2023 +0900
+
+    Merge pull request #64 from fosslight/correct
+    
+    Modify exclude item not to compare for correct mode
+
+[33mcommit 92c9726f8e0f42576d337720d3e00000d151ec46[m
+Author: Jiyeong Seok <jiyeong.seok@lge.com>
+Date:   Fri Jul 14 08:22:29 2023 +0900
+
+    Modify exclude item not to compare for correctmode
+    
+    Signed-off-by: Jiyeong Seok <jiyeong.seok@lge.com>
+
+[33mcommit 180a7efd24c4ff4b12396102872b8dc73be59aca[m
+Author: github-actions[bot] <fosslight-dev@lge.com>
+Date:   Fri Jun 2 09:37:49 2023 +0000
+
+    Update ChangeLog
+
+[33mcommit 017c414dd0d3c51c9e77139074ddf584d4bbf9b4[m
+Author: github-actions[bot] <fosslight-dev@lge.com>
+Date:   Fri Jun 2 09:37:40 2023 +0000
+
+    Bump version: 1.7.11 → 1.7.12
+
+[33mcommit 9dd6c941e8e9016bec1507c0647debe6fe18b504[m
+Merge: 6156494 2352258
+Author: Jiyeong Seok <50347670+dd-jy@users.noreply.github.com>
+Date:   Fri Jun 2 18:36:46 2023 +0900
+
+    Merge pull request #63 from fosslight/correct
+    
+    Fix the correct mode bug for yaml format
+
+[33mcommit 2352258af2fb3ab3654c7bbc1ecd84fe07488490[m
+Author: Jiyeong Seok <jiyeong.seok@lge.com>
+Date:   Fri Jun 2 12:05:26 2023 +0900
+
+    Fix to run correct mode only xlsx
+    
+    Signed-off-by: Jiyeong Seok <jiyeong.seok@lge.com>
+
+[33mcommit 15c6b170ae46d098798008104e8a779b8b80e9e6[m
+Author: Jiyeong Seok <jiyeong.seok@lge.com>
+Date:   Thu Jun 1 11:04:50 2023 +0900
+
+    Fix the correct mode bug for yaml format
+    
+    Signed-off-by: Jiyeong Seok <jiyeong.seok@lge.com>
+
+[33mcommit 615649444c0b9f915fec46f30b2483a51a05b81d[m
+Merge: 1d9d7a4 b2a40d2
+Author: Jiyeong Seok <50347670+dd-jy@users.noreply.github.com>
+Date:   Thu Jun 1 09:26:17 2023 +0900
+
+    Merge pull request #62 from fosslight/correct
+    
+    Correct the source/bin scanner result
+
+[33mcommit b2a40d2e2de411af5ed24199644471f93e7f6230[m
+Author: Jiyeong Seok <jiyeong.seok@lge.com>
+Date:   Wed May 31 15:50:15 2023 +0900
+
+    Fix the bug if not generated the src/bin result
+    
+    Signed-off-by: Jiyeong Seok <jiyeong.seok@lge.com>
+
+[33mcommit ded03601d44fb6732faa471b523a39f472c01bb0[m
+Author: Jiyeong Seok <jiyeong.seok@lge.com>
+Date:   Mon May 29 22:16:29 2023 +0900
+
+    Correct the source/bin scanner result
+    
+    Signed-off-by: Jiyeong Seok <jiyeong.seok@lge.com>
+
+[33mcommit 1d9d7a46a8031c19c3a4fca802948bdcc10861ac[m
+Merge: 662565c b9bd7a8
+Author: Jiyeong Seok <50347670+dd-jy@users.noreply.github.com>
+Date:   Mon May 22 09:29:19 2023 +0900
+
+    Merge pull request #61 from fosslight/tmp
+    
+    Update the git config for gh action
+
+[33mcommit b9bd7a86e6df54c5a3b3ed8ba09d8ea6f42ee328[m
+Author: Jiyeong Seok <jiyeong.seok@lge.com>
+Date:   Fri May 19 17:03:29 2023 +0900
+
+    Update the git config for gh action
+    
+    Signed-off-by: Jiyeong Seok <jiyeong.seok@lge.com>
+
+[33mcommit 662565c9e8d0957d8de30950534d378f38b7725e[m
+Merge: c2de9fe a38d201
+Author: Jiyeong Seok <50347670+dd-jy@users.noreply.github.com>
+Date:   Mon Apr 17 10:13:22 2023 +0900
+
+    Merge pull request #60 from fosslight/deploy_issue
+    
+    Update the ubuntu version for deploy action
+
+[33mcommit a38d20189813d1676a1cf7f952bbcbce4d7bcb0b[m
+Author: Jiyeong Seok <jiyeong.seok@lge.com>
+Date:   Mon Apr 17 10:05:46 2023 +0900
+
+    Update the ubuntu version for deploy action
+    
+    Signed-off-by: Jiyeong Seok <jiyeong.seok@lge.com>
+
+[33mcommit c2de9feb048fd74736013df0c1fd7f7496327e76[m
+Author: github-actions[bot] <runner@fv-az344-567.gmg1d1ggmrrupiaxmptgzqcbbf.gx.internal.cloudapp.net>
+Date:   Thu Feb 23 06:36:14 2023 +0000
+
+    Update ChangeLog
+
+[33mcommit e503cc2bbc67c17f458614d4cdbd8aab5ea5e756[m
+Author: github-actions[bot] <runner@fv-az344-567.gmg1d1ggmrrupiaxmptgzqcbbf.gx.internal.cloudapp.net>
+Date:   Thu Feb 23 06:36:05 2023 +0000
+
+    Bump version: 1.7.10 → 1.7.11
+
+[33mcommit a763cef8df7729b0210cccb5fa963b2c5cc204bd[m
+Merge: 5264692 1bd1bf4
+Author: Jiyeong Seok <50347670+dd-jy@users.noreply.github.com>
+Date:   Fri Feb 17 09:58:37 2023 +0900
+
+    Merge pull request #58 from fosslight/develop
+    
+    Add the package name to result file and log
+
+[33mcommit 1bd1bf48e2a9b48485a7e4a8934b63cacfc382a8[m
+Author: Jiyeong Seok <jiyeong.seok@lge.com>
+Date:   Thu Feb 16 18:18:58 2023 +0900
+
+    Add the package name to result file and log
+    
+    Signed-off-by: Jiyeong Seok <jiyeong.seok@lge.com>
+
+[33mcommit 5264692b8324f62db48b27d23a07dc369b394a40[m
+Author: github-actions[bot] <runner@fv-az337-359.jbyrdabdzgkepcqk1sdi5hhfzg.jx.internal.cloudapp.net>
+Date:   Fri Feb 10 05:04:50 2023 +0000
+
+    Update ChangeLog
+
+[33mcommit 02c7618e2398d39acab955c5e3a93ec0ce05000a[m
+Author: github-actions[bot] <runner@fv-az337-359.jbyrdabdzgkepcqk1sdi5hhfzg.jx.internal.cloudapp.net>
+Date:   Fri Feb 10 05:04:40 2023 +0000
+
+    Bump version: 1.7.9 → 1.7.10
+
+[33mcommit 87f031c969983dfd397fc6cc5f4465eaa820db78[m
+Merge: 57b3389 0867afe
+Author: Jkbang <81218204+bjk7119@users.noreply.github.com>
+Date:   Fri Feb 10 13:52:21 2023 +0900
+
+    Merge pull request #57 from fosslight/develop
+    
+    Apply additional return val of 'parsing_yml'
+
+[33mcommit 0867afe2e55f6e7cc99b5533f005145077ea37a7[m
+Author: Jaekwon Bang <jaekwon.bang@lge.com>
+Date:   Mon Feb 6 15:23:11 2023 +0900
+
+    Apply FL util v1.4.16 or later
+
+[33mcommit b58b8a9cc5f8105549b30994e23a68ceb661bb34[m
+Author: Jaekwon Bang <jaekwon.bang@lge.com>
+Date:   Fri Feb 3 10:32:26 2023 +0900
+
+    Apply additional return val of 'parsing_yml'
+
+[33mcommit 57b3389e01f2c5044ae99d7451783d9b931e6b1b[m
+Author: github-actions[bot] <runner@fv-az571-376.n1u3arpfo4le1efxmz3zz4qjhf.xx.internal.cloudapp.net>
+Date:   Mon Jan 30 00:29:07 2023 +0000
+
+    Update ChangeLog
+
+[33mcommit e0686b959baa747ab5c9ce41ca0e56329d8a03fc[m
+Author: github-actions[bot] <runner@fv-az571-376.n1u3arpfo4le1efxmz3zz4qjhf.xx.internal.cloudapp.net>
+Date:   Mon Jan 30 00:29:00 2023 +0000
+
+    Bump version: 1.7.8 → 1.7.9
+
+[33mcommit 942d34e2bc74265dce2580155a57af8b6991b4af[m
+Merge: ede81f2 be600f9
+Author: Jkbang <81218204+bjk7119@users.noreply.github.com>
+Date:   Wed Jan 4 17:01:00 2023 +0900
+
+    Merge pull request #56 from fosslight/develop
+    
+    Change package to get release package
+
+[33mcommit be600f9c68ce5255a663f4941ae4cc895b15735d[m
+Author: Jaekwon Bang <jaekwon.bang@lge.com>
+Date:   Wed Jan 4 12:01:32 2023 +0900
+
+    Change package to get release package
+
+[33mcommit ede81f2e8d8d3dd2a5eed48f51645875eb1d4384[m
+Merge: d8fd176 572d3ec
+Author: Jiyeong Seok <50347670+dd-jy@users.noreply.github.com>
+Date:   Mon Jan 2 17:40:05 2023 +0900
+
+    Merge pull request #55 from fosslight/develop
+    
+    Add the cron job to check daily build
+
+[33mcommit 572d3eca669adf618ce4b6807653e75c369a557a[m
+Author: Jiyeong Seok <jiyeong.seok@lge.com>
+Date:   Mon Jan 2 17:26:36 2023 +0900
+
+    Add the cron job to check daily build
+    
+    Signed-off-by: Jiyeong Seok <jiyeong.seok@lge.com>
+
+[33mcommit d8fd1766ba698bca3e4f310074bb6b4d17b5697f[m
+Author: github-actions[bot] <runner@fv-az166-656.yhxsnkrsqbeeneztuj2nrdttgf.jx.internal.cloudapp.net>
+Date:   Mon Jan 2 08:24:46 2023 +0000
+
+    Update ChangeLog
+
+[33mcommit e8b24b2ca567af8b05b240bee65821ae0fcad8e6[m
+Author: github-actions[bot] <runner@fv-az166-656.yhxsnkrsqbeeneztuj2nrdttgf.jx.internal.cloudapp.net>
+Date:   Mon Jan 2 08:24:35 2023 +0000
+
+    Bump version: 1.7.7 → 1.7.8
+
+[33mcommit 643e39d952d0e8af3d9a6e5e3efef7d5ac4833ae[m
+Merge: 6b4a827 30b7b2d
+Author: Jiyeong Seok <50347670+dd-jy@users.noreply.github.com>
+Date:   Mon Jan 2 16:42:13 2023 +0900
+
+    Merge pull request #54 from fosslight/develop
+    
+    Update version of package for actions
+
+[33mcommit 30b7b2d32683c29dd3f91d0aac5e0f42fa9d45a8[m
+Author: Jaekwon Bang <jaekwon.bang@lge.com>
+Date:   Wed Dec 28 15:06:30 2022 +0900
+
+    Update version of package for actions
+
+[33mcommit 6b4a8273c7111db0eb7604be63e62e656b9cb032[m
+Author: github-actions[bot] <runner@fv-az566-974.iltkdbwcmizurjtzn42pmpc1mg.bx.internal.cloudapp.net>
+Date:   Fri Nov 18 07:24:19 2022 +0000
+
+    Update ChangeLog
+
+[33mcommit ce9336d488c82b274650418d88aff136603a8f58[m
+Author: github-actions[bot] <runner@fv-az566-974.iltkdbwcmizurjtzn42pmpc1mg.bx.internal.cloudapp.net>
+Date:   Fri Nov 18 07:24:10 2022 +0000
+
+    Bump version: 1.7.6 → 1.7.7
+
+[33mcommit ca0559e8b1ddd87e18e510c205e59461c4a19c97[m
+Merge: 5879c34 caa68b0
+Author: Jiyeong Seok <50347670+dd-jy@users.noreply.github.com>
+Date:   Wed Nov 16 10:00:08 2022 +0900
+
+    Merge pull request #52 from fosslight/develop
+    
+    Fix the output file msg if nothing scanned
+
+[33mcommit caa68b067cc468cb2d189a8c7ea01eaeca16f292[m
+Author: Jiyeong Seok <jiyeong.seok@lge.com>
+Date:   Tue Nov 15 17:26:02 2022 +0900
+
+    Fix the output file msg if nothing scanned
+    
+    Signed-off-by: Jiyeong Seok <jiyeong.seok@lge.com>
+
+[33mcommit 5879c34df43678853baed50acbda1ad0e2307727[m
+Author: github-actions[bot] <runner@fv-az264-253.ca02foy5wcnuvlrvrz2wi3p2og.dx.internal.cloudapp.net>
+Date:   Fri Nov 4 09:19:18 2022 +0000
+
+    Update ChangeLog
+
+[33mcommit df8200de7dbbc6bcc7c1dc8ba3f0ca0edd18758c[m
+Author: github-actions[bot] <runner@fv-az264-253.ca02foy5wcnuvlrvrz2wi3p2og.dx.internal.cloudapp.net>
+Date:   Fri Nov 4 09:19:08 2022 +0000
+
+    Bump version: 1.7.5 → 1.7.6
+
+[33mcommit 26bf0e1f3d4a8ce3fec465d7bacfd51b31553cd3[m
+Merge: 9ad2df5 e6a8b46
+Author: Soim <soim.kim@lge.com>
+Date:   Thu Nov 3 09:25:18 2022 +0900
+
+    Merge pull request #51 from fosslight/develop
+    
+    Analyze current path if not input path
+
+[33mcommit e6a8b462fe11279f59e734f75a8a1ee0ee927679[m
+Author: Jaekwon Bang <jaekwon.bang@lge.com>
+Date:   Mon Oct 31 17:30:12 2022 +0900
+
+    Run currnt path if not input path
+
+[33mcommit 9ad2df5adcdbe13c5e2fe0b732a9afacec39ad2b[m
+Merge: 7076f61 25b3a44
+Author: Jkbang <81218204+bjk7119@users.noreply.github.com>
+Date:   Mon Oct 31 14:22:53 2022 +0900
+
+    Merge pull request #50 from fosslight/develop
+    
+    Fix bug about dep. arg input when not dep. running
+
+[33mcommit 25b3a445b23a9f7def829ea2bb85b2f89d91054c[m
+Author: Jaekwon Bang <jaekwon.bang@lge.com>
+Date:   Tue Oct 25 08:51:30 2022 +0900
+
+    Fix bug about dep. arg input when not dep. running
+
+[33mcommit 7076f6103ed69fd3e37acb714226cd339646efdc[m
+Author: github-actions[bot] <runner@fv-az28-435.ycjfjujedjyu5lezsnvlijijec.cx.internal.cloudapp.net>
+Date:   Thu Oct 6 08:06:48 2022 +0000
+
+    Update ChangeLog
+
+[33mcommit f400426bfca0039dfe8571888d70420904de0acd[m
+Author: github-actions[bot] <runner@fv-az28-435.ycjfjujedjyu5lezsnvlijijec.cx.internal.cloudapp.net>
+Date:   Thu Oct 6 08:06:40 2022 +0000
+
+    Bump version: 1.7.4 → 1.7.5
+
+[33mcommit 86f293472d18c41e8e5041d86546f8fc32f37cdd[m
+Merge: 3e221b3 cdde9c5
+Author: Soim <soim.kim@lge.com>
+Date:   Sun Sep 18 11:36:34 2022 +0900
+
+    Merge pull request #49 from fosslight/develop
+    
+    Fix the binary text copy issue
+
+[33mcommit cdde9c50463b08d3f14d25753e5aeba97e6e0f68[m
+Author: Jiyeong Seok <jiyeong.seok@lge.com>
+Date:   Fri Sep 16 13:43:01 2022 +0900
+
+    fix the binary text copy issue
+    
+    Signed-off-by: Jiyeong Seok <jiyeong.seok@lge.com>
+
+[33mcommit 3e221b3683d275d84d131d9ad173b1aec87aca38[m
+Author: github-actions[bot] <runner@fv-az38-889.qiceih3q1hfe5a3ai3y3qk2fta.cx.internal.cloudapp.net>
+Date:   Thu Sep 15 08:17:40 2022 +0000
+
+    Update ChangeLog
+
+[33mcommit 4f1ea59be51497e9b0fa04c43826bc55c16baf80[m
+Author: github-actions[bot] <runner@fv-az38-889.qiceih3q1hfe5a3ai3y3qk2fta.cx.internal.cloudapp.net>
+Date:   Thu Sep 15 08:17:30 2022 +0000
+
+    Bump version: 1.7.3 → 1.7.4
+
+[33mcommit f283a888bb06ef8ed1f85bcce910d2f8b35df25a[m
+Merge: 805c423 36c2f0d
+Author: Jiyeong Seok <50347670+dd-jy@users.noreply.github.com>
+Date:   Wed Sep 14 18:59:14 2022 +0900
+
+    Merge pull request #48 from fosslight/develop
+    
+    Change the report file name
+
+[33mcommit 36c2f0d3b29451a877f707480e2d9fc7712aa877[m
+Author: Jiyeong Seok <jiyeong.seok@lge.com>
+Date:   Mon Sep 5 19:17:05 2022 +0900
+
+    Change the report file name
+    
+    Signed-off-by: Jiyeong Seok <jiyeong.seok@lge.com>
+
+[33mcommit 805c42356bcf29cf91cf00478c3a42adf9293543[m
+Author: Jkbang <81218204+bjk7119@users.noreply.github.com>
+Date:   Mon Sep 5 13:31:36 2022 +0900
+
+    Modify help msg if invalid input
+
+[33mcommit eb19d6f93aca001a9c2d232d50c4881ec227a689[m
+Author: Jiyeong Seok <50347670+dd-jy@users.noreply.github.com>
+Date:   Thu Sep 1 18:00:30 2022 +0900
+
+    Update README.md
+
+[33mcommit 7da8419cdd0f595e730ed3c36287761e65b25aa3[m
+Author: github-actions[bot] <runner@fv-az91-36.1u4dveb1r3ruphbftqvtwhitpc.gx.internal.cloudapp.net>
+Date:   Thu Sep 1 08:51:48 2022 +0000
+
+    Update ChangeLog
+
+[33mcommit e5db4882b1277dbf85760943da6587212d03e995[m
+Author: github-actions[bot] <runner@fv-az91-36.1u4dveb1r3ruphbftqvtwhitpc.gx.internal.cloudapp.net>
+Date:   Thu Sep 1 08:51:40 2022 +0000
+
+    Bump version: 1.7.2 → 1.7.3
+
+[33mcommit ec2e781b18ecac7d5ce408fe387426f52c84fbca[m
+Merge: f463fba f8dfb76
+Author: Jiyeong Seok <50347670+dd-jy@users.noreply.github.com>
+Date:   Thu Sep 1 17:50:04 2022 +0900
+
+    Merge pull request #46 from fosslight/develop
+    
+    Support 'xlsx' report for Compare mode
+
+[33mcommit f8dfb763798c71f01c9e48a89f38c8c80215822c[m
+Author: Jiyeong Seok <jiyeong.seok@lge.com>
+Date:   Thu Sep 1 17:15:33 2022 +0900
+
+    Support 'xlsx' report for Compare mode
+    
+    Signed-off-by: Jiyeong Seok <jiyeong.seok@lge.com>
+
+[33mcommit f463fbaabb969f2cabd2c62c6411fa13ae7c08d9[m
+Merge: 7b5b71b daccd51
+Author: Soim <soim.kim@lge.com>
+Date:   Thu Sep 1 13:49:43 2022 +0900
+
+    Merge pull request #45 from fosslight/python
+    
+    Change the required version of Python to 3.7
+
+[33mcommit daccd518c369697808136b0fff420c09700a71f5[m
+Author: Soim Kim <soim.kim@lge.com>
+Date:   Thu Sep 1 11:16:32 2022 +0900
+
+    Change the required version of Python to 3.7
+
+[33mcommit 7b5b71b9e761df7c393027b961d50d8f0d40c949[m
+Author: github-actions[bot] <runner@fv-az202-911.ngw3kpfb2bguzbtcwuqjmbcvef.gx.internal.cloudapp.net>
+Date:   Tue Aug 16 00:53:43 2022 +0000
+
+    Update ChangeLog
+
+[33mcommit 87c72b43844919044cd65522aa30764000ff567c[m
+Author: github-actions[bot] <runner@fv-az202-911.ngw3kpfb2bguzbtcwuqjmbcvef.gx.internal.cloudapp.net>
+Date:   Tue Aug 16 00:53:34 2022 +0000
+
+    Bump version: 1.7.1 → 1.7.2
+
+[33mcommit 3eb1b512fbac5eaa983aaf18e2980216378b2d8a[m
+Merge: 590bc55 e7b293b
+Author: Jiyeong Seok <50347670+dd-jy@users.noreply.github.com>
+Date:   Tue Aug 16 09:52:36 2022 +0900
+
+    Merge pull request #42 from fosslight/develop
+    
+    Support yaml format of FOSSLight Report
+
+[33mcommit e7b293bac434e78fed8fc1b69eb3fbbc11084adb[m
+Author: Jiyeong Seok <jiyeong.seok@lge.com>
+Date:   Fri Jul 29 13:13:19 2022 +0900
+
+    Fix to add default name and url for yaml
+    and add compared result summary log
+    
+    Signed-off-by: Jiyeong Seok <jiyeong.seok@lge.com>
+
+[33mcommit c85b553aadc855736be0b4a9b86cf0607a69e721[m
+Merge: 55b1430 590bc55
+Author: Jiyeong Seok <50347670+dd-jy@users.noreply.github.com>
+Date:   Thu Jul 28 18:10:18 2022 +0900
+
+    Merge branch 'main' into develop
+
+[33mcommit 55b143081304055a1b21cceb860fb3a7f7139e42[m
+Author: Jiyeong Seok <jiyeong.seok@lge.com>
+Date:   Fri Jul 22 14:34:42 2022 +0900
+
+    Support yaml format of FOSSLight Report
+    
+    Signed-off-by: Jiyeong Seok <jiyeong.seok@lge.com>
+
+[33mcommit 590bc55688f94d9dc24113b1935a9c87895a2c22[m
+Author: github-actions[bot] <runner@fv-az447-706.tnmeiuxxsqeu3byeydcnbj0j5d.dx.internal.cloudapp.net>
+Date:   Fri Jul 22 08:43:02 2022 +0000
+
+    Update ChangeLog
+
+[33mcommit ea5dd239535a72133d46d5ce035ea6883d274f53[m
+Author: github-actions[bot] <runner@fv-az447-706.tnmeiuxxsqeu3byeydcnbj0j5d.dx.internal.cloudapp.net>
+Date:   Fri Jul 22 08:42:51 2022 +0000
+
+    Bump version: 1.7.0 → 1.7.1
+
+[33mcommit 73fb651aec339d3099f3ee61524889babfeb4353[m
+Merge: b024ec4 ef917ab
+Author: Soim <soim.kim@lge.com>
+Date:   Fri Jul 22 17:08:24 2022 +0900
+
+    Merge pull request #43 from fosslight/temp_prechecker
+    
+    Change FL Reuse to FL Prechecker
+
+[33mcommit ef917aba2937380c2e3d6dd09039d2a8b5cf65df[m
+Author: Soim Kim <soim.kim@lge.com>
+Date:   Fri Jul 22 16:54:05 2022 +0900
+
+    Add reuse to mode
+
+[33mcommit 2153419333b79cebc5a3ec192b31a4d89d70ad39[m
+Author: Jaekwon Bang <jaekwon.bang@lge.com>
+Date:   Fri Jul 22 16:26:10 2022 +0900
+
+    Change FL Reuse to FL Prechecker
+
+[33mcommit b024ec49c76fe7033552e3aa8c8d2b454ff4e78f[m
+Author: github-actions[bot] <runner@fv-az215-490.hflgk3zltyluxbtaij2jzv2hcg.jx.internal.cloudapp.net>
+Date:   Fri Jul 22 06:12:34 2022 +0000
+
+    Update ChangeLog
+
+[33mcommit 45f6cccf06fb2fd8ee24b37f640d49b5d2e67f96[m
+Author: github-actions[bot] <runner@fv-az215-490.hflgk3zltyluxbtaij2jzv2hcg.jx.internal.cloudapp.net>
+Date:   Fri Jul 22 06:12:22 2022 +0000
+
+    Bump version: 1.6.15 → 1.7.0
+
+[33mcommit ca38b8b9efea3e698c759634fb5c30951a9e0430[m
+Merge: e07e2cb 673ae74
+Author: Jiyeong Seok <50347670+dd-jy@users.noreply.github.com>
+Date:   Fri Jul 22 09:07:51 2022 +0900
+
+    Merge pull request #41 from fosslight/develop
+    
+    Replace 'y' option to 'p' option.
+
+[33mcommit 673ae749aa49c96c64c45524ed9928e1c9e9c4b8[m
+Author: Jiyeong Seok <jiyeong.seok@lge.com>
+Date:   Wed Jul 20 17:34:09 2022 +0900
+
+    Replace 'y' option to 'p' option.
+    
+    Signed-off-by: Jiyeong Seok <jiyeong.seok@lge.com>
+
+[33mcommit e07e2cb291189c8481594c9e8296bc1783ccc9ea[m
+Merge: 78f0799 fef96c7
+Author: Jiyeong Seok <50347670+dd-jy@users.noreply.github.com>
+Date:   Wed Jul 20 17:34:48 2022 +0900
+
+    Merge pull request #40 from fosslight/develop
+    
+    Fix scanner support format and not to create csv.
+
+[33mcommit fef96c78d7260e1d5402dc77d20c74a6d37ca39f[m
+Author: Jiyeong Seok <jiyeong.seok@lge.com>
+Date:   Wed Jul 20 10:59:47 2022 +0900
+
+    fix the error
+    
+    Signed-off-by: Jiyeong Seok <jiyeong.seok@lge.com>
+
+[33mcommit dceb31a132e6d160b5fe5c5a7ef1690a435fd81a[m
+Author: Jiyeong Seok <jiyeong.seok@lge.com>
+Date:   Tue Jul 19 18:04:51 2022 +0900
+
+    Fix scanner support format and not to create csv.
+    - all, scanner mode support format : excel, yaml
+    
+    Signed-off-by: Jiyeong Seok <jiyeong.seok@lge.com>
+
+[33mcommit 78f07995837b3b7867a5e01fb396e86c57cfc815[m
+Merge: 666e455 5ea3872
+Author: Jiyeong Seok <50347670+dd-jy@users.noreply.github.com>
+Date:   Fri Jul 15 14:23:32 2022 +0900
+
+    Merge pull request #39 from fosslight/develop
+    
+    Print message when comparison rows are over 100.
+
+[33mcommit 5ea38726b69b7ed3ecd66453a9b22db2182b9e84[m
+Merge: 6ed9bda 0d00cf6
+Author: Jiyeong Seok <jiyeong.seok@lge.com>
+Date:   Fri Jul 15 13:48:23 2022 +0900
+
+    Add the info message
+    - generate xlsx by default in html format
+    
+    Signed-off-by: Jiyeong Seok <jiyeong.seok@lge.com>
+
+[33mcommit 6ed9bdadf86e66d71c0aa3a10e6ec8324f463c0f[m
+Author: Jiyeong Seok <jiyeong.seok@lge.com>
+Date:   Fri Jul 15 11:50:50 2022 +0900
+
+    Fix not to print version N/A for comparison result
+    
+    Signed-off-by: Jiyeong Seok <jiyeong.seok@lge.com>
+
+[33mcommit 0d00cf6215bf187892937de0003aaa7915bf2339[m
+Author: Jiyeong Seok <jiyeong.seok@lge.com>
+Date:   Fri Jul 15 11:50:50 2022 +0900
+
+    Fix not to print version N/A for comparison result
+    
+    Signed-off-by: Jiyeong Seok <jiyeong.seok@lge.com>
+
+[33mcommit fd0a44aa3290432e8953807171cebfc9f553f322[m
+Merge: f18cc23 7d6c81b
+Author: Jiyeong Seok <jiyeong.seok@lge.com>
+Date:   Fri Jul 15 10:36:02 2022 +0900
+
+    Merge branch 'develop'
+
+[33mcommit f18cc23e7dbf36ee2f49c55f2e638083454da456[m
+Author: Jiyeong Seok <jiyeong.seok@lge.com>
+Date:   Fri Jul 15 10:35:54 2022 +0900
+
+    Fix the magic num
+    
+    Signed-off-by: Jiyeong Seok <jiyeong.seok@lge.com>
+
+[33mcommit 7d6c81bf6131158fb1d4edd829c2dd292ad0ee5b[m
+Author: Jaekwon Bang <jaekwon.bang@lge.com>
+Date:   Thu Jul 14 14:17:00 2022 +0900
+
+    Add progress bar
+
+[33mcommit cec85e8d15ff121aa673f3f968f9becb7aa1dc3f[m
+Author: Jiyeong Seok <jiyeong.seok@lge.com>
+Date:   Wed Jul 13 18:42:24 2022 +0900
+
+    Print message when comparison rows are over 100.
+    
+    Signed-off-by: Jiyeong Seok <jiyeong.seok@lge.com>
+
+[33mcommit 666e455c94514f537f4e42f7791c7cd207d12bcc[m
+Merge: b326a56 1980952
+Author: Jiyeong Seok <50347670+dd-jy@users.noreply.github.com>
+Date:   Wed Jul 13 15:54:02 2022 +0900
+
+    Merge pull request #38 from fosslight/develop
+    
+    Add compare mode
+
+[33mcommit 1980952b65832ec2141d7879c42913d980038d3a[m
+Author: Jiyeong Seok <jiyeong.seok@lge.com>
+Date:   Wed Jul 13 14:42:25 2022 +0900
+
+    Fix the xlsx, html result for same compared result
+    
+    Signed-off-by: Jiyeong Seok <jiyeong.seok@lge.com>
+
+[33mcommit 50792795fa035d785a46502f710f3293795cd6f3[m
+Author: Jiyeong Seok <jiyeong.seok@lge.com>
+Date:   Tue Jul 12 17:51:16 2022 +0900
+
+    Fix the reuse compliance
+    
+    Signed-off-by: Jiyeong Seok <jiyeong.seok@lge.com>
+
+[33mcommit 3936863b647ab5abd8f5b137287b6d230d698823[m
+Author: Jiyeong Seok <jiyeong.seok@lge.com>
+Date:   Tue Jul 12 17:44:47 2022 +0900
+
+    Add compare mode
+    - Compare two FOSSLight Report yaml
+    
+    Signed-off-by: Jiyeong Seok <jiyeong.seok@lge.com>
+
+[33mcommit b326a56ebc8fdc745d7f22b62e31a4da7864111f[m
+Author: github-actions[bot] <runner@fv-az33-445.ep4gov4zlyee1j2rdvheha0glb.gx.internal.cloudapp.net>
+Date:   Wed Jul 6 00:17:59 2022 +0000
+
+    Update ChangeLog
+
+[33mcommit 3b20a2e949ad69246e87bbc58ef6aaf3d7c8e7b4[m
+Author: github-actions[bot] <runner@fv-az33-445.ep4gov4zlyee1j2rdvheha0glb.gx.internal.cloudapp.net>
+Date:   Wed Jul 6 00:17:52 2022 +0000
+
+    Bump version: 1.6.14 → 1.6.15
+
+[33mcommit f9722930f54b4ec8cd340d5fc75069d80701e470[m
+Merge: f339c37 e3e5e77
+Author: Soim <soim.kim@lge.com>
+Date:   Wed Jul 6 09:16:16 2022 +0900
+
+    Merge pull request #37 from fosslight/develop
+    
+    Modify reuse input parameter
+
+[33mcommit e3e5e770b2130e9b67dee5a534d0cd59397a46cc[m
+Author: Jaekwon Bang <jaekwon.bang@lge.com>
+Date:   Tue Jul 5 15:47:47 2022 +0900
+
+    Modify reuse input parameter
+
+[33mcommit f339c378c8e1ca54315e2eef104eb0dd53d5eed2[m
+Author: github-actions[bot] <runner@fv-az456-580.p0w0s5v11d3ezinmdpcme2waeg.bx.internal.cloudapp.net>
+Date:   Thu May 19 03:23:29 2022 +0000
+
+    Update ChangeLog
+
+[33mcommit 86641360b87af4d7816e31bd5b60d4c6a8275522[m
+Author: github-actions[bot] <runner@fv-az456-580.p0w0s5v11d3ezinmdpcme2waeg.bx.internal.cloudapp.net>
+Date:   Thu May 19 03:23:16 2022 +0000
+
+    Bump version: 1.6.13 → 1.6.14
+
+[33mcommit 169b5217c8d7880f13df4d944a3b06a38521a148[m
+Merge: af8bb6e 2b1f432
+Author: Soim <soim.kim@lge.com>
+Date:   Thu May 19 12:22:24 2022 +0900
+
+    Merge pull request #36 from fosslight/develop
+    
+    Fix a bug where part of the output file is not created without the -o option
+
+[33mcommit 2b1f4325f00ed026f2ca7b12b63e53992c530592[m
+Author: Soim Kim <soim.kim@lge.com>
+Date:   Thu May 19 10:25:26 2022 +0900
+
+    Fix a bug where output is not generated without -o
+
+[33mcommit af8bb6e90069964669bf18974a1b635eaf6f02cf[m
+Merge: 74014e9 4d7eeb9
+Author: Soim <soim.kim@lge.com>
+Date:   Thu May 19 10:24:57 2022 +0900
+
+    Merge pull request #34 from fosslight/develop
+    
+    Run fosslight_source without installing it
+
+[33mcommit 4d7eeb9831936535ff306648789a33195f84410f[m
+Author: Soim <soim.kim@lge.com>
+Date:   Wed Apr 20 15:58:42 2022 +0900
+
+    Run fosslight_source without installing it
+
+[33mcommit 74014e9375bde8854ccf04f8f74afcb7e62b35c7[m
+Merge: f21f2fe 16ebe84
+Author: Soim <soim.kim@lge.com>
+Date:   Tue Apr 26 09:13:17 2022 +0900
+
+    Merge pull request #35 from fosslight/temp3
+    
+    Add a Dockerfile
+
+[33mcommit 16ebe846722b199ddf23510db7ef349e65348f24[m
+Author: Soim <soim.kim@lge.com>
+Date:   Tue Apr 26 09:06:07 2022 +0900
+
+    Add Docker to the README
+
+[33mcommit 7fb9f44d546f35819845cd3f73da4bdc20e07827[m
+Author: Soim Kim <soim.kim@lge.com>
+Date:   Tue Apr 26 08:54:24 2022 +0900
+
+    Add a Dockerfile
+
+[33mcommit f21f2feac9e3ec27fe40f3dfeaefbd93d2164959[m
+Author: github-actions[bot] <runner@fv-az173-572.h4pcb1qgckmubfchnqyq5btvmd.gx.internal.cloudapp.net>
+Date:   Mon Apr 11 08:06:02 2022 +0000
+
+    Update ChangeLog
+
+[33mcommit eecec6a19fd4f9d545e8e26d26118a98fc99a59a[m
+Author: github-actions[bot] <runner@fv-az173-572.h4pcb1qgckmubfchnqyq5btvmd.gx.internal.cloudapp.net>
+Date:   Mon Apr 11 08:05:51 2022 +0000
+
+    Bump version: 1.6.12 → 1.6.13
+
+[33mcommit 3a8c6af71c5460c8815b625a4a3f000743cf1597[m
+Merge: 245c4e8 45261fd
+Author: Soim <soim.kim@lge.com>
+Date:   Mon Apr 11 17:04:49 2022 +0900
+
+    Merge pull request #33 from fosslight/develop
+    
+    Fix errors when parsing with path
+
+[33mcommit 45261fdfcea4a51a8e8f589431f139bbb4b041f3[m
+Author: Soim Kim <soim.kim@lge.com>
+Date:   Mon Apr 11 16:58:35 2022 +0900
+
+    Fix errors when parsing with path
+
+[33mcommit 245c4e8b98d1698d1922ebe7bd45dcf6e75e41af[m
+Author: Soim <soim.kim@lge.com>
+Date:   Wed Mar 30 08:41:25 2022 +0900
+
+    Add a commit message checker
+
+[33mcommit 9a0e19c61647a0040e91a3ddf86a442aa67f1ee7[m
+Author: Soim Kim <soim.kim@lge.com>
+Date:   Mon Mar 28 09:33:29 2022 +0900
+
+    Fix errors that occur when downloading link
+
+[33mcommit 07692f765f8e562ffc1f06d597eb3567690bff9d[m
+Author: github-actions[bot] <runner@fv-az445-332.r3jsatmgpurepobntafd4hy1pg.dx.internal.cloudapp.net>
+Date:   Mon Mar 28 00:14:35 2022 +0000
+
+    Update ChangeLog
+
+[33mcommit c725df97ac7783fb63965a25398d78a50b06c549[m
+Author: github-actions[bot] <runner@fv-az445-332.r3jsatmgpurepobntafd4hy1pg.dx.internal.cloudapp.net>
+Date:   Mon Mar 28 00:14:25 2022 +0000
+
+    Bump version: 1.6.11 → 1.6.12
+
+[33mcommit 677df8f069fc9fea6eeba2781c2549c4b97ed5c6[m
+Author: Soim Kim <soim.kim@lge.com>
+Date:   Mon Mar 28 09:08:05 2022 +0900
+
+    Fix the bug where column names do not match
+
+[33mcommit 8c2690d310994fdb3b09ea53b672548806957d65[m
+Author: github-actions[bot] <runner@fv-az275-200.go2hi5et44qedpdz5zrtt3gknc.xx.internal.cloudapp.net>
+Date:   Sun Mar 27 22:09:32 2022 +0000
+
+    Update ChangeLog
+
+[33mcommit 8e8abe8c32c886f34fbae9e9b5fc1880d8b2bcd4[m
+Author: github-actions[bot] <runner@fv-az275-200.go2hi5et44qedpdz5zrtt3gknc.xx.internal.cloudapp.net>
+Date:   Sun Mar 27 22:09:17 2022 +0000
+
+    Bump version: 1.6.10 → 1.6.11
+
+[33mcommit 5d551e9bde6a5bd51beca5ce4517c246055e7589[m
+Author: Soim Kim <soimkim12@gmail.com>
+Date:   Sun Mar 27 20:21:51 2022 +0900
+
+    Print download location when analyzing as link
+
+[33mcommit 17be51ca1c9c225eac085b1a07e8b514b039ea65[m
+Author: Soim Kim <soimkim12@gmail.com>
+Date:   Sun Mar 27 10:14:55 2022 +0900
+
+    Extract the OSS name from the link
+
+[33mcommit d1f69ed112a463316a444817a0c80244996c42d7[m
+Author: github-actions[bot] <runner@fv-az193-923.ibjetn2pge3ujnh3vtdq41oyjh.bx.internal.cloudapp.net>
+Date:   Fri Mar 11 05:39:27 2022 +0000
+
+    Update ChangeLog
+
+[33mcommit 383d835e16fb7422dd5cbb3bb5f25301159d1ce9[m
+Author: github-actions[bot] <runner@fv-az193-923.ibjetn2pge3ujnh3vtdq41oyjh.bx.internal.cloudapp.net>
+Date:   Fri Mar 11 05:39:17 2022 +0000
+
+    Bump version: 1.6.9 → 1.6.10
+
+[33mcommit dcfd1fccbd1333b77aa14d84f92a1ebd857012b0[m
+Merge: fd7b961 9bda762
+Author: Soim <soim.kim@lge.com>
+Date:   Thu Mar 3 13:53:24 2022 +0900
+
+    Merge pull request #26 from fosslight/develop
+    
+    Apply f-string format
+
+[33mcommit 9bda76242a987d32146c8020d3be71c17ae5b270[m
+Author: Jaekwon Bang <jaekwon.bang@lge.com>
+Date:   Thu Mar 3 12:09:24 2022 +0900
+
+    Apply f-string format
+
+[33mcommit fd7b9611a6e0179e32bd18d5d8f84e8334e354dc[m
+Author: github-actions[bot] <runner@fv-az278-304.b3qsmdnmz0tudpq43p2gswzmkf.xx.internal.cloudapp.net>
+Date:   Mon Feb 28 00:24:04 2022 +0000
+
+    Update ChangeLog
+
+[33mcommit aecd5825666d805afd0ad48d0e6c9d76bd520b5d[m
+Author: github-actions[bot] <runner@fv-az278-304.b3qsmdnmz0tudpq43p2gswzmkf.xx.internal.cloudapp.net>
+Date:   Mon Feb 28 00:23:51 2022 +0000
+
+    Bump version: 1.6.8 → 1.6.9
+
+[33mcommit 300c5229be0303e4a2850af19064d60dbcbb8c49[m
+Merge: 52df5de 3dd04eb
+Author: Soim <soim.kim@lge.com>
+Date:   Fri Feb 18 07:59:10 2022 +0900
+
+    Merge pull request #25 from fosslight/develop
+    
+    Change the result generation method to merging
+
+[33mcommit 3dd04eba97b9c6d6149b0da3f03a9733379a333c[m
+Author: Soim Kim <soim.kim@lge.com>
+Date:   Thu Feb 17 17:12:44 2022 +0900
+
+    Change the result generation method to merging
+
+[33mcommit 52df5ded9400f63efe28a2ca026c992f0bb0cf57[m
+Author: Soim <soim.kim@lge.com>
+Date:   Tue Feb 15 09:41:56 2022 +0900
+
+    Update mode value in README
+
+[33mcommit 53197ad19eb81fd842289eb3d6949b05823cbe28[m
+Merge: 24cfaf9 033a063
+Author: Soim <soim.kim@lge.com>
+Date:   Tue Feb 15 09:41:22 2022 +0900
+
+    Merge pull request #24 from fosslight/develop
+    
+    Add an inputable value to mode
+
+[33mcommit 033a0631241765e454b8361d7fa67fe16bef6c6a[m
+Author: Soim Kim <soim.kim@lge.com>
+Date:   Tue Feb 15 09:32:23 2022 +0900
+
+    Add an inputable value to mode
+
+[33mcommit 24cfaf93fca3bff420409a11078fa36d03b86ffa[m
+Author: Soim <soim.kim@lge.com>
+Date:   Mon Feb 14 18:17:57 2022 +0900
+
+    Update command in README
+
+[33mcommit 78f41f958541ed608766f813d38e7578be5844c2[m
+Merge: 3819166 24fc45f
+Author: Soim <soim.kim@lge.com>
+Date:   Fri Feb 11 14:49:24 2022 +0900
+
+    Merge pull request #23 from fosslight/develop
+    
+    Update the README with additional Scanners
+
+[33mcommit 24fc45f6c9ade57076d15659d43175a3368ed648[m
+Author: Soim <soim.kim@lge.com>
+Date:   Fri Feb 11 14:39:48 2022 +0900
+
+    Update the README with additional Scanners
+
+[33mcommit 3819166f8cc8302d4164845ebe6b97bcd7760796[m
+Author: github-actions[bot] <runner@fv-az296-893.ie1vkwtfhimuhe55j3he1m2lab.gx.internal.cloudapp.net>
+Date:   Thu Feb 10 10:18:14 2022 +0000
+
+    Update ChangeLog
+
+[33mcommit 82bb2b4e778c2e66724b998753be8007f630ced4[m
+Author: github-actions[bot] <runner@fv-az296-893.ie1vkwtfhimuhe55j3he1m2lab.gx.internal.cloudapp.net>
+Date:   Thu Feb 10 10:18:04 2022 +0000
+
+    Bump version: 1.6.7 → 1.6.8
+
+[33mcommit a81ff0d8b6613ac4133f91baa84895472f6955c4[m
+Merge: f246d76 f5a7543
+Author: Jkbang <81218204+bjk7119@users.noreply.github.com>
+Date:   Thu Feb 10 19:15:46 2022 +0900
+
+    Merge pull request #22 from fosslight/temp
+    
+    Modify to print output file name
+
+[33mcommit f5a754306f49e84124e8d2f641a688010e18e212[m
+Author: Jaekwon Bang <jaekwon.bang@lge.com>
+Date:   Thu Feb 10 14:41:55 2022 +0900
+
+    Modify to print output file name
+
+[33mcommit f246d76a17eed085f2bd412154326127fe5e1093[m
+Author: Soim Kim <soim.kim@lge.com>
+Date:   Thu Feb 10 09:35:32 2022 +0900
+
+    Fix the bug that the raw folder is not deleted
+
+[33mcommit c34d8efff3728f38a4db6c75f73e039e65d6f002[m
+Merge: 6fab509 0fa1821
+Author: Soim <soim.kim@lge.com>
+Date:   Thu Feb 10 09:25:09 2022 +0900
+
+    Merge pull request #20 from fosslight/temp
+    
+    Create a result file of FOSSLight Source
+
+[33mcommit 0fa1821d6228316a6cba0154b68250dcdc5bd943[m
+Author: Soim Kim <soim.kim@lge.com>
+Date:   Thu Feb 10 09:22:25 2022 +0900
+
+    Create a result file of FOSSLight Source
+
+[33mcommit 6fab5093c8bbf3e79c6d8cb9052fa204f2e34254[m
+Merge: 709cfb2 9b7d678
+Author: Soim <soim.kim@lge.com>
+Date:   Thu Feb 10 08:50:16 2022 +0900
+
+    Merge pull request #18 from fosslight/temp
+    
+    Move the binary analysis result file to output
+
+[33mcommit 709cfb2b99340d745a4430496f1d82a07cebd4b5[m
+Merge: 258a09d 9f6da36
+Author: Soim <soim.kim@lge.com>
+Date:   Thu Feb 10 08:46:19 2022 +0900
+
+    Merge pull request #19 from fosslight/temp2
+    
+    Change the options when analyzing the source
+
+[33mcommit 9f6da36dc70cba7e3799078a724568d0dfd13059[m
+Author: Soim Kim <soim.kim@lge.com>
+Date:   Thu Feb 10 08:38:10 2022 +0900
+
+    Change the options when analyzing the source
+    
+    When calling FOSSLight Source Scanner,
+    only ScanCode was used before, but modify it
+    to analyze using all scanners.
+
+[33mcommit 9b7d6780417ec010858f2b22592911883367eb04[m
+Author: Soim Kim <soim.kim@lge.com>
+Date:   Wed Feb 9 15:43:45 2022 +0900
+
+    Move the binary analysis result file to output
+
+[33mcommit 258a09d0ce8a8ca58a9901531dca7298f33c932c[m
+Merge: c8957c3 bdee206
+Author: Soim <soim.kim@lge.com>
+Date:   Wed Feb 9 15:40:36 2022 +0900
+
+    Merge pull request #17 from fosslight/temp
+    
+    Support analysis mode
+
+[33mcommit bdee206a2ccbbdd51a683df090678f09e1c0d743[m
+Author: Soim Kim <soim.kim@lge.com>
+Date:   Wed Feb 9 14:25:22 2022 +0900
+
+    Support analysis mode
+    
+    Let the user choose which Scanner to analyze.
+
+[33mcommit c8957c3d2dd5733aba433bcd7f1c2ce89ce56604[m
+Merge: 8f0b52c 1e62299
+Author: Soim <soim.kim@lge.com>
+Date:   Wed Feb 9 14:03:57 2022 +0900
+
+    Merge pull request #16 from fosslight/temp
+    
+    Add a FOSSLight Reuse
+
+[33mcommit 1e622997848c49705206c88fc8e98f301573c461[m
+Author: Soim Kim <soim.kim@lge.com>
+Date:   Wed Feb 9 10:31:40 2022 +0900
+
+    Add a FOSSLight Reuse
+
+[33mcommit 8f0b52c8a3532588ed981087d0421dff7f469231[m
+Merge: e52d7d9 a50f747
+Author: Soim <soim.kim@lge.com>
+Date:   Wed Feb 9 09:46:21 2022 +0900
+
+    Merge pull request #14 from fosslight/develop
+    
+    Add a FOSSLight Binary
+
+[33mcommit a50f747b45f0caf742bbd5a5772ae375ebf0a710[m
+Author: Soim Kim <soim.kim@lge.com>
+Date:   Tue Feb 8 17:15:12 2022 +0900
+
+    Add a FOSSLight Binary
+
+[33mcommit 14000c8c8a2807ce9baaac25bca456937c5ded1a[m
+Author: Soim Kim <soim.kim@lge.com>
+Date:   Tue Jan 4 13:03:19 2022 +0900
+
+    Add the v option to print the version
+
+[33mcommit e52d7d9c3091539014c47248df214f16320cebf2[m
+Author: github-actions[bot] <runner@fv-az269-561.ngy22jzkcuyepamf0t2wagtycd.xx.internal.cloudapp.net>
+Date:   Thu Nov 25 08:54:26 2021 +0000
+
+    Update ChangeLog
+
+[33mcommit 91918bc37e2bb47e904bca64fb0789235fa8f4b7[m
+Author: github-actions[bot] <runner@fv-az269-561.ngy22jzkcuyepamf0t2wagtycd.xx.internal.cloudapp.net>
+Date:   Thu Nov 25 08:53:55 2021 +0000
+
+    Bump version: 1.6.6 → 1.6.7
+
+[33mcommit b2d79d18f3ab67d22a28228715daee90669d47c3[m
+Author: Soim <soimkim12@gmail.com>
+Date:   Wed Nov 10 15:11:04 2021 +0900
+
+    Add parameter to README
+
+[33mcommit bf094cfd37160d026f018b90fd91d0ef3f48b4dc[m
+Author: Soim Kim <soim.kim@lge.com>
+Date:   Thu Nov 4 15:40:20 2021 +0900
+
+    Print output file instead of path
+
+[33mcommit 9a63b4c02a03f1103e16317d89fdd1e10c2e7883[m
+Author: github-actions[bot] <runner@fv-az132-515.w5jmtgevnbgefpdoz44oxoejwc.bx.internal.cloudapp.net>
+Date:   Thu Nov 4 06:25:56 2021 +0000
+
+    Update ChangeLog
+
+[33mcommit 53cd90577bf3f5b2a3316771d650efc3fd469dc3[m
+Author: github-actions[bot] <runner@fv-az132-515.w5jmtgevnbgefpdoz44oxoejwc.bx.internal.cloudapp.net>
+Date:   Thu Nov 4 06:25:29 2021 +0000
+
+    Bump version: 1.6.5 → 1.6.6
+
+[33mcommit 4bb45b5b23ef9728056a245f1ff0b4ad1539f590[m
+Author: Soim Kim <soim.kim@lge.com>
+Date:   Thu Nov 4 15:14:29 2021 +0900
+
+    Add number of cores to analyze as param
+
+[33mcommit dd7c72bc688480289b1572e5de293821ad5eeb4b[m
+Author: github-actions[bot] <runner@fv-az127-347.nbdmdw4j3xwe5kupbvbpklj4na.phxx.internal.cloudapp.net>
+Date:   Thu Oct 21 09:10:17 2021 +0000
+
+    Update ChangeLog
+
+[33mcommit 38d53d0e8854559b67f20ce910c9138dd14b06da[m
+Author: github-actions[bot] <runner@fv-az127-347.nbdmdw4j3xwe5kupbvbpklj4na.phxx.internal.cloudapp.net>
+Date:   Thu Oct 21 09:09:52 2021 +0000
+
+    Bump version: 1.6.4 → 1.6.5
+
+[33mcommit 6c35c88e474372dee3be6b62f32f76119b2fd2dd[m
+Merge: c713f97 5375b36
+Author: Soim <soimkim12@gmail.com>
+Date:   Thu Oct 21 18:07:51 2021 +0900
+
+    Merge pull request #10 from fosslight/develop
+    
+    Add the -f option and change way to create output
+
+[33mcommit 5375b36a005f44f6dc3d38de3be6cda5d9310122[m
+Author: Soim Kim <soim.kim@lge.com>
+Date:   Mon Oct 18 18:01:46 2021 +0900
+
+    Add the -f option and change way to create output
+
+[33mcommit c713f97b9cb92b71157d3c0e2cad8d03b3fd2193[m
+Merge: e61093d 9baf0e2
+Author: Soim <soimkim12@gmail.com>
+Date:   Mon Oct 18 12:43:25 2021 +0900
+
+    Merge pull request #9 from fosslight/develop
+    
+    Change the parameters related to the scanner path
+
+[33mcommit 9baf0e2ddbc9e5a0bcf7c0967185ec9d4117aa1d[m
+Author: Soim Kim <soim.kim@lge.com>
+Date:   Mon Oct 18 11:35:44 2021 +0900
+
+    Change the parameters related to the scanner path
+    
+    - Execute both FL Source and FL Dependency for the path
+      with the -p option.
+    - Receive the path for FL Source and FL dependency
+      only once in input mode.
+
+[33mcommit e61093df45fa8a7241c50cc7410572e66333feab[m
+Author: github-actions[bot] <runner@fv-az272-933.pipv00pdljkefgdf2xtybwq3aa.xx.internal.cloudapp.net>
+Date:   Thu Oct 7 12:11:00 2021 +0000
+
+    Update ChangeLog
+
+[33mcommit 1ffcac25784222e76ae40827951ee9693b2bcb57[m
+Author: github-actions[bot] <runner@fv-az272-933.pipv00pdljkefgdf2xtybwq3aa.xx.internal.cloudapp.net>
+Date:   Thu Oct 7 12:10:29 2021 +0000
+
+    Bump version: 1.6.3 → 1.6.4
+
+[33mcommit ea6b68e63f93d371d3f3a82c4418b1e9344a4166[m
+Merge: 24b7087 5d4cb90
+Author: Soim <soimkim12@gmail.com>
+Date:   Thu Oct 7 21:08:56 2021 +0900
+
+    Merge pull request #8 from fosslight/develop
+    
+    Change sheet name of Dependency Scan result
+
+[33mcommit 5d4cb90f8a1bd68eed15b36b2cc2aaa73029a746[m
+Author: Soim Kim <soim.kim@lge.com>
+Date:   Thu Oct 7 21:02:15 2021 +0900
+
+    Change sheet name of Dependency Scan result
+
+[33mcommit 24b708781dda4de69fdaebf51c56fec45cbc8d0f[m
+Author: github-actions[bot] <runner@fv-az129-926.unsdhqlsd1aehetrpucgquyceg.gx.internal.cloudapp.net>
+Date:   Wed Oct 6 07:52:11 2021 +0000
+
+    Update ChangeLog
+
+[33mcommit 623ccf6faf03551c02e3ae62c546369f76ceca1b[m
+Author: github-actions[bot] <runner@fv-az129-926.unsdhqlsd1aehetrpucgquyceg.gx.internal.cloudapp.net>
+Date:   Wed Oct 6 07:51:42 2021 +0000
+
+    Bump version: 1.6.2 → 1.6.3
+
+[33mcommit d064706b6d22952d8ac81a7801bd61d591d4dfdc[m
+Merge: 8921e2c 55106b3
+Author: Soim <soimkim12@gmail.com>
+Date:   Wed Oct 6 14:33:48 2021 +0900
+
+    Merge pull request #7 from fosslight/develop
+    
+    Add option -t  for hiding the progress bar
+
+[33mcommit 55106b305777678fedd4a44d3324dade0974e101[m
+Author: Soim Kim <soim.kim@lge.com>
+Date:   Wed Oct 6 14:29:05 2021 +0900
+
+    Add option for hiding the progress bar
+
+[33mcommit 8921e2caf987b7dfc7232a125284ae4e924651af[m
+Author: github-actions[bot] <runner@fv-az129-178.unsdhqlsd1aehetrpucgquyceg.gx.internal.cloudapp.net>
+Date:   Tue Oct 5 12:44:31 2021 +0000
+
+    Update ChangeLog
+
+[33mcommit 2393315ff985e210a41c9d306d5c826cf83bf9e0[m
+Author: github-actions[bot] <runner@fv-az129-178.unsdhqlsd1aehetrpucgquyceg.gx.internal.cloudapp.net>
+Date:   Tue Oct 5 12:44:07 2021 +0000
+
+    Bump version: 1.6.1 → 1.6.2
+
+[33mcommit be1e13d07b59247a5a2ccdcf6de3d8355303f539[m
+Merge: b5b8e48 25190d7
+Author: Soim <soimkim12@gmail.com>
+Date:   Tue Oct 5 21:41:50 2021 +0900
+
+    Specify the output file name
+
+[33mcommit 25190d7a9428edb5f9067d1cf7264f85c05440b7[m
+Author: Soim Kim <soim.kim@lge.com>
+Date:   Tue Oct 5 21:31:15 2021 +0900
+
+    Specify the output file name
+
+[33mcommit b5b8e486220d71a1f82504694d06b7aefddcd989[m
+Author: github-actions[bot] <runner@fv-az182-521.xlcsutvm5t3ellfcnbcbis3udb.bx.internal.cloudapp.net>
+Date:   Fri Oct 1 07:46:33 2021 +0000
+
+    Update ChangeLog
+
+[33mcommit c63dc32a051dd4c5a1477caa1d5216fc5a5671fc[m
+Author: github-actions[bot] <runner@fv-az182-521.xlcsutvm5t3ellfcnbcbis3udb.bx.internal.cloudapp.net>
+Date:   Fri Oct 1 07:46:02 2021 +0000
+
+    Bump version: 1.6.0 → 1.6.1
+
+[33mcommit c6ee9ad4b6e5615fa4fc14dd3b39288b3217888a[m
+Merge: 3f02862 075bd9b
+Author: Soim <soimkim12@gmail.com>
+Date:   Fri Oct 1 16:45:16 2021 +0900
+
+    Merge pull request #5 from fosslight/develop
+    
+    Change the output path of log, source
+
+[33mcommit 075bd9b2c0a987c8514456086d1313dba0f8ef52[m
+Merge: b7512e6 3f02862
+Author: Soim <soimkim12@gmail.com>
+Date:   Fri Oct 1 16:41:29 2021 +0900
+
+    Merge branch 'main' into develop
+
+[33mcommit b7512e6ec992d8280dffd35e8165d4b650abf95c[m
+Author: Soim Kim <soim.kim@lge.com>
+Date:   Fri Oct 1 16:35:31 2021 +0900
+
+    Update output path
+
+[33mcommit 3f0286265176bb30f1e80a430f951f56936a73e5[m
+Author: Soim Kim <soim.kim@lge.com>
+Date:   Fri Sep 24 14:43:11 2021 +0900
+
+    Add the FOSSLight Util minimum version
+
+[33mcommit 48a22040fe8497ae5a7d5392bea33dc2ca8ea683[m
+Author: Soim Kim <soim.kim@lge.com>
+Date:   Fri Sep 24 14:43:11 2021 +0900
+
+    Add the FOSSLight Util minimum version
+
+[33mcommit e7696f83f9531b597ba5ec2721378dbbebdfa386[m
+Author: github-actions[bot] <runner@fv-az199-804.p34kcttjc52uhdeejc3ryfzuef.xx.internal.cloudapp.net>
+Date:   Fri Sep 24 04:53:26 2021 +0000
+
+    Update ChangeLog
+
+[33mcommit 4fb624ea73aaa3d3d78a9e96d2834948959c622b[m
+Author: github-actions[bot] <runner@fv-az199-804.p34kcttjc52uhdeejc3ryfzuef.xx.internal.cloudapp.net>
+Date:   Fri Sep 24 04:52:59 2021 +0000
+
+    Bump version: 1.5.0 → 1.6.0
+
+[33mcommit 38b52ce05baaabfc31ff8e85b81fc8d1de852d3f[m
+Author: Soim Kim <soim.kim@lge.com>
+Date:   Fri Sep 24 13:28:06 2021 +0900
+
+    Update version to 1.5.0
+
+[33mcommit 3271720fdf36fbc680cccafc26005cbdfa5cea72[m
+Author: Soim Kim <soim.kim@lge.com>
+Date:   Fri Sep 24 12:16:41 2021 +0900
+
+    Add a config file for updating version
+
+[33mcommit e120de20fcbd1b79aa56a89189a93f72c0fdcd66[m
+Author: Soim Kim <soim.kim@lge.com>
+Date:   Fri Sep 24 12:02:53 2021 +0900
+
+    Add reuse settings
+
+[33mcommit 3ec2e49d2226c8e5bba0e54694a5e0f48a8f67e1[m
+Author: Soim Kim <soim.kim@lge.com>
+Date:   Fri Sep 24 11:53:38 2021 +0900
+
+    Update README
+
+[33mcommit d843f6ed142aab41d7ca53fcf7472ccc87697903[m
+Author: Soim <soimkim12@gmail.com>
+Date:   Fri Sep 24 11:49:14 2021 +0900
+
+    Update release-drafter-config.yml
+
+[33mcommit 6d55191a4cc1e682442f8578ca504e66978aaf94[m
+Author: Soim Kim <soim.kim@lge.com>
+Date:   Fri Sep 24 11:48:52 2021 +0900
+
+    Add workflows to github
+
+[33mcommit 46974ffacb3c9ee9ce5a932fbb1ee768bdb12e32[m
+Author: Soim Kim <soim.kim@lge.com>
+Date:   Fri Sep 24 11:39:28 2021 +0900
+
+    Update tox commands
+
+[33mcommit 17336a36bca0dc228969a1a92c0b334bfe859aba[m
+Author: Soim Kim <soim.kim@lge.com>
+Date:   Fri Sep 24 11:32:40 2021 +0900
+
+    Fix a bug when downloading source
+
+[33mcommit a934f291de54312ef05718a060e4a80565569b9f[m
+Author: Soim Kim <soim.kim@lge.com>
+Date:   Fri Sep 24 11:28:38 2021 +0900
+
+    Update README
+
+[33mcommit 5e95d8be46c4ab8ddddfd90aa0e2da5d4fb26702[m
+Author: Soim Kim <soim.kim@lge.com>
+Date:   Fri Sep 24 10:50:37 2021 +0900
+
+    Initialize the repository
+
+[33mcommit 9a8dd26871a44603b28c366381a30cabe0329ed2[m
+Author: Soim <soimkim12@gmail.com>
+Date:   Fri Sep 24 09:55:54 2021 +0900
+
+    Initial commit
