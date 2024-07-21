@@ -20,9 +20,10 @@ def parse_setting_json(data):
     correct_fpath = data.get('correct_fpath', '')
     ui = data.get('ui', False)
     exclude_path = data.get('exclude', [])
+    selected_source_scanner = data.get('selected_source_scanner', 'all')
 
     str_lists = [mode, path, exclude_path]
-    strings = [dep_argument, output, format, db_url, correct_fpath, link]
+    strings = [dep_argument, output, format, db_url, correct_fpath, link, selected_source_scanner]
     booleans = [timer, raw, no_correction, ui]
     is_incorrect = False
 
@@ -35,12 +36,14 @@ def parse_setting_json(data):
     for i, target in enumerate(strings):
         if not isinstance(target, str):
             is_incorrect = True
-            str_lists[i] = ''
+            # str_lists[i] = '' -> string을 for문 돌리는데 왜 str_list를 수정하는거지?
+            strings[i] = ''
 
     for i, target in enumerate(booleans):
         if not isinstance(target, bool):
             is_incorrect = True
-            str_lists[i] = False
+            # str_lists[i] = False -> 같은 이유
+            booleans[i] = False
 
     if not isinstance(core, int):
         is_incorrect = True
@@ -50,4 +53,4 @@ def parse_setting_json(data):
         print('Ignoring some values with incorrect format in the setting file.')
 
     return mode, path, dep_argument, output, format, link, db_url, timer, \
-        raw, core, no_correction, correct_fpath, ui, exclude_path
+        raw, core, no_correction, correct_fpath, ui, exclude_path, selected_source_scanner
