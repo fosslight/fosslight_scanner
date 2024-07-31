@@ -160,8 +160,7 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                         src_output = os.path.join("output", output_files["SRC"])
                         output_rel_path = os.path.relpath(abs_path, os.getcwd())
                         command = shlex.quote(f"docker run -it -v {_output_dir}:/app/output "
-                                              f"fosslight -p {output_rel_path} -o {src_output}" 
-                                              f"--selected_scanner {selected_source_scanner}") 
+                                              f"fosslight -p {output_rel_path} -o {src_output}")
                         if path_to_exclude:
                             command += f" -e {' '.join(path_to_exclude)}"
                         command_result = subprocess.run(command, stdout=subprocess.PIPE, text=True)
