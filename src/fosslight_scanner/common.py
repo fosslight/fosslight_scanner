@@ -47,7 +47,7 @@ def run_analysis(path_to_run, params, func, str_run_start, output, exe_path):
     logger.info("## Start to run "+str_run_start)
     return_value = ""
     try:
-        if path_to_run != "":
+        if path_to_run != "":       
             logger.info(f"|--- Path to analyze : {path_to_run}")
             os.chdir(output)
             sys.argv = params

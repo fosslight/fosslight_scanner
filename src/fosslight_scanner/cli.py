@@ -68,6 +68,7 @@ def main():
     parser.add_argument('--correct_fpath', help='Path to the sbom-info.yaml',
                         type=str, required=False, default='')
     parser.add_argument('--ui', help='Generate UI mode result file', action='store_true', required=False, default=False)
+    parser.add_argument('--selected_source_scanner', help='Specify the source scanner to use', type=str, required=False, default='')
 
     try:
         args = parser.parse_args()
