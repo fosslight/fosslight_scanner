@@ -3,7 +3,6 @@
 # Copyright (c) 2021 LG Electronics Inc.
 # SPDX-License-Identifier: Apache-2.0
 
-
 def parse_setting_json(data):
     # check type, if invalid = init value
     mode = data.get('mode', [])
@@ -20,8 +19,8 @@ def parse_setting_json(data):
     correct_fpath = data.get('correct_fpath', '')
     ui = data.get('ui', False)
     exclude_path = data.get('exclude', [])
-    selected_source_scanner = data.get('selected_source_scanner', 'all')
-
+    selected_source_scanner = data.get('selected_source_scanner', '')
+    
     str_lists = [mode, path, exclude_path]
     strings = [dep_argument, output, format, db_url, correct_fpath, link, selected_source_scanner]
     booleans = [timer, raw, no_correction, ui]
@@ -36,13 +35,11 @@ def parse_setting_json(data):
     for i, target in enumerate(strings):
         if not isinstance(target, str):
             is_incorrect = True
-            # str_lists[i] = '' -> string을 for문 돌리는데 왜 str_list를 수정하는거지?
             strings[i] = ''
 
     for i, target in enumerate(booleans):
         if not isinstance(target, bool):
             is_incorrect = True
-            # str_lists[i] = False -> 같은 이유
             booleans[i] = False
 
     if not isinstance(core, int):
