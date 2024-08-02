@@ -103,9 +103,8 @@ def run_dependency(path_to_analyze, output_file_with_path, params="", path_to_ex
 def source_analysis_wrapper(*args, **kwargs):
     selected_scanner = kwargs.pop('selected_scanner', 'all')
     source_write_json_file = kwargs.pop('source_write_json_file', False)
-    # args 리스트에 write_json_file 값을 올바른 위치에 삽입
     args = list(args)
-    args.insert(2, source_write_json_file)  # 2는 write_json_file의 인덱스입니다. 필요에 따라 조정하세요.
+    args.insert(2, source_write_json_file)  
     return source_analysis(*args, selected_scanner=selected_scanner, **kwargs)
 
 def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
@@ -156,11 +155,11 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                                     -1, source_analysis_wrapper,
                                     abs_path,
                                     src_output,
-                                    num_cores,  # write_json_file 위치에 있던 False를 제거하고 다른 인자들을 앞으로 당깁니다
+                                    num_cores, 
                                     False,
                                     path_to_exclude=path_to_exclude,
                                     selected_scanner=selected_source_scanner,
-                                    source_write_json_file=source_write_json_file)  # 여기에 source_write_json_file을 추가
+                                    source_write_json_file=source_write_json_file)  
                         
                     else:  # Run fosslight_source by using docker image
                         src_output = os.path.join("output", output_files["SRC"])
