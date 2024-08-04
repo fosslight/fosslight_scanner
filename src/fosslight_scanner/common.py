@@ -9,6 +9,7 @@ import logging
 import shutil
 import pandas as pd
 import yaml
+
 import fosslight_util.constant as constant
 from fosslight_util.parsing_yaml import parsing_yml
 from fosslight_util.write_yaml import create_yaml_with_ossitem
@@ -20,11 +21,14 @@ from fosslight_util.oss_item import OssItem
 logger = logging.getLogger(constant.LOGGER_NAME)
 SRC_SHEET = 'SRC_FL_Source'
 BIN_SHEET = 'BIN_FL_Binary'
-BIN_EXT_HEADER = {'BIN_FL_Binary': ['ID', 'Binary Path', 'OSS Name',
-                                    'OSS Version', 'License', 'Download Location',
-                                    'Homepage', 'Copyright Text', 'Exclude',
-                                    'Comment', 'Vulnerability Link', 'TLSH', 'SHA1']}
-BIN_HIDDEN_HEADER = {'TLSH', "SHA1"}
+BIN_EXT_HEADER = {
+    'BIN_FL_Binary': [
+        'ID', 'Binary Path', 'OSS Name', 'OSS Version', 'License',
+        'Download Location', 'Homepage', 'Copyright Text', 'Exclude',
+        'Comment', 'Vulnerability Link', 'TLSH', 'SHA1'
+    ]
+}
+BIN_HIDDEN_HEADER = {'TLSH', 'SHA1'}
 
 
 def copy_file(source, destination):
@@ -38,16 +42,15 @@ def copy_file(source, destination):
     except Exception as ex:
         logger.debug(f"Failed to copy {source} to {destination}: {ex}")
         return False, copied_file
-    else:
-        return True, copied_file
+    return True, copied_file
 
 
 def run_analysis(path_to_run, params, func, str_run_start, output, exe_path):
     # This function will be replaced by call_analysis_api().
-    logger.info("## Start to run "+str_run_start)
+    logger.info("## Start to run " + str_run_start)
     return_value = ""
     try:
-        if path_to_run != "":       
+        if path_to_run:
             logger.info(f"|--- Path to analyze : {path_to_run}")
             os.chdir(output)
             sys.argv = params
@@ -68,7 +71,7 @@ def call_analysis_api(path_to_run, str_run_start, return_idx, func, *args, **kwa
     success = True
     result = []
     try:
-        if path_to_run != "":
+        if path_to_run:
             logger.info(f"|--- Path to analyze : {path_to_run}")
             result = func(*args, **kwargs)
         else:
@@ -79,36 +82,33 @@ def call_analysis_api(path_to_run, str_run_start, return_idx, func, *args, **kwa
         success = False
         logger.error(f"{str_run_start}:{ex}")
     try:
-        if success:
-            if result and return_idx >= 0:
-                if len(result) > return_idx:
-                    result = result[return_idx]
-                else:
-                    success = False
+        if success and result and return_idx >= 0:
+            if len(result) > return_idx:
+                result = result[return_idx]
+            else:
+                success = False
     except Exception as ex:
         logger.debug(f"Get return value:{ex}")
         success = False
-    if not result:
-        result = []
-    return success, result
+    return success, result or []
 
 
 def overwrite_excel(excel_file_path, oss_name, column_name='OSS Name'):
-    if oss_name != "":
+    if oss_name:
         try:
             files = os.listdir(excel_file_path)
             for file in files:
                 if file.endswith(".xlsx"):
-                    file = os.path.join(excel_file_path, file)
-                    excel_file = pd.ExcelFile(file, engine='openpyxl')
+                    file_path = os.path.join(excel_file_path, file)
+                    excel_file = pd.ExcelFile(file_path, engine='openpyxl')
 
                     for sheet_name in excel_file.sheet_names:
                         try:
-                            df = pd.read_excel(file, sheet_name=sheet_name, engine='openpyxl')
+                            df = pd.read_excel(file_path, sheet_name=sheet_name, engine='openpyxl')
                             if column_name in df.columns:
                                 updated = (df[column_name] == '') | (df[column_name].isnull())
                                 df.loc[updated, column_name] = oss_name
-                                df.to_excel(file, sheet_name=sheet_name, index=False)
+                                df.to_excel(file_path, sheet_name=sheet_name, index=False)
                         except Exception as ex:
                             logger.debug(f"overwrite_sheet {sheet_name}:{ex}")
         except Exception as ex:
