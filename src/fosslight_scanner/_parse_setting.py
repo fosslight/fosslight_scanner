@@ -23,7 +23,7 @@ def parse_setting_json(data):
     selected_source_scanner = data.get('selected_source_scanner', '')
     source_write_json_file = data.get('source_write_json_file', False)
     source_print_matched_text = data.get('source_print_matched_text', False)
-
+    source_time_out = data.get('source_time_out', 120)
     str_lists = [mode, path, exclude_path]
     strings = [
         dep_argument, output, format, db_url,
@@ -53,9 +53,13 @@ def parse_setting_json(data):
         is_incorrect = True
         core = -1
 
+    if not isinstance(source_time_out, int):
+        is_incorrect = True
+        source_time_out = 120
+
     if is_incorrect:
         print('Ignoring some values with incorrect format in the setting file.')
 
     return mode, path, dep_argument, output, format, link, db_url, timer, \
         raw, core, no_correction, correct_fpath, ui, exclude_path, \
-        selected_source_scanner, source_write_json_file, source_print_matched_text
+        selected_source_scanner, source_write_json_file, source_print_matched_text, source_time_out
