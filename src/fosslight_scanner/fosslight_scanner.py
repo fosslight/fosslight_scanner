@@ -28,7 +28,6 @@ from fosslight_prechecker._precheck import run_lint as prechecker_lint
 from fosslight_util.write_excel import merge_excels, merge_cover_comment
 from fosslight_util.cover import CoverItem
 
-from ._get_input import get_input_mode
 from .common import (
     copy_file, call_analysis_api, overwrite_excel,
     merge_yamls, correct_scanner_result, create_scancodejson
@@ -114,8 +113,10 @@ def run_dependency(path_to_analyze, output_file_with_path, params="", path_to_ex
 def source_analysis_wrapper(*args, **kwargs):
     selected_scanner = kwargs.pop('selected_scanner', 'all')
     source_write_json_file = kwargs.pop('source_write_json_file', False)
+    source_print_matched_text = kwargs.pop('source_print_matched_text', False)
     args = list(args)
     args.insert(2, source_write_json_file)
+    args.insert(5, source_print_matched_text)
     return source_analysis(*args, selected_scanner=selected_scanner, **kwargs)
 
 
@@ -125,7 +126,7 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                 output_extension="", num_cores=-1, db_url="",
                 default_oss_name="", default_oss_version="", url="",
                 correct_mode=True, correct_fpath="", ui_mode=False, path_to_exclude=[],
-                selected_source_scanner="all", source_write_json_file=False):
+                selected_source_scanner="all", source_write_json_file=False, source_print_matched_text=False):
     final_excel_dir = output_path
     success = True
     temp_output_fiiles = []
@@ -175,6 +176,8 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                                     path_to_exclude=path_to_exclude,
                                     selected_scanner=selected_source_scanner,
                                     source_write_json_file=source_write_json_file,
+                                    source_print_matched_text=source_print_matched_text,
+
                         )
 
                     else:  # Run fosslight_source by using docker image
@@ -335,7 +338,7 @@ def init(output_path="", make_outdir=True):
 def run_main(mode_list, path_arg, dep_arguments, output_file_or_dir, file_format, url_to_analyze,
              db_url, hide_progressbar=False, keep_raw_data=False, num_cores=-1,
              correct_mode=True, correct_fpath="", ui_mode=False, path_to_exclude=[],
-             selected_source_scanner="all", source_write_json_file=False):
+             selected_source_scanner="all", source_write_json_file=False, source_print_matched_text=False):
     global _executed_path, _start_time
 
     output_file = ""
@@ -453,7 +456,8 @@ def run_main(mode_list, path_arg, dep_arguments, output_file_or_dir, file_format
                                 remove_downloaded_source, {}, output_file,
                                 output_extension, num_cores, db_url,
                                 default_oss_name, default_oss_version, url_to_analyze,
-                                correct_mode, correct_fpath, ui_mode, path_to_exclude)
+                                correct_mode, correct_fpath, ui_mode, path_to_exclude,
+                                selected_source_scanner, source_write_json_file, source_print_matched_text)
 
                 if extract_folder:
                     shutil.rmtree(extract_folder)
