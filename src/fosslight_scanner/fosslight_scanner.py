@@ -114,10 +114,12 @@ def source_analysis_wrapper(*args, **kwargs):
     selected_scanner = kwargs.pop('selected_scanner', 'all')
     source_write_json_file = kwargs.pop('source_write_json_file', False)
     source_print_matched_text = kwargs.pop('source_print_matched_text', False)
+    source_time_out = kwargs.pop('source_time_out', 120)
     args = list(args)
     args.insert(2, source_write_json_file)
     args.insert(5, source_print_matched_text)
-    return source_analysis(*args, selected_scanner=selected_scanner, **kwargs)
+
+    return source_analysis(*args, selected_scanner=selected_scanner, time_out=source_time_out, **kwargs)
 
 
 def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
@@ -126,7 +128,8 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                 output_extension="", num_cores=-1, db_url="",
                 default_oss_name="", default_oss_version="", url="",
                 correct_mode=True, correct_fpath="", ui_mode=False, path_to_exclude=[],
-                selected_source_scanner="all", source_write_json_file=False, source_print_matched_text=False):
+                selected_source_scanner="all", source_write_json_file=False, source_print_matched_text=False,
+                source_time_out=120):
     final_excel_dir = output_path
     success = True
     temp_output_fiiles = []
@@ -177,7 +180,7 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                                     selected_scanner=selected_source_scanner,
                                     source_write_json_file=source_write_json_file,
                                     source_print_matched_text=source_print_matched_text,
-
+                                    source_time_out=source_time_out
                         )
 
                     else:  # Run fosslight_source by using docker image
@@ -338,7 +341,8 @@ def init(output_path="", make_outdir=True):
 def run_main(mode_list, path_arg, dep_arguments, output_file_or_dir, file_format, url_to_analyze,
              db_url, hide_progressbar=False, keep_raw_data=False, num_cores=-1,
              correct_mode=True, correct_fpath="", ui_mode=False, path_to_exclude=[],
-             selected_source_scanner="all", source_write_json_file=False, source_print_matched_text=False):
+             selected_source_scanner="all", source_write_json_file=False, source_print_matched_text=False,
+             source_time_out=120):
     global _executed_path, _start_time
 
     output_file = ""
@@ -457,7 +461,7 @@ def run_main(mode_list, path_arg, dep_arguments, output_file_or_dir, file_format
                                 output_extension, num_cores, db_url,
                                 default_oss_name, default_oss_version, url_to_analyze,
                                 correct_mode, correct_fpath, ui_mode, path_to_exclude,
-                                selected_source_scanner, source_write_json_file, source_print_matched_text)
+                                selected_source_scanner, source_write_json_file, source_print_matched_text, source_time_out)
 
                 if extract_folder:
                     shutil.rmtree(extract_folder)

@@ -15,14 +15,15 @@ from fosslight_util.help import print_package_version
 
 def set_args(mode, path, dep_argument, output, format, link, db_url, timer,
              raw, core, no_correction, correct_fpath, ui, setting, exclude_path,
-             selected_source_scanner, source_write_json_file, source_print_matched_text):
+             selected_source_scanner, source_write_json_file, source_print_matched_text, source_time_out):
     if setting and os.path.isfile(setting):
         try:
             with open(setting, 'r', encoding='utf-8') as file:
                 data = json.load(file)
             s_mode, s_path, s_dep_argument, s_output, s_format, s_link, s_db_url, s_timer, s_raw, s_core, \
                 s_no_correction, s_correct_fpath, s_ui, s_exclude_path, \
-                s_selected_source_scanner, s_source_write_json_file, s_source_print_matched_text = parse_setting_json(data)
+                s_selected_source_scanner, s_source_write_json_file, s_source_print_matched_text, \
+                s_source_time_out = parse_setting_json(data)
 
             # direct cli arguments have higher priority than setting file
             mode = mode or s_mode
@@ -34,7 +35,7 @@ def set_args(mode, path, dep_argument, output, format, link, db_url, timer,
             db_url = db_url or s_db_url
             timer = timer or s_timer
             raw = raw or s_raw
-            core = core or s_core
+            core = core if core != -1 else s_core
             no_correction = no_correction or s_no_correction
             correct_fpath = correct_fpath or s_correct_fpath
             ui = ui or s_ui
@@ -42,12 +43,12 @@ def set_args(mode, path, dep_argument, output, format, link, db_url, timer,
             selected_source_scanner = selected_source_scanner or s_selected_source_scanner
             source_write_json_file = source_write_json_file or s_source_write_json_file
             source_print_matched_text = source_print_matched_text or s_source_print_matched_text
-
+            source_time_out = source_time_out if source_time_out != 120 else s_source_time_out
         except Exception as e:
             print(f"Cannot open setting file: {e}")
     return mode, path, dep_argument, output, format, link, db_url, timer, \
         raw, core, no_correction, correct_fpath, ui, exclude_path, \
-        selected_source_scanner, source_write_json_file, source_print_matched_text,
+        selected_source_scanner, source_write_json_file, source_print_matched_text, source_time_out
 
 
 def main():
@@ -101,6 +102,9 @@ def main():
     parser.add_argument('--source_print_matched_text',
                         help='Print additional information for scan result on separate sheets',
                         required=False, default=False)
+    parser.add_argument('--source_time_out',
+                        help='Stop scancode scanning if scanning takes longer than a timeout in seconds',
+                        type=int, dest='source_time_out', default=120)
 
     try:
         args = parser.parse_args()
@@ -113,16 +117,19 @@ def main():
         print_package_version(PKG_NAME, "FOSSLight Scanner Version:")
     else:
         mode, path, dep_argument, output, format, link, db_url, timer, raw, core, no_correction, correct_fpath, \
-            ui, exclude_path, selected_source_scanner, source_write_json_file, source_print_matched_text = set_args(
+            ui, exclude_path, selected_source_scanner, source_write_json_file, source_print_matched_text, \
+            source_time_out = set_args(
                 args.mode, args.path, args.dep_argument, args.output,
                 args.format, args.link, args.db_url, args.timer, args.raw,
                 args.core, args.no_correction, args.correct_fpath, args.ui,
                 args.setting, args.exclude_path, args.selected_source_scanner,
-                args.source_write_json_file, args.source_print_matched_text,)
+                args.source_write_json_file, args.source_print_matched_text,
+                args.source_time_out,)
 
         run_main(mode, path, dep_argument, output, format, link, db_url, timer,
                  raw, core, not no_correction, correct_fpath, ui, exclude_path,
-                 selected_source_scanner, source_write_json_file, source_print_matched_text,)
+                 selected_source_scanner, source_write_json_file, source_print_matched_text,
+                 source_time_out,)
 
 
 if __name__ == "__main__":

@@ -15,5 +15,6 @@
   "exclude": ["test", "sample_license.txt"],
   "selected_source_scanner": "scancode",  
   "source_write_json_file": true,
-  "source_print_matched_text": true
+  "source_print_matched_text": true,
+  "source_time_out": 120
 }
