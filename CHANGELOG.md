@@ -1,5 +1,17 @@
 # Changelog
 
+## v1.7.30 (22/07/2024)
+## Changes
+## 🚀 Features
+
+- Run with compressed file @bjk7119 (#105)
+
+## 🔧 Maintenance
+
+- Remove to create bin.txt @bjk7119 (#100)
+
+---
+
 ## v1.7.29 (08/07/2024)
 ## Changes
 ## 🚀 Features
@@ -279,17 +291,3 @@
 ## 🐛 Hotfixes
 
 - Change FL Reuse to FL Prechecker @bjk7119 (#43)
-
----
-
-## v1.7.0 (22/07/2022)
-## Changes
-## 🚀 Features
-
-- Add compare mode @dd-jy (#38)
-
-## 🔧 Maintenance
-
-- Replace 'y' option to 'p' option. @dd-jy (#41)
-- Fix scanner support format and not to create csv. @dd-jy (#40)
-- Print message when comparison rows are over 100. @dd-jy (#39)
