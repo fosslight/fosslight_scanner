@@ -15,14 +15,14 @@ from fosslight_util.help import print_package_version
 
 def set_args(mode, path, dep_argument, output, format, link, db_url, timer,
              raw, core, no_correction, correct_fpath, ui, setting, exclude_path,
-             selected_source_scanner, source_write_json_file):
+             selected_source_scanner, source_write_json_file, source_print_matched_text):
     if setting and os.path.isfile(setting):
         try:
             with open(setting, 'r', encoding='utf-8') as file:
                 data = json.load(file)
             s_mode, s_path, s_dep_argument, s_output, s_format, s_link, s_db_url, s_timer, s_raw, s_core, \
                 s_no_correction, s_correct_fpath, s_ui, s_exclude_path, \
-                s_selected_source_scanner, s_source_write_json_file = parse_setting_json(data)
+                s_selected_source_scanner, s_source_write_json_file, s_source_print_matched_text = parse_setting_json(data)
 
             # direct cli arguments have higher priority than setting file
             mode = mode or s_mode
@@ -39,16 +39,15 @@ def set_args(mode, path, dep_argument, output, format, link, db_url, timer,
             correct_fpath = correct_fpath or s_correct_fpath
             ui = ui or s_ui
             exclude_path = exclude_path or s_exclude_path
-            selected_source_scanner = (selected_source_scanner or
-                                       s_selected_source_scanner)
-            source_write_json_file = (source_write_json_file or
-                                      s_source_write_json_file)
+            selected_source_scanner = selected_source_scanner or s_selected_source_scanner
+            source_write_json_file = source_write_json_file or s_source_write_json_file
+            source_print_matched_text = source_print_matched_text or s_source_print_matched_text
 
         except Exception as e:
             print(f"Cannot open setting file: {e}")
-    return (mode, path, dep_argument, output, format, link, db_url, timer,
-            raw, core, no_correction, correct_fpath, ui, exclude_path,
-            selected_source_scanner, source_write_json_file)
+    return mode, path, dep_argument, output, format, link, db_url, timer, \
+        raw, core, no_correction, correct_fpath, ui, exclude_path, \
+        selected_source_scanner, source_write_json_file, source_print_matched_text,
 
 
 def main():
@@ -99,6 +98,9 @@ def main():
     parser.add_argument('--source_write_json_file',
                         help='Generate raw result of scanners in json format',
                         required=False, default=False)
+    parser.add_argument('--source_print_matched_text',
+                        help='Print additional information for scan result on separate sheets',
+                        required=False, default=False)
 
     try:
         args = parser.parse_args()
@@ -111,16 +113,16 @@ def main():
         print_package_version(PKG_NAME, "FOSSLight Scanner Version:")
     else:
         mode, path, dep_argument, output, format, link, db_url, timer, raw, core, no_correction, correct_fpath, \
-            ui, exclude_path, selected_source_scanner, source_write_json_file = set_args(
+            ui, exclude_path, selected_source_scanner, source_write_json_file, source_print_matched_text = set_args(
                 args.mode, args.path, args.dep_argument, args.output,
                 args.format, args.link, args.db_url, args.timer, args.raw,
                 args.core, args.no_correction, args.correct_fpath, args.ui,
                 args.setting, args.exclude_path, args.selected_source_scanner,
-                args.source_write_json_file)
+                args.source_write_json_file, args.source_print_matched_text,)
 
         run_main(mode, path, dep_argument, output, format, link, db_url, timer,
                  raw, core, not no_correction, correct_fpath, ui, exclude_path,
-                 selected_source_scanner, source_write_json_file)
+                 selected_source_scanner, source_write_json_file, source_print_matched_text,)
 
 
 if __name__ == "__main__":

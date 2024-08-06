@@ -22,13 +22,14 @@ def parse_setting_json(data):
     exclude_path = data.get('exclude', [])
     selected_source_scanner = data.get('selected_source_scanner', '')
     source_write_json_file = data.get('source_write_json_file', False)
+    source_print_matched_text = data.get('source_print_matched_text', False)
 
     str_lists = [mode, path, exclude_path]
     strings = [
         dep_argument, output, format, db_url,
         correct_fpath, link, selected_source_scanner
     ]
-    booleans = [timer, raw, no_correction, ui, source_write_json_file]
+    booleans = [timer, raw, no_correction, ui, source_write_json_file, source_print_matched_text]
     is_incorrect = False
 
     # check if json file is incorrect format
@@ -56,4 +57,5 @@ def parse_setting_json(data):
         print('Ignoring some values with incorrect format in the setting file.')
 
     return mode, path, dep_argument, output, format, link, db_url, timer, \
-        raw, core, no_correction, correct_fpath, ui, exclude_path, selected_source_scanner, source_write_json_file
+        raw, core, no_correction, correct_fpath, ui, exclude_path, \
+        selected_source_scanner, source_write_json_file, source_print_matched_text
