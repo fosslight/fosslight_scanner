@@ -14,6 +14,7 @@ from ._help import print_help_msg
 from .fosslight_scanner import run_main, PKG_NAME
 from ._parse_setting import parse_setting_json
 from fosslight_util.help import print_package_version
+import os.path
 
 
 def print_make_license_notice(output_dir=None):
@@ -56,6 +57,7 @@ def set_args(mode, path, dep_argument, output, format, link, db_url, timer,
              raw, core, no_correction, correct_fpath, ui, setting, exclude_path,
              selected_source_scanner, source_write_json_file, source_print_matched_text, source_time_out,
              binary_simple, binary_notice):
+
     if setting and os.path.isfile(setting):
         try:
             with open(setting, 'r', encoding='utf-8') as file:
