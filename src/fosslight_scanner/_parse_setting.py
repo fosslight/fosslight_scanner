@@ -24,12 +24,14 @@ def parse_setting_json(data):
     source_write_json_file = data.get('source_write_json_file', False)
     source_print_matched_text = data.get('source_print_matched_text', False)
     source_time_out = data.get('source_time_out', 120)
+    binary_simple = data.get('binary_simple', False)
+    binary_notice = data.get('binary_notice', False)
     str_lists = [mode, path, exclude_path]
     strings = [
         dep_argument, output, format, db_url,
         correct_fpath, link, selected_source_scanner
     ]
-    booleans = [timer, raw, no_correction, ui, source_write_json_file, source_print_matched_text]
+    booleans = [timer, raw, no_correction, ui, source_write_json_file, source_print_matched_text, binary_simple, binary_notice]
     is_incorrect = False
 
     # check if json file is incorrect format
@@ -62,4 +64,5 @@ def parse_setting_json(data):
 
     return mode, path, dep_argument, output, format, link, db_url, timer, \
         raw, core, no_correction, correct_fpath, ui, exclude_path, \
-        selected_source_scanner, source_write_json_file, source_print_matched_text, source_time_out
+        selected_source_scanner, source_write_json_file, source_print_matched_text, source_time_out, \
+        binary_simple, binary_notice

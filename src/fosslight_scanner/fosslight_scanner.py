@@ -129,7 +129,7 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                 default_oss_name="", default_oss_version="", url="",
                 correct_mode=True, correct_fpath="", ui_mode=False, path_to_exclude=[],
                 selected_source_scanner="all", source_write_json_file=False, source_print_matched_text=False,
-                source_time_out=120):
+                source_time_out=120, binary_simple=False):
     final_excel_dir = output_path
     success = True
     temp_output_fiiles = []
@@ -201,7 +201,7 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                                                1, binary_analysis.find_binaries,
                                                abs_path,
                                                os.path.join(_output_dir, output_files["BIN"]),
-                                               "", db_url, False,
+                                               "", db_url, binary_simple,
                                                correct_mode, correct_fpath,
                                                path_to_exclude=path_to_exclude)
 
@@ -342,7 +342,7 @@ def run_main(mode_list, path_arg, dep_arguments, output_file_or_dir, file_format
              db_url, hide_progressbar=False, keep_raw_data=False, num_cores=-1,
              correct_mode=True, correct_fpath="", ui_mode=False, path_to_exclude=[],
              selected_source_scanner="all", source_write_json_file=False, source_print_matched_text=False,
-             source_time_out=120):
+             source_time_out=120, binary_simple=False):
     global _executed_path, _start_time
 
     output_file = ""
@@ -461,7 +461,8 @@ def run_main(mode_list, path_arg, dep_arguments, output_file_or_dir, file_format
                                 output_extension, num_cores, db_url,
                                 default_oss_name, default_oss_version, url_to_analyze,
                                 correct_mode, correct_fpath, ui_mode, path_to_exclude,
-                                selected_source_scanner, source_write_json_file, source_print_matched_text, source_time_out)
+                                selected_source_scanner, source_write_json_file, source_print_matched_text, source_time_out,
+                                binary_simple,)
 
                 if extract_folder:
                     shutil.rmtree(extract_folder)
