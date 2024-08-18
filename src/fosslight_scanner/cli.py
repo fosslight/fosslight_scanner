@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 # Copyright (c) 2022 LG Electronics Inc.
 # SPDX-License-Identifier: Apache-2.0
-import importlib
-from pathlib import Path
 import sys
 import json
 import os
@@ -14,49 +12,16 @@ from ._help import print_help_msg
 from .fosslight_scanner import run_main, PKG_NAME
 from ._parse_setting import parse_setting_json
 from fosslight_util.help import print_package_version
-import os.path
-
-
-def print_make_license_notice(output_dir=None):
-    try:
-        # fosslight_binary 패키지의 위치 찾기
-        spec = importlib.util.find_spec("fosslight_binary")
-        if spec is None:
-            print("fosslight_binary package not found")
-            return
-
-        package_root = Path(spec.origin).parent
-
-        licenses_path = package_root / "LICENSES"
-
-        if not licenses_path.exists():
-            print(f"LICENSES directory not found at {licenses_path}")
-            return
-
-        license_content = f"*** {PKG_NAME} open source license notice ***\n\n"
-        for license_file in licenses_path.glob("*"):
-            if license_file.is_file():
-                with open(license_file, 'r', encoding='utf8') as f:
-                    file_content = f.read()
-                    license_content += file_content
-                    license_content += "\n" + "="*80 + "\n\n"
-
-        if output_dir:
-            output_path = Path(output_dir) / f"{PKG_NAME}_licenses.txt"
-            with open(output_path, 'w', encoding='utf8') as f:
-                f.write(license_content)
-            print(f"License notice has been saved to: {output_path}")
-
-        print(license_content)
-
-    except Exception as e:
-        print(f"Error while printing license notice: {e}")
 
 
 def set_args(mode, path, dep_argument, output, format, link, db_url, timer,
-             raw, core, no_correction, correct_fpath, ui, setting, exclude_path,
-             selected_source_scanner, source_write_json_file, source_print_matched_text, source_time_out,
-             binary_simple, binary_notice):
+             raw, core, no_correction, correct_fpath, ui, setting, exclude_path):
+
+    selected_source_scanner = "all"
+    source_write_json_file = False
+    source_print_matched_text = False
+    source_time_out = 120
+    binary_simple = False
 
     if setting and os.path.isfile(setting):
         try:
@@ -65,7 +30,7 @@ def set_args(mode, path, dep_argument, output, format, link, db_url, timer,
             s_mode, s_path, s_dep_argument, s_output, s_format, s_link, s_db_url, s_timer, s_raw, s_core, \
                 s_no_correction, s_correct_fpath, s_ui, s_exclude_path, \
                 s_selected_source_scanner, s_source_write_json_file, s_source_print_matched_text, \
-                s_source_time_out, s_binary_simple, s_binary_notice = parse_setting_json(data)
+                s_source_time_out, s_binary_simple, = parse_setting_json(data)
 
             # direct cli arguments have higher priority than setting file
             mode = mode or s_mode
@@ -82,18 +47,20 @@ def set_args(mode, path, dep_argument, output, format, link, db_url, timer,
             correct_fpath = correct_fpath or s_correct_fpath
             ui = ui or s_ui
             exclude_path = exclude_path or s_exclude_path
-            selected_source_scanner = selected_source_scanner or s_selected_source_scanner
-            source_write_json_file = source_write_json_file or s_source_write_json_file
-            source_print_matched_text = source_print_matched_text or s_source_print_matched_text
-            source_time_out = source_time_out if source_time_out != 120 else s_source_time_out
-            binary_simple = binary_simple or s_binary_simple
-            binary_notice = binary_notice if binary_notice is not False else s_binary_notice
+
+            # These options are only set from the setting file, not from CLI arguments
+            selected_source_scanner = s_selected_source_scanner or selected_source_scanner
+            source_write_json_file = s_source_write_json_file
+            source_print_matched_text = s_source_print_matched_text
+            source_time_out = s_source_time_out if s_source_time_out != 120 else source_time_out
+            binary_simple = s_binary_simple
+
         except Exception as e:
             print(f"Cannot open setting file: {e}")
     return mode, path, dep_argument, output, format, link, db_url, timer, \
         raw, core, no_correction, correct_fpath, ui, exclude_path, \
         selected_source_scanner, source_write_json_file, source_print_matched_text, source_time_out, \
-        binary_simple, binary_notice
+        binary_simple,
 
 
 def main():
@@ -138,24 +105,6 @@ def main():
                         type=str, required=False, default='')
     parser.add_argument('--ui', help='Generate UI mode result file',
                         action='store_true', required=False, default=False)
-    parser.add_argument('--selected_source_scanner',
-                        help='Specify the source scanner to use',
-                        type=str, required=False, default='')
-    parser.add_argument('--source_write_json_file',
-                        help='Generate raw result of scanners in json format',
-                        required=False, default=False)
-    parser.add_argument('--source_print_matched_text',
-                        help='Print additional information for scan result on separate sheets',
-                        required=False, default=False)
-    parser.add_argument('--source_time_out',
-                        help='Stop scancode scanning if scanning takes longer than a timeout in seconds',
-                        type=int, dest='source_time_out', default=120)
-    parser.add_argument('--binary_simple',
-                        help='Extract only the binary list in simple mode',
-                        action='store_true', required=False, default=False)
-    parser.add_argument('--binary_notice',
-                        help='Print the open source license notice text',
-                        action='store_true', required=False, default=False)
 
     try:
         args = parser.parse_args()
@@ -169,21 +118,16 @@ def main():
     else:
         mode, path, dep_argument, output, format, link, db_url, timer, raw, core, no_correction, correct_fpath, \
             ui, exclude_path, selected_source_scanner, source_write_json_file, source_print_matched_text, \
-            source_time_out, binary_simple, binary_notice = set_args(
+            source_time_out, binary_simple, = set_args(
                 args.mode, args.path, args.dep_argument, args.output,
                 args.format, args.link, args.db_url, args.timer, args.raw,
                 args.core, args.no_correction, args.correct_fpath, args.ui,
-                args.setting, args.exclude_path, args.selected_source_scanner,
-                args.source_write_json_file, args.source_print_matched_text,
-                args.source_time_out, args.binary_simple, args.binary_notice)
+                args.setting, args.exclude_path)
 
         run_main(mode, path, dep_argument, output, format, link, db_url, timer,
                  raw, core, not no_correction, correct_fpath, ui, exclude_path,
                  selected_source_scanner, source_write_json_file, source_print_matched_text,
                  source_time_out, binary_simple,)
-    if binary_notice:
-        print_make_license_notice(output_dir=output)
-        sys.exit(0)
 
 
 if __name__ == "__main__":
