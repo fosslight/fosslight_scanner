@@ -56,8 +56,7 @@ SCANNER_MODE = [
 
 
 def run_dependency(path_to_analyze, output_file_with_path, params="", path_to_exclude=None):
-    if path_to_exclude is None:
-        path_to_exclude = []
+    path_to_exclude = []
     result_list = []
 
     package_manager = ""
@@ -462,7 +461,7 @@ def run_main(mode_list, path_arg, dep_arguments, output_file_or_dir, file_format
                                 default_oss_name, default_oss_version, url_to_analyze,
                                 correct_mode, correct_fpath, ui_mode, path_to_exclude,
                                 selected_source_scanner, source_write_json_file, source_print_matched_text, source_time_out,
-                                binary_simple,)
+                                binary_simple)
 
                 if extract_folder:
                     shutil.rmtree(extract_folder)
