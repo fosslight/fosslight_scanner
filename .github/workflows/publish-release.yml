@@ -30,7 +30,7 @@ jobs:
         echo New version: ${new_version}
         git config --global user.name "github-actions[bot]"
         git config --global user.email "fosslight-dev@lge.com"
-        bumpversion --current-version $last_version --new-version $new_version setup.py
+        bumpversion patch --current-version $last_version --new-version $new_version setup.py
     - name: update changelog with gren
       env:
         GREN_GITHUB_TOKEN: ${{ secrets.TOKEN }}

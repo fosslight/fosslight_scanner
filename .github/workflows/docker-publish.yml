@@ -26,5 +26,5 @@ jobs:
         context: .
         push: true
         tags: |
-          your-dockerhub-username/fosslight_scanner:latest
-          your-dockerhub-username/fosslight_scanner:${{ github.event.release.tag_name }}
+          nanayah99/fosslight_scanner:latest
+          nanayah99/fosslight_scanner:${{ github.event.release.tag_name }}
