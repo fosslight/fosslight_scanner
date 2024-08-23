@@ -39,17 +39,17 @@ jobs:
       run: |
         npm install github-release-notes@0.17.3
         node_modules/.bin/gren changelog --override
-    # - name: Commit files
-    #   run: |
-    #     git config --global user.name "github-actions[bot]"
-    #     git config --global user.email "fosslight-dev@lge.com"
-    #     git add CHANGELOG.md
-    #     git commit -m "Update ChangeLog"
-    # - name: Push changes
-    #   uses: ad-m/github-push-action@master
-    #   with:
-    #     github_token: ${{ secrets.TOKEN }}
-    #     branch: main
+    - name: Commit files
+      run: |
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "fosslight-dev@lge.com"
+        git add CHANGELOG.md
+        git commit -m "Update ChangeLog"
+    - name: Push changes
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.TOKEN }}
+        branch: main
 
   deploy:
     runs-on: ubuntu-latest
