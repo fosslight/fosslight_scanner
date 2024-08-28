@@ -48,6 +48,7 @@ jobs:
         git add CHANGELOG.md
         git commit -m "Update ChangeLog"
     - name: Push changes
+      continue-on-error: true
       uses: ad-m/github-push-action@master
       with:
         github_token: ${{ secrets.TOKEN }}
