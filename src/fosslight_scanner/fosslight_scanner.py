@@ -55,8 +55,7 @@ SCANNER_MODE = [
 ]
 
 
-def run_dependency(path_to_analyze, output_file_with_path, params="", path_to_exclude=None):
-    path_to_exclude = []
+def run_dependency(path_to_analyze, output_file_with_path, params="", path_to_exclude=[]):
     result_list = []
 
     package_manager = ""
