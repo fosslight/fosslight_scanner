@@ -4,16 +4,17 @@
 # Copyright (c) 2020 LG Electronics Inc.
 # SPDX-License-Identifier: Apache-2.0
 import os
+import sys
+import re
 import logging
 import warnings
-import re
 import yaml
-import sys
 import shutil
 import shlex
 import subprocess
 from pathlib import Path
 from datetime import datetime
+
 from fosslight_binary import binary_analysis
 from fosslight_dependency.run_dependency_scanner import run_dependency_scanner
 from fosslight_util.download import cli_download_and_extract, compression_extension
@@ -24,13 +25,15 @@ from fosslight_util.timer_thread import TimerThread
 import fosslight_util.constant as constant
 from fosslight_util.output_format import check_output_format
 from fosslight_prechecker._precheck import run_lint as prechecker_lint
-from .common import (copy_file, call_analysis_api,
-                     overwrite_excel,
-                     merge_yamls, correct_scanner_result,
-                     create_scancodejson)
 from fosslight_util.write_excel import merge_excels, merge_cover_comment
-from ._run_compare import run_compare
 from fosslight_util.cover import CoverItem
+
+from .common import (
+    copy_file, call_analysis_api, overwrite_excel,
+    merge_yamls, correct_scanner_result, create_scancodejson
+)
+from ._run_compare import run_compare
+
 fosslight_source_installed = True
 try:
     from fosslight_source.cli import run_scanners as source_analysis
@@ -46,10 +49,14 @@ _log_file = "fosslight_log_all_"
 _start_time = ""
 _executed_path = ""
 SRC_DIR_FROM_LINK_PREFIX = "fosslight_src_dir_"
-SCANNER_MODE = ["all", "compare", "reuse", "prechecker", "binary", "bin", "src", "source", "dependency", "dep"]
+SCANNER_MODE = [
+    "all", "compare", "reuse", "prechecker", "binary",
+    "bin", "src", "source", "dependency", "dep"
+]
 
 
-def run_dependency(path_to_analyze, output_file_with_path, params="", path_to_exclude=[]):
+def run_dependency(path_to_analyze, output_file_with_path, params="", path_to_exclude=None):
+    path_to_exclude = []
     result_list = []
 
     package_manager = ""
@@ -60,7 +67,7 @@ def run_dependency(path_to_analyze, output_file_with_path, params="", path_to_ex
     github_token = ""
 
     try:
-        if params != "":
+        if params:
             match_obj = re.findall(
                 r'\s*(-\s*[a|d|m|c|n|t])\s*\'([^\']+)\'\s*', params)
             for param, value in match_obj:
@@ -84,22 +91,34 @@ def run_dependency(path_to_analyze, output_file_with_path, params="", path_to_ex
     timer.start()
 
     try:
-        success, result = call_analysis_api(path_to_analyze, "Dependency Analysis",
-                                            1, run_dependency_scanner,
-                                            package_manager,
-                                            os.path.abspath(path_to_analyze),
-                                            output_file_with_path,
-                                            pip_activate_cmd, pip_deactivate_cmd,
-                                            output_custom_dir, app_name,
-                                            github_token, path_to_exclude=path_to_exclude)
+        success, result = call_analysis_api(
+            path_to_analyze, "Dependency Analysis",
+            1, run_dependency_scanner,
+            package_manager,
+            os.path.abspath(path_to_analyze),
+            output_file_with_path,
+            pip_activate_cmd, pip_deactivate_cmd,
+            output_custom_dir, app_name,
+            github_token, path_to_exclude=path_to_exclude
+        )
         if success:
             result_list = result.get('SRC_FL_Dependency')
     except Exception as ex:
         logger.warning(f"Run dependency: {ex}")
 
-    if not result_list:
-        result_list = []
-    return result_list
+    return result_list or []
+
+
+def source_analysis_wrapper(*args, **kwargs):
+    selected_scanner = kwargs.pop('selected_scanner', 'all')
+    source_write_json_file = kwargs.pop('source_write_json_file', False)
+    source_print_matched_text = kwargs.pop('source_print_matched_text', False)
+    source_time_out = kwargs.pop('source_time_out', 120)
+    args = list(args)
+    args.insert(2, source_write_json_file)
+    args.insert(5, source_print_matched_text)
+
+    return source_analysis(*args, selected_scanner=selected_scanner, time_out=source_time_out, **kwargs)
 
 
 def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
@@ -107,7 +126,9 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                 remove_src_data=True, result_log={}, output_file="",
                 output_extension="", num_cores=-1, db_url="",
                 default_oss_name="", default_oss_version="", url="",
-                correct_mode=True, correct_fpath="", ui_mode=False, path_to_exclude=[]):
+                correct_mode=True, correct_fpath="", ui_mode=False, path_to_exclude=[],
+                selected_source_scanner="all", source_write_json_file=False, source_print_matched_text=False,
+                source_time_out=120, binary_simple=False):
     final_excel_dir = output_path
     success = True
     temp_output_fiiles = []
@@ -146,12 +167,21 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                 try:
                     if fosslight_source_installed:
                         src_output = os.path.join(_output_dir, output_files["SRC"])
-                        success, result = call_analysis_api(src_path, "Source Analysis",
-                                                            -1, source_analysis,
-                                                            abs_path,
-                                                            src_output,
-                                                            False, num_cores, False,
-                                                            path_to_exclude=path_to_exclude)
+                        success, result = call_analysis_api(
+                                    src_path,
+                                    "Source Analysis",
+                                    -1, source_analysis_wrapper,
+                                    abs_path,
+                                    src_output,
+                                    num_cores,
+                                    False,
+                                    path_to_exclude=path_to_exclude,
+                                    selected_scanner=selected_source_scanner,
+                                    source_write_json_file=source_write_json_file,
+                                    source_print_matched_text=source_print_matched_text,
+                                    source_time_out=source_time_out
+                        )
+
                     else:  # Run fosslight_source by using docker image
                         src_output = os.path.join("output", output_files["SRC"])
                         output_rel_path = os.path.relpath(abs_path, os.getcwd())
@@ -170,7 +200,7 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                                                1, binary_analysis.find_binaries,
                                                abs_path,
                                                os.path.join(_output_dir, output_files["BIN"]),
-                                               "", db_url, False,
+                                               "", db_url, binary_simple,
                                                correct_mode, correct_fpath,
                                                path_to_exclude=path_to_exclude)
 
@@ -309,7 +339,9 @@ def init(output_path="", make_outdir=True):
 
 def run_main(mode_list, path_arg, dep_arguments, output_file_or_dir, file_format, url_to_analyze,
              db_url, hide_progressbar=False, keep_raw_data=False, num_cores=-1,
-             correct_mode=True, correct_fpath="", ui_mode=False, path_to_exclude=[]):
+             correct_mode=True, correct_fpath="", ui_mode=False, path_to_exclude=[],
+             selected_source_scanner="all", source_write_json_file=False, source_print_matched_text=False,
+             source_time_out=120, binary_simple=False):
     global _executed_path, _start_time
 
     output_file = ""
@@ -427,7 +459,9 @@ def run_main(mode_list, path_arg, dep_arguments, output_file_or_dir, file_format
                                 remove_downloaded_source, {}, output_file,
                                 output_extension, num_cores, db_url,
                                 default_oss_name, default_oss_version, url_to_analyze,
-                                correct_mode, correct_fpath, ui_mode, path_to_exclude)
+                                correct_mode, correct_fpath, ui_mode, path_to_exclude,
+                                selected_source_scanner, source_write_json_file, source_print_matched_text, source_time_out,
+                                binary_simple)
 
                 if extract_folder:
                     shutil.rmtree(extract_folder)

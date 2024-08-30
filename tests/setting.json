@@ -1,16 +1,21 @@
 {
   "mode": ["binary", "source"],
   "path": ["tests"],
-  "link": "",
   "dep_argument": "",
   "output": "test_result_dir",
-  "exclude": ["test", "sample_license.txt"],
   "format": "excel",
+  "link": "",
   "db_url": "",
   "timer": false,
   "raw": true,
   "core": -1,
   "no_correction": false,
   "correct_fpath": "",
-  "ui": false
+  "ui": false,
+  "exclude": ["test", "sample_license.txt"],
+  "selected_source_scanner": "scancode",  
+  "source_write_json_file": true,
+  "source_print_matched_text": true,
+  "source_time_out": 120,
+  "binary_simple": false
 }
