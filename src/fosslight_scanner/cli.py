@@ -30,7 +30,7 @@ def set_args(mode, path, dep_argument, output, format, link, db_url, timer,
             s_mode, s_path, s_dep_argument, s_output, s_format, s_link, s_db_url, s_timer, s_raw, s_core, \
                 s_no_correction, s_correct_fpath, s_ui, s_exclude_path, \
                 s_selected_source_scanner, s_source_write_json_file, s_source_print_matched_text, \
-                s_source_time_out, s_binary_simple, = parse_setting_json(data)
+                s_source_time_out, s_binary_simple = parse_setting_json(data)
 
             # direct cli arguments have higher priority than setting file
             mode = mode or s_mode
@@ -60,7 +60,7 @@ def set_args(mode, path, dep_argument, output, format, link, db_url, timer,
     return mode, path, dep_argument, output, format, link, db_url, timer, \
         raw, core, no_correction, correct_fpath, ui, exclude_path, \
         selected_source_scanner, source_write_json_file, source_print_matched_text, source_time_out, \
-        binary_simple,
+        binary_simple
 
 
 def main():
@@ -127,7 +127,7 @@ def main():
         run_main(mode, path, dep_argument, output, format, link, db_url, timer,
                  raw, core, not no_correction, correct_fpath, ui, exclude_path,
                  selected_source_scanner, source_write_json_file, source_print_matched_text,
-                 source_time_out, binary_simple,)
+                 source_time_out, binary_simple)
 
 
 if __name__ == "__main__":
