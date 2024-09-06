@@ -7,13 +7,10 @@ import os
 import sys
 import logging
 import shutil
-import pandas as pd
-import yaml
-from fosslight_util.constant import LOGGER_NAME, FOSSLIGHT_SOURCE, FOSSLIGHT_BINARY
-from fosslight_util.parsing_yaml import parsing_yml
+import copy
+from fosslight_util.constant import LOGGER_NAME, FOSSLIGHT_SOURCE, FOSSLIGHT_BINARY, FOSSLIGHT_DEPENDENCY
 from fosslight_util.write_scancodejson import write_scancodejson
-from fosslight_util.read_excel import read_oss_report
-from fosslight_util.oss_item import OssItem
+from fosslight_util.oss_item import OssItem, FileItem
 
 logger = logging.getLogger(LOGGER_NAME)
 SRC_SHEET = 'SRC_FL_Source'
@@ -104,11 +101,9 @@ def update_oss_item(scan_item, oss_name, oss_version, download_loc):
     return scan_item
 
 
-def create_scancodejson(final_report, output_extension, ui_mode_report, src_path=""):
+def create_scancodejson(all_scan_item_origin, ui_mode_report, src_path=""):
     success = True
     err_msg = ''
-
-    oss_total_list = []
     root_dir = ""
     root_strip = ""
     try:
@@ -120,28 +115,37 @@ def create_scancodejson(final_report, output_extension, ui_mode_report, src_path
         root_dir = ""
 
     try:
-        item_without_oss = OssItem("")
-        oss_total_list = get_osslist(os.path.dirname(final_report), os.path.basename(final_report),
-                                     output_extension, '')
+        all_scan_item = copy.deepcopy(all_scan_item_origin)
+        if FOSSLIGHT_DEPENDENCY in all_scan_item.file_items:
+            del all_scan_item.file_items[FOSSLIGHT_DEPENDENCY]
         if src_path:
-            for root, dirs, files in os.walk(src_path):
+            fileitems_without_oss = []
+            for root, _, files in os.walk(src_path):
                 root = root.replace(root_strip, "")
                 for file in files:
+                    fi_without_oss = FileItem('')
+                    included = False
                     item_path = os.path.join(root, file)
                     item_path = item_path.replace(parent + os.path.sep, '', 1)
-                    included = any(item_path in x.source_name_or_path for x in oss_total_list)
-                    if not included:
-                        item_without_oss.source_name_or_path = item_path
-            if len(item_without_oss.source_name_or_path) > 0:
-                oss_total_list.append(item_without_oss)
-        if root_dir:
-            for oss in oss_total_list:
-                tmp_path_list = oss.source_name_or_path
-                oss.source_name_or_path = ""
-                oss.source_name_or_path = [os.path.join(root_dir, path) for path in tmp_path_list]
 
+                    for file_items in all_scan_item.file_items.values():
+                        for file_item in file_items:
+                            if file_item.source_name_or_path:
+                                if file_item.source_name_or_path == item_path:
+                                    included = True
+                                    break
+                    if not included:
+                        fi_without_oss.source_name_or_path = item_path
+                        fileitems_without_oss.append(fi_without_oss)
+            if len(fileitems_without_oss) > 0:
+                all_scan_item.file_items[FOSSLIGHT_SOURCE].extend(fileitems_without_oss)
+        if root_dir:
+            for file_items in all_scan_item.file_items.values():
+                for fi in file_items:
+                    if fi.source_name_or_path:
+                        fi.source_name_or_path = os.path.join(root_dir, fi.source_name_or_path)
         write_scancodejson(os.path.dirname(ui_mode_report), os.path.basename(ui_mode_report),
-                           oss_total_list)
+                           all_scan_item)
     except Exception as ex:
         err_msg = ex
         success = False
@@ -160,10 +164,10 @@ def correct_scanner_result(all_scan_item):
         try:
             remove_src_idx_list = []
             for idx_src, src_fileitem in enumerate(src_fileitems):
-                src_fileitem.exclude = check_exclude_dir(src_fileitem.source_name_or_path)
+                src_fileitem.exclude = check_exclude_dir(src_fileitem.source_name_or_path, src_fileitem.exclude)
                 dup_flag = False
                 for bin_fileitem in bin_fileitems:
-                    bin_fileitem.exclude = check_exclude_dir(bin_fileitem.source_name_or_path)
+                    bin_fileitem.exclude = check_exclude_dir(bin_fileitem.source_name_or_path, bin_fileitem.exclude)
                     if src_fileitem.source_name_or_path == bin_fileitem.source_name_or_path:
                         dup_flag = True
                         src_all_licenses_non_empty = all(oss_item.license for oss_item in src_fileitem.oss_items)
@@ -193,24 +197,9 @@ def correct_scanner_result(all_scan_item):
     return all_scan_item
 
 
-def get_osslist(_output_dir, output_file, output_extension, sheet_name=''):
-    err_reason = ''
-    oss_list = []
-    oss_file_with_fullpath = os.path.join(_output_dir, output_file)
-
-    if os.path.exists(oss_file_with_fullpath):
-        if output_extension == '.xlsx':
-            oss_list = read_oss_report(oss_file_with_fullpath, sheet_name)
-        elif output_extension == '.yaml':
-            oss_list, _, err_reason = parsing_yml(oss_file_with_fullpath, _output_dir)
-        else:
-            err_reason = f'Not supported extension: {output_extension}'
-    if err_reason:
-        logger.info(f'get_osslist: {err_reason}')
-    return oss_list
-
-
-def check_exclude_dir(source_name_or_path):
+def check_exclude_dir(source_name_or_path, file_item_exclude):
+    if file_item_exclude:
+        return True
     _exclude_dirs = ["venv", "node_modules", "Pods", "Carthage"]
     exclude = False
 

@@ -30,7 +30,7 @@ from fosslight_util.oss_item import ScannerItem
 from fosslight_util.output_format import write_output_file
 
 from .common import (
-    copy_file, call_analysis_api, update_oss_item,
+    call_analysis_api, update_oss_item,
     correct_scanner_result, create_scancodejson
 )
 from ._run_compare import run_compare
@@ -198,12 +198,12 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
 
             if run_bin:
                 success, result = call_analysis_api(src_path, "Binary Analysis",
-                                            1, binary_analysis.find_binaries,
-                                            abs_path,
-                                            os.path.join(_output_dir, output_files["BIN"]),
-                                            "", db_url, binary_simple,
-                                            correct_mode, correct_fpath,
-                                            path_to_exclude=path_to_exclude)
+                                                    1, binary_analysis.find_binaries,
+                                                    abs_path,
+                                                    os.path.join(_output_dir, output_files["BIN"]),
+                                                    "", db_url, binary_simple,
+                                                    correct_mode, correct_fpath,
+                                                    path_to_exclude=path_to_exclude)
                 if success:
                     all_scan_item.file_items.update(result.file_items)
                     all_cover_items.append(result.cover)
@@ -251,7 +251,7 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
 
         if ui_mode:
             ui_mode_report = f"{output_file_without_ext}.json"
-            success, err_msg = create_scancodejson(final_report, output_extension, ui_mode_report, src_path)
+            success, err_msg = create_scancodejson(all_scan_item, ui_mode_report, src_path)
             if success and os.path.isfile(ui_mode_report):
                 logger.info(f'Generated the ui mode result file: {ui_mode_report}')
             else:
