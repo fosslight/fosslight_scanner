@@ -1,5 +1,22 @@
 # Changelog
 
+## v1.7.31 (06/09/2024)
+## Changes
+## 🚀 Features
+
+- Setting.json with source_scanner selection @soonhong99 (#109)
+
+## 🐛 Hotfixes
+
+- Fix a bug related to path_to_exclude @soimkim (#116)
+
+## 🔧 Maintenance
+
+- Limit installation fosslight package @dd-jy (#117)
+- Add simple_mode parameter to CoverItem constructor @YongGoose (#108)
+
+---
+
 ## v1.7.30 (22/07/2024)
 ## Changes
 ## 🚀 Features
@@ -283,11 +300,3 @@
 ## 🚀 Features
 
 - Support yaml format of FOSSLight Report @dd-jy (#42)
-
----
-
-## v1.7.1 (22/07/2022)
-## Changes
-## 🐛 Hotfixes
-
-- Change FL Reuse to FL Prechecker @bjk7119 (#43)
