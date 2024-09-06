@@ -1,5 +1,14 @@
 # Changelog
 
+## v2.0.0 (06/09/2024)
+## Changes
+## 🔧 Maintenance
+
+- Remove prechecker @dd-jy (#119)
+- Refactoring OSS item @dd-jy (#118)
+
+---
+
 ## v1.7.31 (06/09/2024)
 ## Changes
 ## 🚀 Features
@@ -292,11 +301,3 @@
 ## 🔧 Maintenance
 
 - Change the required version of Python to 3.7 @soimkim (#45)
-
----
-
-## v1.7.2 (16/08/2022)
-## Changes
-## 🚀 Features
-
-- Support yaml format of FOSSLight Report @dd-jy (#42)
