@@ -14,7 +14,8 @@ from pathlib import Path
 from bs4 import BeautifulSoup
 import fosslight_util.constant as constant
 from fosslight_util.compare_yaml import compare_yaml
-from fosslight_util.convert_excel_to_yaml import convert_excel_to_yaml
+from fosslight_util.read_excel import read_oss_report
+from fosslight_util.parsing_yaml import parsing_yml
 
 logger = logging.getLogger(constant.LOGGER_NAME)
 ADD = "add"
@@ -255,10 +256,18 @@ def run_compare(before_f, after_f, output_path, output_file, file_ext, _start_ti
 
     result_file = get_comparison_result_filename(output_path, output_file, file_ext, _start_time)
 
-    if before_ext == XLSX_EXT:
-        convert_excel_to_yaml(before_f, before_yaml)
-        convert_excel_to_yaml(after_f, after_yaml)
-    compared_result = compare_yaml(before_yaml, after_yaml)
+    before_basepath = os.path.dirname(before_f)
+    after_basepath = os.path.dirname(after_f)
+    if XLSX_EXT == before_ext:
+        before_fileitems = read_oss_report(before_f, "", before_basepath)
+    elif YAML_EXT == before_ext:
+        before_fileitems, _, _ = parsing_yml(before_yaml, before_basepath)
+    if XLSX_EXT == after_ext:
+        after_fileitems = read_oss_report(after_f, after_basepath)
+    elif YAML_EXT == after_ext:
+        after_fileitems, _, _ = parsing_yml(after_yaml, after_basepath)
+
+    compared_result = compare_yaml(before_fileitems, after_fileitems)
     if compared_result != '':
         count_compared_result(compared_result)
         ret, result_file = write_compared_result(result_file, compared_result, file_ext, before_yaml, after_yaml)
