@@ -25,12 +25,13 @@ from fosslight_util.timer_thread import TimerThread
 import fosslight_util.constant as constant
 from fosslight_util.output_format import check_output_format
 from fosslight_prechecker._precheck import run_lint as prechecker_lint
-from fosslight_util.write_excel import merge_excels, merge_cover_comment
 from fosslight_util.cover import CoverItem
+from fosslight_util.oss_item import ScannerItem
+from fosslight_util.output_format import write_output_file
 
 from .common import (
-    copy_file, call_analysis_api, overwrite_excel,
-    merge_yamls, correct_scanner_result, create_scancodejson
+    call_analysis_api, update_oss_item,
+    correct_scanner_result, create_scancodejson
 )
 from ._run_compare import run_compare
 
@@ -56,7 +57,7 @@ SCANNER_MODE = [
 
 
 def run_dependency(path_to_analyze, output_file_with_path, params="", path_to_exclude=[]):
-    result_list = []
+    result = []
 
     package_manager = ""
     pip_activate_cmd = ""
@@ -90,7 +91,7 @@ def run_dependency(path_to_analyze, output_file_with_path, params="", path_to_ex
     timer.start()
 
     try:
-        success, result = call_analysis_api(
+        success, scan_item = call_analysis_api(
             path_to_analyze, "Dependency Analysis",
             1, run_dependency_scanner,
             package_manager,
@@ -101,11 +102,11 @@ def run_dependency(path_to_analyze, output_file_with_path, params="", path_to_ex
             github_token, path_to_exclude=path_to_exclude
         )
         if success:
-            result_list = result.get('SRC_FL_Dependency')
+            result = scan_item
     except Exception as ex:
         logger.warning(f"Run dependency: {ex}")
 
-    return result_list or []
+    return result
 
 
 def source_analysis_wrapper(*args, **kwargs):
@@ -130,7 +131,8 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                 source_time_out=120, binary_simple=False):
     final_excel_dir = output_path
     success = True
-    temp_output_fiiles = []
+    all_cover_items = []
+    all_scan_item = ScannerItem(PKG_NAME, _start_time)
     if not remove_src_data:
         success, final_excel_dir, result_log = init(output_path)
 
@@ -158,9 +160,6 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                                                     -1, prechecker_lint,
                                                     abs_path, False, output_prechecker,
                                                     exclude_path=path_to_exclude)
-                success_file, copied_file = copy_file(output_prechecker, output_path)
-                if success_file:
-                    temp_output_fiiles.append(copied_file)
 
             if run_src:
                 try:
@@ -180,6 +179,9 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                                     source_print_matched_text=source_print_matched_text,
                                     source_time_out=source_time_out
                         )
+                        if success:
+                            all_scan_item.file_items.update(result[2].file_items)
+                            all_cover_items.append(result[2].cover)
 
                     else:  # Run fosslight_source by using docker image
                         src_output = os.path.join("output", output_files["SRC"])
@@ -195,16 +197,22 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                     logger.warning(f"Failed to run source analysis: {ex}")
 
             if run_bin:
-                success, _ = call_analysis_api(src_path, "Binary Analysis",
-                                               1, binary_analysis.find_binaries,
-                                               abs_path,
-                                               os.path.join(_output_dir, output_files["BIN"]),
-                                               "", db_url, binary_simple,
-                                               correct_mode, correct_fpath,
-                                               path_to_exclude=path_to_exclude)
+                success, result = call_analysis_api(src_path, "Binary Analysis",
+                                                    1, binary_analysis.find_binaries,
+                                                    abs_path,
+                                                    os.path.join(_output_dir, output_files["BIN"]),
+                                                    "", db_url, binary_simple,
+                                                    correct_mode, correct_fpath,
+                                                    path_to_exclude=path_to_exclude)
+                if success:
+                    all_scan_item.file_items.update(result.file_items)
+                    all_cover_items.append(result.cover)
 
             if run_dep:
-                run_dependency(src_path, os.path.join(_output_dir, output_files["DEP"]), dep_arguments, path_to_exclude)
+                dep_scanitem = run_dependency(src_path, os.path.join(_output_dir, output_files["DEP"]),
+                                              dep_arguments, path_to_exclude)
+                all_scan_item.file_items.update(dep_scanitem.file_items)
+                all_cover_items.append(dep_scanitem.cover)
 
         else:
             return
@@ -215,46 +223,23 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
     try:
         output_file_without_ext = os.path.join(final_excel_dir, output_file)
         final_report = f"{output_file_without_ext}{output_extension}"
-        merge_files = [output_files["SRC"], output_files["BIN"], output_files["DEP"]]
         cover = CoverItem(tool_name=PKG_NAME,
                           start_time=_start_time,
                           input_path=abs_path,
                           exclude_path=path_to_exclude,
                           simple_mode=False)
-        cover.comment = merge_cover_comment(_output_dir, merge_files)
+        merge_comment = []
+        for ci in all_cover_items:
+            merge_comment.append(str(f'[{ci.tool_name}] {ci.comment}'))
+        cover.comment = '\n'.join(merge_comment)
+        all_scan_item.cover = cover
 
-        if output_extension == ".xlsx":
-            tmp_dir = f"tmp_{datetime.now().strftime('%y%m%d_%H%M')}"
-            exist_src = False
-            exist_bin = False
-            if correct_mode:
-                os.makedirs(os.path.join(_output_dir, tmp_dir), exist_ok=True)
-                if os.path.exists(os.path.join(_output_dir, output_files['SRC'])):
-                    exist_src = True
-                    shutil.copy2(os.path.join(_output_dir, output_files['SRC']), os.path.join(_output_dir, tmp_dir))
-                if os.path.exists(os.path.join(_output_dir, output_files['BIN'])):
-                    exist_bin = True
-                    shutil.copy2(os.path.join(_output_dir, output_files['BIN']), os.path.join(_output_dir, tmp_dir))
-                if exist_src or exist_bin:
-                    correct_scanner_result(_output_dir, output_files, output_extension, exist_src, exist_bin)
+        if correct_mode:
+            all_scan_item = correct_scanner_result(all_scan_item)
 
-            if remove_src_data:
-                overwrite_excel(_output_dir, default_oss_name, "OSS Name")
-                overwrite_excel(_output_dir, default_oss_version, "OSS Version")
-                overwrite_excel(_output_dir, url, "Download Location")
-            success, err_msg = merge_excels(_output_dir, final_report, merge_files, cover)
-
-            if correct_mode:
-                if exist_src:
-                    shutil.move(os.path.join(_output_dir, tmp_dir, output_files['SRC']),
-                                os.path.join(_output_dir, output_files['SRC']))
-                if exist_bin:
-                    shutil.move(os.path.join(_output_dir, tmp_dir, output_files['BIN']),
-                                os.path.join(_output_dir, output_files['BIN']))
-                shutil.rmtree(os.path.join(_output_dir, tmp_dir), ignore_errors=True)
-        elif output_extension == ".yaml":
-            success, err_msg = merge_yamls(_output_dir, merge_files, final_report,
-                                           remove_src_data, default_oss_name, default_oss_version, url)
+        if remove_src_data:
+            all_scan_item = update_oss_item(all_scan_item, default_oss_name, default_oss_version, url)
+        success, err_msg, final_report = write_output_file(output_file_without_ext, output_extension, all_scan_item)
         if success:
             if os.path.isfile(final_report):
                 logger.info(f'Generated the result file: {final_report}')
@@ -266,7 +251,7 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
 
         if ui_mode:
             ui_mode_report = f"{output_file_without_ext}.json"
-            success, err_msg = create_scancodejson(final_report, output_extension, ui_mode_report, src_path)
+            success, err_msg = create_scancodejson(all_scan_item, ui_mode_report, src_path)
             if success and os.path.isfile(ui_mode_report):
                 logger.info(f'Generated the ui mode result file: {ui_mode_report}')
             else:
