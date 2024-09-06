@@ -24,7 +24,6 @@ from fosslight_util.set_log import init_log
 from fosslight_util.timer_thread import TimerThread
 import fosslight_util.constant as constant
 from fosslight_util.output_format import check_output_format
-from fosslight_prechecker._precheck import run_lint as prechecker_lint
 from fosslight_util.cover import CoverItem
 from fosslight_util.oss_item import ScannerItem
 from fosslight_util.output_format import write_output_file
@@ -51,7 +50,7 @@ _start_time = ""
 _executed_path = ""
 SRC_DIR_FROM_LINK_PREFIX = "fosslight_src_dir_"
 SCANNER_MODE = [
-    "all", "compare", "reuse", "prechecker", "binary",
+    "all", "compare", "binary",
     "bin", "src", "source", "dependency", "dep"
 ]
 
@@ -152,14 +151,7 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
         if success:
             output_files = {"SRC": f"fosslight_src_{_start_time}{output_extension}",
                             "BIN": f"fosslight_bin_{_start_time}{output_extension}",
-                            "DEP": f"fosslight_dep_{_start_time}{output_extension}",
-                            "PRECHECKER": f"fosslight_lint_{_start_time}.yaml"}
-            if run_prechecker:
-                output_prechecker = os.path.join(_output_dir, output_files["PRECHECKER"])
-                success, result = call_analysis_api(src_path, "Prechecker Lint",
-                                                    -1, prechecker_lint,
-                                                    abs_path, False, output_prechecker,
-                                                    exclude_path=path_to_exclude)
+                            "DEP": f"fosslight_dep_{_start_time}{output_extension}"}
 
             if run_src:
                 try:
@@ -397,19 +389,13 @@ def run_main(mode_list, path_arg, dep_arguments, output_file_or_dir, file_format
             run_src = False
             run_bin = False
             run_dep = False
-            run_prechecker = False
             remove_downloaded_source = False
 
             if "all" in mode_list or (not mode_list):
                 run_src = True
                 run_bin = True
                 run_dep = True
-                run_prechecker = False
-                if "prechecker" in mode_list or "reuse" in mode_list:
-                    run_prechecker = True
             else:
-                if "prechecker" in mode_list or "reuse" in mode_list:
-                    run_prechecker = True
                 if "binary" in mode_list or "bin" in mode_list:
                     run_bin = True
                 if "source" in mode_list or "src" in mode_list:
@@ -417,7 +403,7 @@ def run_main(mode_list, path_arg, dep_arguments, output_file_or_dir, file_format
                 if "dependency" in mode_list or "dep" in mode_list:
                     run_dep = True
 
-            if run_dep or run_src or run_bin or run_prechecker:
+            if run_dep or run_src or run_bin:
                 if src_path == "" and url_to_analyze == "":
                     src_path, dep_arguments, url_to_analyze = get_input_mode(_executed_path, mode_list)
 
@@ -439,7 +425,7 @@ def run_main(mode_list, path_arg, dep_arguments, output_file_or_dir, file_format
 
                 if src_path != "":
                     run_scanner(src_path, dep_arguments, output_path, keep_raw_data,
-                                run_src, run_bin, run_dep, run_prechecker,
+                                run_src, run_bin, run_dep, '',
                                 remove_downloaded_source, {}, output_file,
                                 output_extension, num_cores, db_url,
                                 default_oss_name, default_oss_version, url_to_analyze,
