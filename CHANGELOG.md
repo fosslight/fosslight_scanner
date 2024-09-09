@@ -1,5 +1,13 @@
 # Changelog
 
+## v2.0.1 (09/09/2024)
+## Changes
+## 🔧 Maintenance
+
+- Revert "Remove prechecker" @dd-jy (#120)
+
+---
+
 ## v2.0.0 (06/09/2024)
 ## Changes
 ## 🔧 Maintenance
@@ -289,15 +297,3 @@
 
 - Change the report file name @dd-jy (#48)
 - Modify help msg if invalid input @bjk7119 (#47)
-
----
-
-## v1.7.3 (01/09/2022)
-## Changes
-## 🚀 Features
-
-- Support 'xlsx' report for Compare mode @dd-jy (#46)
-
-## 🔧 Maintenance
-
-- Change the required version of Python to 3.7 @soimkim (#45)
