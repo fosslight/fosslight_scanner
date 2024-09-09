@@ -8,3 +8,4 @@ fosslight_util>=2.0.0
 fosslight_source>=2.0.0
 fosslight_dependency>=4.0.0
 fosslight_binary>=5.0.0
+fosslight_prechecker==3.0.27
