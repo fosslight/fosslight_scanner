@@ -72,3 +72,7 @@ RUN echo '#!/bin/bash' > /entrypoint.sh && \
 ENTRYPOINT ["/entrypoint.sh"]
 
 CMD ["-h"]
+
+# Clean up the build
+RUN apt-get clean && \
+    rm -rf /var/lib/apt/lists/*

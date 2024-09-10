@@ -1,8 +1,8 @@
-# Copyright (c) 2022 LG Electronics Inc.
-# SPDX-License-Identifier: Apache-2.0
-
 #!/bin/bash
 # run_fosslight.sh
+
+# Copyright (c) 2022 LG Electronics Inc.
+# SPDX-License-Identifier: Apache-2.0
 
 # Function to convert relative path to absolute path
 to_absolute_path() {
@@ -108,8 +108,8 @@ shift $((OPTIND -1))
 
 # Check if Docker image is provided
 if [ -z "$DOCKER_IMAGE" ]; then
-    echo "Error: Docker image (-i) is required."
     print_usage
+    echo "Error: Docker image (-i) is required."
     exit 1
 fi
 
