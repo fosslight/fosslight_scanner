@@ -1,3 +1,6 @@
+# Copyright (c) 2022 LG Electronics Inc.
+# SPDX-License-Identifier: Apache-2.0
+
 #!/bin/bash
 # Set JAVA_HOME and PATH explicitly
 export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-arm64
