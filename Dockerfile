@@ -2,10 +2,6 @@
 # SPDX-License-Identifier: Apache-2.0
 FROM python:3.8-slim-buster
 
-# Set JAVA_HOME environment variable at the top
-ENV JAVA_HOME=/usr/lib/jvm/java-11-openjdk-arm64
-ENV PATH=$JAVA_HOME/bin:$PATH
-
 COPY . /app
 WORKDIR /app
 
@@ -26,8 +22,9 @@ RUN ln -sf /bin/bash /bin/sh && \
   apt-get clean && \
   rm -rf /var/lib/apt/lists/*
 
-# Check Java version to ensure it's installed correctly
-RUN java -version
+# Set JAVA_HOME dynamically
+RUN echo "export JAVA_HOME=\$(dirname \$(dirname \$(readlink -f \$(which java))))" >> /etc/profile && \
+    echo "export PATH=\$JAVA_HOME/bin:\$PATH" >> /etc/profile
 
 # Install license-checker globally
 RUN npm install -g license-checker
@@ -52,20 +49,21 @@ WORKDIR /fosslight_scanner
 RUN pip3 install . --no-deps && \
     rm -rf ~/.cache/pip /root/.cache/pip
 
-# Add /usr/local/bin to the PATH again (although it's already there)
+# Add /usr/local/bin to the PATH
 ENV PATH="/usr/local/bin:${PATH}"
 
 VOLUME /src
 WORKDIR /src
 
-# Modify the entrypoint script to ensure JAVA_HOME and PATH are set correctly
+# Create and set up the entrypoint script
 RUN echo '#!/bin/bash' > /entrypoint.sh && \
-    echo 'export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-arm64' >> /entrypoint.sh && \
+    echo 'source /etc/profile' >> /entrypoint.sh && \
+    echo 'export JAVA_HOME=$(dirname $(dirname $(readlink -f $(which java))))' >> /entrypoint.sh && \
     echo 'export PATH=$JAVA_HOME/bin:$PATH' >> /entrypoint.sh && \
     echo 'if command -v "$1" > /dev/null 2>&1; then' >> /entrypoint.sh && \
     echo '    exec "$@"' >> /entrypoint.sh && \
     echo 'else' >> /entrypoint.sh && \
-    echo '    exec fosslight_source "$@"' >> /entrypoint.sh && \
+    echo '    exec fosslight "$@"' >> /entrypoint.sh && \
     echo 'fi' >> /entrypoint.sh && \
     chmod +x /entrypoint.sh
 
