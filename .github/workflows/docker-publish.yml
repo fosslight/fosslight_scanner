@@ -32,3 +32,33 @@ jobs:
         tags: |
           nanayah99/fosslight_scanner:latest
           nanayah99/fosslight_scanner:${{ github.event.release.tag_name }}
+
+  create-windows-executable:
+    runs-on: windows-latest
+    needs: build-and-push-docker
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.8'
+
+    - name: Install dependencies
+      run: |
+        pip install pyinstaller
+        pip install -r requirements.txt
+
+    - name: Create executable
+      run: pyinstaller --onefile additionalOption.py
+
+    - name: Upload executable to release
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ github.event.release.upload_url }}
+        asset_path: ./dist/additionalOption.exe
+        asset_name: fosslight_wrapper.exe
+        asset_content_type: application/vnd.microsoft.portable-executable
