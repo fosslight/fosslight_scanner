@@ -35,7 +35,6 @@ jobs:
 
   create-windows-executable:
     runs-on: windows-latest
-    needs: build-and-push
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
@@ -43,12 +42,11 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
-        python-version: '3.8'
+        python-version: '3.9'
 
     - name: Install dependencies
       run: |
         pip install pyinstaller
-        pip install -r requirements.txt
 
     - name: Create executable
       run: pyinstaller --onefile additionalOption.py
