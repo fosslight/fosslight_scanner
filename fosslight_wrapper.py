@@ -7,6 +7,7 @@ import subprocess
 import logging
 from datetime import datetime
 
+
 def setup_logging():
     current_time = datetime.now().strftime("%Y%m%d_%H%M")
     log_filename = f'fosslight_log_{current_time}.txt'
@@ -14,12 +15,13 @@ def setup_logging():
                         format='%(asctime)s - %(levelname)s - %(message)s',
                         encoding='utf-8')
 
+
 def get_user_input():
     print("FossLight Wrapper")
     image = input("Enter Docker image name (e.g., fosslight/fosslight): ")
-    
+
     analysis_type = input("Choose analysis type (1 for local path, 2 for Git repository): ")
-    
+
     if analysis_type == '1':
         input_path = input("Enter local path to analyze: ")
         return image, 'local', input_path
@@ -30,6 +32,7 @@ def get_user_input():
         print("Invalid choice. Exiting.")
         sys.exit(1)
 
+
 def display_current_options(options):
     if not options:
         print("Only the default option has been applied.")
@@ -37,6 +40,7 @@ def display_current_options(options):
         print("Current additional options:")
         for i, option in enumerate(options, 1):
             print(f"{i}. {option}")
+
 
 def get_additional_options():
     options = []
@@ -61,6 +65,7 @@ def get_additional_options():
             print("Invalid choice. Please try again.")
 
     return options
+
 
 def add_option():
     print("\nAvailable additional options:")
@@ -104,6 +109,7 @@ def add_option():
         print("Invalid option. No option added.")
         return []
 
+
 def remove_option(options):
     if not options:
         print("No options to remove.")
@@ -111,7 +117,7 @@ def remove_option(options):
 
     display_current_options(options)
     choice = input("Enter the number of the option you want to remove (or 0 to cancel): ")
-    
+
     try:
         index = int(choice) - 1
         if 0 <= index < len(options):
@@ -125,6 +131,7 @@ def remove_option(options):
         print("Invalid input. No option removed.")
 
     return options
+
 
 def run_fosslight(image, analysis_type, input_source, output_path, additional_options):
     # Convert Windows paths to Docker-compatible paths
@@ -154,7 +161,8 @@ def run_fosslight(image, analysis_type, input_source, output_path, additional_op
 
     # Run the Docker command with real-time output and UTF-8 encoding
     try:
-        process = subprocess.Popen(docker_cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, bufsize=1, universal_newlines=True, encoding='utf-8')
+        process = subprocess.Popen(docker_cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                                   bufsize=1, universal_newlines=True, encoding='utf-8')
         for line in process.stdout:
             line = line.strip()
             if line:  # Only log non-empty lines
@@ -170,6 +178,7 @@ def run_fosslight(image, analysis_type, input_source, output_path, additional_op
         logging.error(f"Error running FossLight: {e}")
     except Exception as e:
         logging.error(f"Unexpected error: {e}")
+
 
 def main():
     # Redirect stdout to use utf-8 encoding without buffering
@@ -193,6 +202,7 @@ def main():
 
     print("\nFossLight wrapper completed. Press Enter to exit.")
     input()
+
 
 if __name__ == "__main__":
     main()
