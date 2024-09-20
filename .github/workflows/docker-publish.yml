@@ -35,7 +35,7 @@ jobs:
 
   create-windows-executable:
     runs-on: windows-latest
-    needs: build-and-push-docker
+    needs: build-and-push
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
