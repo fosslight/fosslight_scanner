@@ -1,3 +1,6 @@
+# Copyright (c) 2022 LG Electronics Inc.
+# SPDX-License-Identifier: Apache-2.0
+
 import sys
 import io
 import subprocess
