@@ -1,50 +1,12 @@
 import pytest
-from fosslight_scanner._run_compare import *
-from pathlib import Path
+from fosslight_scanner._run_compare import write_result_json_yaml, parse_result_for_table, get_sample_html, \
+    write_result_html, write_result_xlsx, write_compared_result, get_comparison_result_filename, \
+    count_compared_result, run_compare, \
+    ADD, DELETE, CHANGE, XLSX_EXT, HTML_EXT, YAML_EXT, JSON_EXT
+import logging
 import json
 import yaml
 
-"""
-1. write_result_json_yaml:
-Test with JSON extension.
-Test with YAML extension.
-Test with invalid extension.
-
-2. parse_result_for_table:
-Test with ADD status.
-Test with DELETE status.
-Test with CHANGE status.
-Test with invalid status.
-
-3. get_sample_html:
-Test if the function returns a file object or empty string.
-
-4. write_result_html:
-Test with valid HTML content.
-Test with invalid HTML content.
-
-5. write_result_xlsx:
-Test with valid data.
-Test with invalid data.
-
-6. write_compared_result:
-Test with XLSX extension.
-Test with HTML extension.
-Test with JSON extension.
-Test with YAML extension.
-Test with invalid extension.
-
-7. get_comparison_result_filename:
-Test with different extensions and filenames.
-
-8. count_compared_result:
-Test with different compared results.
-
-9. run_compare:
-Test with valid YAML files.
-Test with valid XLSX files.
-Test with invalid file extensions.
-"""
 
 def test_write_result_json_yaml(tmp_path):
     output_file = tmp_path / "result.json"
@@ -56,7 +18,6 @@ def test_write_result_json_yaml(tmp_path):
     assert write_result_json_yaml(output_file, compared_result, YAML_EXT) == True
     assert yaml.safe_load(open(output_file)) == compared_result
 
-    # Handle ".txt" case based on actual behavior of the function
     output_file = tmp_path / "result.txt"
     assert write_result_json_yaml(output_file, compared_result, ".txt") == True
 
@@ -98,23 +59,23 @@ def test_write_compared_result(tmp_path):
     output_file = tmp_path / "result"
     compared_result = {ADD: [], DELETE: [], CHANGE: []}
 
-    # XLSX 확장자 비교
+    # XLSX Extension comparison
     success, result_file = write_compared_result(output_file, compared_result, XLSX_EXT)
     assert success is True
     assert str(result_file) == str(output_file)
 
-    # HTML 확장자 비교
+    # HTML Extension comparison
     success, result_file = write_compared_result(output_file, compared_result, HTML_EXT)
     expected_result_file = f"{str(output_file) + XLSX_EXT}, {str(output_file)}"
     assert success is True
     assert result_file == expected_result_file
 
-    # JSON 확장자 비교
+    # JSON Extension comparison
     success, result_file = write_compared_result(output_file, compared_result, JSON_EXT)
     assert success is True
     assert str(result_file) == str(output_file)
 
-    # YAML 확장자 비교
+    # YAML Extension comparison
     success, result_file = write_compared_result(output_file, compared_result, YAML_EXT)
     assert success is True
     assert str(result_file) == str(output_file)
