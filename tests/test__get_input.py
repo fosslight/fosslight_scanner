@@ -1,16 +1,17 @@
 import pytest
-from fosslight_scanner._get_input import get_input, ask_to_run, get_input_mode
+from fosslight_scanner._get_input import get_input, get_input_mode
+
 
 def test_get_input(monkeypatch):
     # given
     ask_msg = "Please enter the path to analyze:"
     default_value = "default"
-    
+
     # when
     # Mock input to return an empty string
     monkeypatch.setattr('builtins.input', lambda _: "")
     result_no_input = get_input(ask_msg, default_value)
-    
+
     # Mock input to return "user_input"
     monkeypatch.setattr('builtins.input', lambda _: "user_input")
     result_with_input = get_input(ask_msg, "user_input")
@@ -20,16 +21,14 @@ def test_get_input(monkeypatch):
     assert result_with_input == "user_input"
 
 
-
 @pytest.mark.parametrize("input_value, expected_output", [
-    ("y", True),  # lowercase 'y' should return True
-    ("Y", True),  # uppercase 'Y' should return True
-    ("1", True),  # "1" should return True
+    ("y", True),
+    ("Y", True),
+    ("1", True),
 ])
 def test_ask_to_run(input_value, expected_output):
     # given
-    ask_msg = f"Do you want to proceed? (input: {input_value}): "
-
+    # nothing
     # when
     result = input_value in ["y", "Y", "1"]
 
