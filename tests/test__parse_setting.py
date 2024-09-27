@@ -3,7 +3,6 @@ from fosslight_scanner._parse_setting import parse_setting_json
 
 
 @pytest.mark.parametrize("data, expected_output, expect_warning", [
-    # 정상적인 JSON 데이터
     (
         {
             "mode": ["source", "binary"],
@@ -26,10 +25,9 @@ from fosslight_scanner._parse_setting import parse_setting_json
             "https://example.com", "postgresql://user:pass@host/db", True, True, 4, True,
             "sbom-info.yaml", False, ["excluded/path"]
         ),
-        False  # 올바른 데이터는 경고를 출력하지 않습니다.
+        False
     ),
 ])
-
 def test_parse_setting_json(data, expected_output, expect_warning, capsys):
     # when
     result = parse_setting_json(data)
