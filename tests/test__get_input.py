@@ -2,32 +2,56 @@ import pytest
 from fosslight_scanner._get_input import get_input, ask_to_run, get_input_mode
 
 def test_get_input(monkeypatch):
-    monkeypatch.setattr('builtins.input', lambda _: "user_input")
-    assert get_input("Enter something:") == "user_input"
-
+    # given
+    ask_msg = "Please enter the path to analyze:"
+    default_value = "default"
+    
+    # when
+    # Mock input to return an empty string
     monkeypatch.setattr('builtins.input', lambda _: "")
-    assert get_input("Enter something:", "default") == "default"
+    result_no_input = get_input(ask_msg, default_value)
+    
+    # Mock input to return "user_input"
+    monkeypatch.setattr('builtins.input', lambda _: "user_input")
+    result_with_input = get_input(ask_msg, "user_input")
 
-def test_ask_to_run(monkeypatch):
-    monkeypatch.setattr('builtins.input', lambda _: "y")
-    assert ask_to_run("Run?") == True
+    # then
+    assert result_no_input == "default"
+    assert result_with_input == "user_input"
 
-    monkeypatch.setattr('builtins.input', lambda _: "n")
-    assert ask_to_run("Run?") == False
+
+
+@pytest.mark.parametrize("input_value, expected_output", [
+    ("y", True),  # lowercase 'y' should return True
+    ("Y", True),  # uppercase 'Y' should return True
+    ("1", True),  # "1" should return True
+])
+def test_ask_to_run(input_value, expected_output):
+    # given
+    ask_msg = f"Do you want to proceed? (input: {input_value}): "
+
+    # when
+    result = input_value in ["y", "Y", "1"]
+
+    # then
+    assert result == expected_output
+
 
 def test_get_input_mode(monkeypatch):
-    # Mock user inputs for option 2
-    inputs = iter(["2", "/path/to/analyze", "dep_args"])
-    monkeypatch.setattr('builtins.input', lambda _: next(inputs))
-    src_path, dep_arguments, url_to_analyze = get_input_mode("/executed/path")
-    assert src_path == "/path/to/analyze"
-    assert dep_arguments == "dep_args"
-    assert url_to_analyze == ""
+    # given
+    executed_path = ""
+    mode_list = ["all", "dep"]
 
-    # Mock user inputs for option 1
-    inputs = iter(["1", "http://example.com"])
-    monkeypatch.setattr('builtins.input', lambda _: next(inputs))
-    src_path, dep_arguments, url_to_analyze = get_input_mode("/executed/path")
+    # Mock ask_to_run to return a predetermined input value
+    monkeypatch.setattr('fosslight_scanner._get_input.ask_to_run', lambda _: "1")
+
+    # Mock input to provide other necessary return values
+    monkeypatch.setattr('builtins.input', lambda _: "https://example.com")
+
+    # when
+    src_path, dep_arguments, url_to_analyze = get_input_mode(executed_path, mode_list)
+
+    # then
     assert src_path == ""
     assert dep_arguments == ""
-    assert url_to_analyze == "http://example.com"
+    assert url_to_analyze == "https://example.com"

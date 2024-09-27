@@ -1,3 +1,4 @@
 future
 pandas
 xlrd
+pytest

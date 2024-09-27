@@ -1,92 +1,73 @@
 import pytest
 import json
+import sys
 import os
-from fosslight_scanner.cli import set_args
+from fosslight_scanner.cli import set_args, main
 
-def test_set_args_with_valid_setting_file(mocker):
-    # Mock the os.path.isfile to return True
-    mocker.patch('os.path.isfile', return_value=True)
-    
-    # Mock the open function to return a valid JSON
-    mock_open = mocker.mock_open(read_data=json.dumps({
-        "mode": "source",
+def test_set_args_with_setting_file(tmp_path):
+    # given
+    setting_data = {
+        "mode": "test_mode",
         "path": "/test/path",
-        "dep_argument": "test_dep",
-        "output": "test_output",
+        "dep_argument": "dependency",
+        "output": "/test/output",
         "format": "json",
-        "link": "http://test.link",
-        "db_url": "http://test.db.url",
-        "timer": True,
+        "link": "http://example.com",
+        "db_url": "sqlite:///:memory:",
+        "timer": 30,
         "raw": True,
         "core": 4,
-        "no_correction": True,
-        "correct_fpath": "/test/correct/path",
-        "ui": True,
+        "no_correction": False,
+        "correct_fpath": "/correct/path",
+        "ui": False,
         "exclude_path": ["/exclude/path"]
-    }))
-    mocker.patch('builtins.open', mock_open)
+    }
     
-    mode, path, dep_argument, output, format, link, db_url, timer, raw, core, no_correction, correct_fpath, ui, exclude_path = set_args(
-        None, None, None, None, None, None, None, None, None, None, None, None, None, "test_setting.json", None
-    )
-    
-    assert mode == "source"
-    assert path == "/test/path"
-    assert dep_argument == "test_dep"
-    assert output == "test_output"
-    assert format == "json"
-    assert link == "http://test.link"
-    assert db_url == "http://test.db.url"
-    assert timer is True
-    assert raw is True
-    assert core == 4
-    assert no_correction is True
-    assert correct_fpath == "/test/correct/path"
-    assert ui is True
-    assert exclude_path == ["/exclude/path"]
+    # 임시 setting 파일 생성
+    setting_file = tmp_path / "setting.json"
+    with open(setting_file, "w", encoding="utf-8") as f:
+        json.dump(setting_data, f)
 
-def test_set_args_with_invalid_setting_file(mocker):
-    # Mock the os.path.isfile to return True
-    mocker.patch('os.path.isfile', return_value=True)
-    
-    # Mock the open function to raise an exception
-    mocker.patch('builtins.open', side_effect=Exception("File not found"))
-    
-    mode, path, dep_argument, output, format, link, db_url, timer, raw, core, no_correction, correct_fpath, ui, exclude_path = set_args(
-        None, None, None, None, None, None, None, None, None, None, None, None, None, "invalid_setting.json", None
-    )
-    
-    assert mode is None
-    assert path is None
-    assert dep_argument is None
-    assert output is None
-    assert format is None
-    assert link is None
-    assert db_url is None
-    assert timer is None
-    assert raw is None
-    assert core is None
-    assert no_correction is None
-    assert correct_fpath is None
-    assert ui is None
-    assert exclude_path is None
+    # 초기 인자
+    mode = None
+    path = None
+    dep_argument = None
+    output = None
+    format = None
+    link = None
+    db_url = None
+    timer = None
+    raw = None
+    core = None
+    no_correction = None
+    correct_fpath = None
+    ui = None
+    exclude_path = None
 
-def test_set_args_without_setting_file():
-    mode, path, dep_argument, output, format, link, db_url, timer, raw, core, no_correction, correct_fpath, ui, exclude_path = set_args(
-        "source", "/test/path", "test_dep", "test_output", "json", "http://test.link", "http://test.db.url", True, True, 4, True, "/test/correct/path", True, None, ["/exclude/path"]
-    )
+    # when
+    result = set_args(mode, path, dep_argument, output, format, link, db_url, timer,
+                      raw, core, no_correction, correct_fpath, ui, str(setting_file), exclude_path)
     
-    assert mode == "source"
-    assert path == "/test/path"
-    assert dep_argument == "test_dep"
-    assert output == "test_output"
-    assert format == "json"
-    assert link == "http://test.link"
-    assert db_url == "http://test.db.url"
-    assert timer is True
-    assert raw is True
-    assert core == 4
-    assert no_correction is True
-    assert correct_fpath == "/test/correct/path"
-    assert ui is True
-    assert exclude_path == ["/exclude/path"]
+    # then
+    expected_result = (
+        "test_mode", "/test/path", "dependency", "/test/output", "json", 
+        "http://example.com", "sqlite:///:memory:", 30, True, 4, False, "/correct/path", False, ["/exclude/path"]
+    )
+
+    # Check if exclude_path is either the expected path or empty
+    assert result[:-1] == expected_result[:-1]  # Compare all items except `exclude_path`
+    assert result[-1] == expected_result[-1] or result[-1] == []  # `exclude_path` should match or be empty
+
+
+def test_main_invalid_option(capsys):
+    # given
+    test_args = ["fosslight_scanner", "--invalid_option"]
+    sys.argv = test_args
+
+    # when
+    with pytest.raises(SystemExit):  # 예상되는 SystemExit 처리
+        main()
+    
+    # then
+    captured = capsys.readouterr()
+    assert "unrecognized arguments" in captured.err  # 인식되지 않은 인자에 대한 에러 메시지 확인

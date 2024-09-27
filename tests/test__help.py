@@ -1,10 +1,16 @@
+import sys
 import pytest
-from fosslight_scanner._help import print_help_msg
+from fosslight_scanner._help import print_help_msg, _HELP_MESSAGE_SCANNER
 
-def test_print_help_msg(mocker, monkeypatch):
-    mock_print_help_msg = mocker.patch('fosslight_util.help.PrintHelpMsg')
-    mock_print_help_msg_instance = mock_print_help_msg.return_value
-    mock_print_help_msg_instance.print_help_msg = mocker.Mock()
-    monkeypatch.setattr('sys.exit', lambda: None)
+def test_print_help_msg(capsys, monkeypatch):
+    # given
+    # monkeypatch sys.exit to prevent the test from stopping
+    monkeypatch.setattr(sys, "exit", lambda: None)
+    
+    # when
     print_help_msg()
-    mock_print_help_msg.return_value.print_help_msg.assert_called_once_with(True)
+
+    # then
+    captured = capsys.readouterr()
+    # Validate the help message output
+    assert _HELP_MESSAGE_SCANNER.strip() in captured.out
