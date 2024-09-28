@@ -11,15 +11,15 @@ import yaml
 def test_write_result_json_yaml(tmp_path):
     output_file = tmp_path / "result.json"
     compared_result = {"key": "value"}
-    assert write_result_json_yaml(output_file, compared_result, JSON_EXT) == True
+    assert write_result_json_yaml(output_file, compared_result, JSON_EXT) is True
     assert json.load(open(output_file)) == compared_result
 
     output_file = tmp_path / "result.yaml"
-    assert write_result_json_yaml(output_file, compared_result, YAML_EXT) == True
+    assert write_result_json_yaml(output_file, compared_result, YAML_EXT) is True
     assert yaml.safe_load(open(output_file)) == compared_result
 
     output_file = tmp_path / "result.txt"
-    assert write_result_json_yaml(output_file, compared_result, ".txt") == True
+    assert write_result_json_yaml(output_file, compared_result, ".txt") is True
 
 
 def test_parse_result_for_table():
@@ -27,7 +27,8 @@ def test_parse_result_for_table():
     assert parse_result_for_table(oi, ADD) == [ADD, '', '', 'test(1.0)', 'MIT']
     assert parse_result_for_table(oi, DELETE) == [DELETE, 'test(1.0)', 'MIT', '', '']
 
-    oi = {"name": "test", "prev": [{"version": "1.0", "license": ["MIT"]}], "now": [{"version": "2.0", "license": ["Apache-2.0"]}]}
+    oi = {"name": "test", "prev": [{"version": "1.0", "license": ["MIT"]}],
+          "now": [{"version": "2.0", "license": ["Apache-2.0"]}]}
     assert parse_result_for_table(oi, CHANGE) == [CHANGE, 'test(1.0)', 'MIT', 'test(2.0)', 'Apache-2.0']
 
     assert parse_result_for_table(oi, "invalid") == []
@@ -40,19 +41,19 @@ def test_get_sample_html():
 def test_write_result_html(tmp_path):
     output_file = tmp_path / "result.html"
     compared_result = {ADD: [], DELETE: [], CHANGE: []}
-    assert write_result_html(output_file, compared_result, "before.yaml", "after.yaml") == True
+    assert write_result_html(output_file, compared_result, "before.yaml", "after.yaml") is True
 
     compared_result = {ADD: [{"name": "test", "version": "1.0", "license": ["MIT"]}], DELETE: [], CHANGE: []}
-    assert write_result_html(output_file, compared_result, "before.yaml", "after.yaml") == True
+    assert write_result_html(output_file, compared_result, "before.yaml", "after.yaml") is True
 
 
 def test_write_result_xlsx(tmp_path):
     output_file = tmp_path / "result.xlsx"
     compared_result = {ADD: [], DELETE: [], CHANGE: []}
-    assert write_result_xlsx(output_file, compared_result) == True
+    assert write_result_xlsx(output_file, compared_result) is True
 
     compared_result = {ADD: [{"name": "test", "version": "1.0", "license": ["MIT"]}], DELETE: [], CHANGE: []}
-    assert write_result_xlsx(output_file, compared_result) == True
+    assert write_result_xlsx(output_file, compared_result) is True
 
 
 def test_write_compared_result(tmp_path):
@@ -79,6 +80,7 @@ def test_write_compared_result(tmp_path):
     success, result_file = write_compared_result(output_file, compared_result, YAML_EXT)
     assert success is True
     assert str(result_file) == str(output_file)
+
 
 def test_get_comparison_result_filename():
     assert get_comparison_result_filename("/path", "file", XLSX_EXT, "time") == "/path/file.xlsx"
@@ -115,12 +117,6 @@ def test_run_compare_different_extension(tmp_path):
         ]
     }
 
-    after_content = {
-        "oss_list": [
-            {"name": "test", "version": "2.0", "license": "Apache-2.0"}
-        ]
-    }
-
     # Write these contents to the files
     with open(before_f, "w") as bf:
         yaml.dump(before_content, bf)
@@ -133,4 +129,4 @@ def test_run_compare_different_extension(tmp_path):
     comparison_result = run_compare(before_f, after_f, output_path, output_file, file_ext, _start_time, _output_dir)
 
     # then
-    assert comparison_result == False
+    assert comparison_result is False

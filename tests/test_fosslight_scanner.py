@@ -1,7 +1,5 @@
-import pytest
 from fosslight_scanner.fosslight_scanner import run_dependency, \
     run_scanner, download_source, init, run_main
-import os
 
 """
 1.run_dependency 함수 테스트:
@@ -26,6 +24,7 @@ import os
 
 """
 
+
 def test_run_dependency(tmp_path):
     # given
     path_to_analyze = tmp_path / "test_project"
@@ -42,7 +41,7 @@ def test_run_dependency(tmp_path):
     # then
     # Check that result_list is a list
     assert isinstance(result_list, list), "Result should be a list."
-    
+
     # Check that result_list is not None (even if empty, it's still a valid list)
     assert result_list is not None, "Result should not be None."
 
@@ -54,7 +53,7 @@ def test_run_scanner(tmp_path):
     dep_arguments = ""
     output_file = "test_output"
     output_extension = ".yaml"
-    
+
     # Create necessary directories and files for the test
     src_path.mkdir(parents=True, exist_ok=True)
     output_path.mkdir(parents=True, exist_ok=True)
@@ -91,7 +90,7 @@ def test_download_source(tmp_path):
     # given
     link = "https://example.com/test_repo.git"
     out_dir = tmp_path / "output"
-    
+
     # Create the necessary output directory
     out_dir.mkdir(parents=True, exist_ok=True)
 
@@ -109,10 +108,11 @@ def test_download_source(tmp_path):
         # If the function succeeds, check temp_src_dir is a valid path
         assert isinstance(temp_src_dir, str), "Temporary source directory should be a string."
         assert str(temp_src_dir).startswith(str(out_dir)), "Temporary source directory should be within the output directory."
-    
+
     # Ensure oss_name and oss_version are strings
     assert isinstance(oss_name, str), "OSS name should be a string."
     assert isinstance(oss_version, str), "OSS version should be a string."
+
 
 def test_init(tmp_path):
     # given
@@ -122,14 +122,14 @@ def test_init(tmp_path):
     global _output_dir, _log_file
     _output_dir = "test_output"  # Set to a default or test-specific value
     _log_file = "test_log"       # Set the name of the log file
-    
+
     # when
     dir_created, output_root_dir, result_log = init(str(output_path))
 
     # then
     # Ensure that the output directory was created
     assert dir_created is True, "The output directory should be created."
-    
+
     # Check if the output_root_dir is correct
     assert output_root_dir == str(output_path), "Output root directory should match the given path."
 
@@ -147,7 +147,7 @@ def test_run_main(tmp_path):
     file_format = "yaml"
     url_to_analyze = ""
     db_url = ""
-    
+
     # Create necessary directories and files for the test
     (tmp_path / "test_src").mkdir(parents=True, exist_ok=True)
 
@@ -171,26 +171,3 @@ def test_run_main(tmp_path):
 
     # then
     assert result is True
-    def test_run_dependency_success():
-        with patch('fosslight_scanner.fosslight_scanner.call_analysis_api') as mock_call:
-            mock_call.return_value = (True, {'SRC_FL_Dependency': ['dep1', 'dep2']})
-            result = run_dependency('/path/to/analyze', '/output/path')
-            assert result == ['dep1', 'dep2']
-
-    def test_run_dependency_failure():
-        with patch('fosslight_scanner.fosslight_scanner.call_analysis_api') as mock_call:
-            mock_call.return_value = (False, {})
-            result = run_dependency('/path/to/analyze', '/output/path')
-            assert result == []
-
-    def test_run_dependency_invalid_params():
-        with patch('fosslight_scanner.fosslight_scanner.call_analysis_api') as mock_call:
-            mock_call.return_value = (True, {'SRC_FL_Dependency': ['dep1', 'dep2']})
-            result = run_dependency('/path/to/analyze', '/output/path', params="-m 'invalid'")
-            assert result == ['dep1', 'dep2']
-
-    def test_run_dependency_exception():
-        with patch('fosslight_scanner.fosslight_scanner.call_analysis_api') as mock_call:
-            mock_call.side_effect = Exception("Test exception")
-            result = run_dependency('/path/to/analyze', '/output/path')
-            assert result == []
