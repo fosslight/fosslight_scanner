@@ -8,6 +8,7 @@ import logging
 from datetime import datetime
 import os
 
+
 def setup_logging():
     current_time = datetime.now().strftime("%Y%m%d_%H%M")
     log_filename = f'fosslight_log_{current_time}.txt'
@@ -15,18 +16,20 @@ def setup_logging():
                         format='%(asctime)s - %(levelname)s - %(message)s',
                         encoding='utf-8')
 
+
 def is_double_clicked():
     return sys.argv[0].endswith('.exe') and len(sys.argv) == 1
+
 
 def check_and_pull_image(image_name):
     try:
         # Check if the image exists locally
-        result = subprocess.run(["docker", "image", "inspect", image_name], 
+        result = subprocess.run(["docker", "image", "inspect", image_name],
                                 capture_output=True, text=True)
         if result.returncode == 0:
             logging.info(f"Image {image_name} already exists locally.")
             return True
-        
+
         # If the image doesn't exist, pull it
         logging.info(f"Pulling the image {image_name} from Docker Hub")
         subprocess.run(["docker", "pull", image_name], check=True)
@@ -36,10 +39,11 @@ def check_and_pull_image(image_name):
         logging.error(f"Error with Docker image {image_name}: {e}")
         return False
 
+
 def get_user_input(auto_image=None):
     if auto_image:
         return auto_image, 'local', os.getcwd()
-    
+
     print("FossLight Wrapper")
     image = input("Enter Docker image name (e.g., nanayah99/fosslight_scanner:latest): ")
     analysis_type = input("Choose analysis type (1 for local path, 2 for Git repository): ")
@@ -53,6 +57,7 @@ def get_user_input(auto_image=None):
     else:
         print("Invalid choice. Exiting.")
         sys.exit(1)
+
 
 def display_current_options(options):
     if not options:
@@ -153,6 +158,7 @@ def remove_option(options):
 
     return options
 
+
 def remove_wfp_file(output_path):
     wfp_file = os.path.join(output_path, "scanner_output.wfp")
     if os.path.exists(wfp_file):
@@ -161,6 +167,7 @@ def remove_wfp_file(output_path):
             logging.info(f"Successfully removed WFP file: {wfp_file}")
         except Exception as e:
             logging.error(f"Failed to remove WFP file: {wfp_file}. Error: {e}")
+
 
 def run_fosslight(image, analysis_type, input_source, output_path, additional_options):
     # Convert Windows paths to Docker-compatible paths
@@ -175,13 +182,12 @@ def run_fosslight(image, analysis_type, input_source, output_path, additional_op
     if analysis_type == 'local':
         input_path = input_source.replace('\\', '/').replace('C:', '/c')
         docker_cmd.extend(["-v", f"{input_path}:/src"])
-    
+
     docker_cmd.extend([
         image,
         "fosslight",
         "-o", "/output",
     ])
-
 
     if analysis_type == 'local':
         docker_cmd.extend(["-p", "/src"])
@@ -222,6 +228,7 @@ def get_execution_mode():
         return "manual"
     return "auto"
 
+
 def main():
     # Redirect stdout to use utf-8 encoding without buffering
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', line_buffering=True)
@@ -237,7 +244,7 @@ def main():
             print(f"Failed to ensure the presence of the Docker image: {image_name}")
             input("Press Enter to exit...")
             sys.exit(1)
-        
+
         current_dir = os.getcwd()
         image, analysis_type, input_source = image_name, 'local', current_dir
         output_path = current_dir
@@ -262,6 +269,7 @@ def main():
 
     print("\nFossLight wrapper completed. Press Enter to exit.")
     input()
+
 
 if __name__ == "__main__":
     main()
