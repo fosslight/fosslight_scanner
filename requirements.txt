@@ -1,3 +1,5 @@
+tox
+pytest
 future
 pandas
 openpyxl
