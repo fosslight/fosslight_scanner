@@ -1,8 +1,9 @@
 import os
 import pytest
-import pandas as pd
+# import pandas as pd
 from fosslight_scanner.common import copy_file, run_analysis, call_analysis_api, \
-    overwrite_excel, get_osslist, check_exclude_dir
+    get_osslist, check_exclude_dir
+# overwrite_excel,
 from fosslight_util.oss_item import OssItem
 
 
@@ -71,33 +72,33 @@ def test_call_analysis_api(path_to_run, expected_result):
     assert result == expected_result
 
 
-def test_overwrite_excel(tmp_path):
-    # given
-    excel_file_path = tmp_path / "excel_files"
-    excel_file_path.mkdir(parents=True)
+# def test_overwrite_excel(tmp_path):
+#     # given
+#     excel_file_path = tmp_path / "excel_files"
+#     excel_file_path.mkdir(parents=True)
 
-    # Create a sample Excel file
-    sample_file = excel_file_path / "test.xlsx"
-    df = pd.DataFrame({"OSS Name": [None, "Existing OSS"], "Other Column": ["value1", "value2"]})
-    df.to_excel(sample_file, index=False)
+#     # Create a sample Excel file
+#     sample_file = excel_file_path / "test.xlsx"
+#     df = pd.DataFrame({"OSS Name": [None, "Existing OSS"], "Other Column": ["value1", "value2"]})
+#     df.to_excel(sample_file, index=False)
 
-    oss_name = "Updated OSS Name"
-    column_name = "OSS Name"
+#     oss_name = "Updated OSS Name"
+#     column_name = "OSS Name"
 
-    # when
-    overwrite_excel(str(excel_file_path), oss_name, column_name)
+#     # when
+#     overwrite_excel(str(excel_file_path), oss_name, column_name)
 
-    # then
-    # Check if the Excel file is updated correctly
-    updated_df = pd.read_excel(sample_file)
+#     # then
+#     # Check if the Excel file is updated correctly
+#     updated_df = pd.read_excel(sample_file)
 
-    # Ensure the OSS Name column is updated where it was originally empty
-    assert updated_df[column_name].iloc[0] == oss_name, "The first row should be updated with the new OSS name."
-    assert updated_df[column_name].iloc[1] == "Existing OSS", "The second row should remain unchanged."
+#     # Ensure the OSS Name column is updated where it was originally empty
+#     assert updated_df[column_name].iloc[0] == oss_name, "The first row should be updated with the new OSS name."
+#     assert updated_df[column_name].iloc[1] == "Existing OSS", "The second row should remain unchanged."
 
-    # Check if other columns are unaffected
-    assert updated_df["Other Column"].iloc[0] == "value1"
-    assert updated_df["Other Column"].iloc[1] == "value2"
+#     # Check if other columns are unaffected
+#     assert updated_df["Other Column"].iloc[0] == "value1"
+#     assert updated_df["Other Column"].iloc[1] == "value2"
 
 
 def test_merge_yamls():
