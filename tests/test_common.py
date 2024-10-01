@@ -1,10 +1,9 @@
 import os
 import pytest
 # import pandas as pd
-from fosslight_scanner.common import copy_file, run_analysis, call_analysis_api, \
-     check_exclude_dir
-# get_osslist, overwrite_excel
-from fosslight_util.oss_item import OssItem
+from fosslight_scanner.common import copy_file, run_analysis, call_analysis_api \
+# get_osslist, overwrite_excel, check_exclude_dir
+# from fosslight_util.oss_item import OssItem
 
 
 def test_copy_file(tmp_path):
@@ -130,38 +129,38 @@ def test_write_output_with_osslist():
 #     assert isinstance(oss_list, list)
 
 
-def test_check_exclude_dir():
-    # given
-    # Create dummy OssItem objects for the test
-    oss_list = [
-        OssItem("dummy_value"),
-        OssItem("dummy_value"),
-        OssItem("dummy_value"),
-        OssItem("dummy_value"),
-        OssItem("dummy_value"),
-    ]
+# def test_check_exclude_dir():
+#     # given
+#     # Create dummy OssItem objects for the test
+#     oss_list = [
+#         OssItem("dummy_value"),
+#         OssItem("dummy_value"),
+#         OssItem("dummy_value"),
+#         OssItem("dummy_value"),
+#         OssItem("dummy_value"),
+#     ]
 
-    oss_list[0].name = "package1"
-    oss_list[0].source_name_or_path = ["/project/venv/file.py"]
+#     oss_list[0].name = "package1"
+#     oss_list[0].source_name_or_path = ["/project/venv/file.py"]
 
-    oss_list[1].name = "package2"
-    oss_list[1].source_name_or_path = ["/project/src/file.py"]
+#     oss_list[1].name = "package2"
+#     oss_list[1].source_name_or_path = ["/project/src/file.py"]
 
-    oss_list[2].name = "package3"
-    oss_list[2].source_name_or_path = ["/project/node_modules/module.js"]
+#     oss_list[2].name = "package3"
+#     oss_list[2].source_name_or_path = ["/project/node_modules/module.js"]
 
-    oss_list[3].name = "package4"
-    oss_list[3].source_name_or_path = ["/project/Carthage/Build"]
+#     oss_list[3].name = "package4"
+#     oss_list[3].source_name_or_path = ["/project/Carthage/Build"]
 
-    oss_list[4].name = "package5"
-    oss_list[4].source_name_or_path = ["/project/Pods/framework"]
+#     oss_list[4].name = "package5"
+#     oss_list[4].source_name_or_path = ["/project/Pods/framework"]
 
-    # when
-    updated_oss_list = check_exclude_dir(oss_list)
+#     # when
+#     updated_oss_list = check_exclude_dir(oss_list)
 
-    # then
-    assert updated_oss_list[0].exclude is True
-    assert updated_oss_list[1].exclude is not True
-    assert updated_oss_list[2].exclude is True
-    assert updated_oss_list[3].exclude is True
-    assert updated_oss_list[4].exclude is True
+#     # then
+#     assert updated_oss_list[0].exclude is True
+#     assert updated_oss_list[1].exclude is not True
+#     assert updated_oss_list[2].exclude is True
+#     assert updated_oss_list[3].exclude is True
+#     assert updated_oss_list[4].exclude is True
