@@ -1,8 +1,8 @@
 import pytest
-import json
+# import json
 import sys
 from fosslight_scanner.cli import main
-#set_args
+# set_args
 
 
 # def test_set_args_with_setting_file(tmp_path):

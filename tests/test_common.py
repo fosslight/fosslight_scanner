@@ -1,7 +1,7 @@
 import os
 import pytest
 # import pandas as pd
-from fosslight_scanner.common import copy_file, run_analysis, call_analysis_api \
+from fosslight_scanner.common import copy_file, run_analysis, call_analysis_api
 # get_osslist, overwrite_excel, check_exclude_dir
 # from fosslight_util.oss_item import OssItem
 

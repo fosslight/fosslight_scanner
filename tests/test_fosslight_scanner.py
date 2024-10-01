@@ -1,29 +1,6 @@
 from fosslight_scanner.fosslight_scanner import run_dependency, \
     run_scanner, download_source, init, run_main
 
-"""
-1.run_dependency 함수 테스트:
-의존성 분석이 성공적으로 수행되는지 확인.
-잘못된 매개변수를 전달했을 때 예외가 발생하는지 확인.
-
-2.run_scanner 함수 테스트:
-소스, 바이너리, 의존성 분석이 성공적으로 수행되는지 확인.
-잘못된 매개변수를 전달했을 때 예외가 발생하는지 확인.
-
-3.download_source 함수 테스트:
-소스 다운로드가 성공적으로 수행되는지 확인.
-잘못된 링크를 전달했을 때 예외가 발생하는지 확인.
-
-4.init 함수 테스트:
-초기화가 성공적으로 수행되는지 확인.
-잘못된 경로를 전달했을 때 예외가 발생하는지 확인.
-
-5.run_main 함수 테스트:
-다양한 모드에서 메인 함수가 성공적으로 수행되는지 확인.
-잘못된 매개변수를 전달했을 때 예외가 발생하는지 확인.
-
-"""
-
 
 def test_run_dependency(tmp_path):
     # given
