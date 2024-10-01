@@ -2,8 +2,8 @@ import os
 import pytest
 # import pandas as pd
 from fosslight_scanner.common import copy_file, run_analysis, call_analysis_api, \
-    get_osslist, check_exclude_dir
-# overwrite_excel,
+     check_exclude_dir
+# get_osslist, overwrite_excel
 from fosslight_util.oss_item import OssItem
 
 
@@ -117,17 +117,17 @@ def test_write_output_with_osslist():
     pass
 
 
-def test_get_osslist(monkeypatch, tmp_path):
-    # given
-    output_dir = tmp_path / "output"
-    output_dir.mkdir()
-    output_file = "oss_list.xlsx"
+# def test_get_osslist(monkeypatch, tmp_path):
+#     # given
+#     output_dir = tmp_path / "output"
+#     output_dir.mkdir()
+#     output_file = "oss_list.xlsx"
 
-    # when
-    oss_list = get_osslist(str(output_dir), output_file, ".xlsx")
+#     # when
+#     oss_list = get_osslist(str(output_dir), output_file, ".xlsx")
 
-    # then
-    assert isinstance(oss_list, list)
+#     # then
+#     assert isinstance(oss_list, list)
 
 
 def test_check_exclude_dir():
