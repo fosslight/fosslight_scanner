@@ -30,7 +30,7 @@ jobs:
         push: true
         platforms: linux/amd64,linux/arm64
         tags: |
-        # nanayah99 -> fosslight 수정 필요
+          # nanayah99 -> fosslight 수정 필요
           nanayah99/fosslight_scanner:latest
           nanayah99/fosslight_scanner:${{ github.event.release.tag_name }}
 
