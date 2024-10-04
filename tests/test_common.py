@@ -1,6 +1,5 @@
 import os
 import pytest
-import pandas as pd
 from fosslight_util.oss_item import OssItem
 from fosslight_scanner.common import copy_file, run_analysis, call_analysis_api, check_exclude_dir
 
