@@ -30,8 +30,9 @@ jobs:
         push: true
         platforms: linux/amd64,linux/arm64
         tags: |
-          fosslight/fosslight_scanner:latest
-          fosslight/fosslight_scanner:${{ github.event.release.tag_name }}
+        # nanayah99 -> fosslight 수정 필요
+          nanayah99/fosslight_scanner:latest
+          nanayah99/fosslight_scanner:${{ github.event.release.tag_name }}
 
   create-windows-executable:
     runs-on: windows-latest
@@ -60,3 +61,37 @@ jobs:
         asset_path: ./dist/fosslight_wrapper.exe
         asset_name: fosslight_wrapper.exe
         asset_content_type: application/vnd.microsoft.portable-executable
+
+  create-macos-app:
+    runs-on: macos-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.9'
+
+    - name: Install dependencies
+      run: |
+        pip install pyinstaller
+
+    - name: Create .app bundle
+      run: |
+        pyinstaller --windowed --name "FossLight Wrapper" --add-data "fosslight_wrapper.py:." fosslight_wrapper.py
+
+    - name: Compress .app to .zip
+      run: |
+        cd dist
+        zip -r FossLight_Wrapper.zip "FossLight Wrapper.app"
+
+    - name: Upload .app bundle to release
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ github.event.release.upload_url }}
+        asset_path: ./dist/FossLight_Wrapper.zip
+        asset_name: FossLight_Wrapper_macOS.zip
+        asset_content_type: application/zip
