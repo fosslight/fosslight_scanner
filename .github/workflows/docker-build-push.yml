@@ -69,7 +69,6 @@ jobs:
 
     - name: Create .command file
       run: |
-        cp fosslight_wrapper_mac.sh fosslight_wrapper_mac.command
         chmod +x fosslight_wrapper_mac.command
 
     - name: Upload .command file to release
