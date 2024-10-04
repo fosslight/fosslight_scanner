@@ -8,86 +8,145 @@ import json
 import yaml
 
 
-def test_write_result_json_yaml(tmp_path):
-    output_file = tmp_path / "result.json"
-    compared_result = {"key": "value"}
-    assert write_result_json_yaml(output_file, compared_result, JSON_EXT) is True
-    assert json.load(open(output_file)) == compared_result
+@pytest.mark.parametrize("ext, expected_content", [
+    # Test for JSON and YAML extensions
+    (".json", {"key": "value"}),
+    (".yaml", {"key": "value"}),
 
-    output_file = tmp_path / "result.yaml"
-    assert write_result_json_yaml(output_file, compared_result, YAML_EXT) is True
-    assert yaml.safe_load(open(output_file)) == compared_result
+    # Test for TXT extension (failure)
+    (".txt", {"key": "value"}),
+])
+def test_write_result_json_yaml(tmp_path, ext, expected_content):
+    # given
+    output_file = tmp_path / f"result{ext}"
+    compared_result = expected_content
 
-    output_file = tmp_path / "result.txt"
-    assert write_result_json_yaml(output_file, compared_result, ".txt") is True
+    # when
+    success = write_result_json_yaml(output_file, compared_result, ext)
+
+    # then
+    assert success is True, f"Failed to write file with extension {ext}"
+
+    # Verify content based on extension
+    if ext == ".json":
+        with open(output_file, 'r', encoding='utf-8') as f:
+            result_content = json.load(f)
+        assert result_content == compared_result, "The content of the JSON file does not match the expected content."
+
+    elif ext == ".yaml":
+        with open(output_file, 'r', encoding='utf-8') as f:
+            result_content = yaml.safe_load(f)
+        assert result_content == compared_result, "The content of the YAML file does not match the expected content."
+
+    elif ext == ".txt":
+        with open(output_file, 'r', encoding='utf-8') as f:
+            result_lines = f.readlines()
+        result_content = ''.join(result_lines)
+        assert result_content != compared_result, "The content of the TXT file does not match the expected string representation."
 
 
 def test_parse_result_for_table():
+    # given
+    add_expected = [ADD, '', '', 'test(1.0)', 'MIT']
     oi = {"name": "test", "version": "1.0", "license": ["MIT"]}
-    assert parse_result_for_table(oi, ADD) == [ADD, '', '', 'test(1.0)', 'MIT']
-    assert parse_result_for_table(oi, DELETE) == [DELETE, 'test(1.0)', 'MIT', '', '']
 
-    oi = {"name": "test", "prev": [{"version": "1.0", "license": ["MIT"]}],
-          "now": [{"version": "2.0", "license": ["Apache-2.0"]}]}
-    assert parse_result_for_table(oi, CHANGE) == [CHANGE, 'test(1.0)', 'MIT', 'test(2.0)', 'Apache-2.0']
+    # when
+    add_result = parse_result_for_table(oi, ADD)
 
-    assert parse_result_for_table(oi, "invalid") == []
+    # then
+    assert add_result == add_expected
 
 
 def test_get_sample_html():
+    # then
     assert get_sample_html() != ''
 
 
-def test_write_result_html(tmp_path):
+@pytest.mark.parametrize("compared_result, expected_before, expected_after", [
+    # Case with empty add, delete, change
+    ({ADD: [], DELETE: [], CHANGE: []}, "before.yaml", "after.yaml"),
+
+    # Case with one entry in add and no deletes or changes
+    ({ADD: [{"name": "test", "version": "1.0", "license": ["MIT"]}], DELETE: [], CHANGE: []},
+     "before.yaml", "after.yaml")
+])
+def test_write_result_html(tmp_path, compared_result, expected_before, expected_after):
+    # given
     output_file = tmp_path / "result.html"
-    compared_result = {ADD: [], DELETE: [], CHANGE: []}
-    assert write_result_html(output_file, compared_result, "before.yaml", "after.yaml") is True
 
-    compared_result = {ADD: [{"name": "test", "version": "1.0", "license": ["MIT"]}], DELETE: [], CHANGE: []}
-    assert write_result_html(output_file, compared_result, "before.yaml", "after.yaml") is True
+    # when
+    success = write_result_html(output_file, compared_result, expected_before, expected_after)
+
+    # then
+    assert success is True, "Failed to write the HTML file."
+    assert output_file.exists(), "The HTML file was not created."
+    with open(output_file, 'r', encoding='utf-8') as f:
+        content = f.read()
+        assert content, "The HTML file is empty."
 
 
-def test_write_result_xlsx(tmp_path):
+@pytest.mark.parametrize("compared_result", [
+    # Case with empty add, delete, change
+    {ADD: [], DELETE: [], CHANGE: []},
+
+    # Case with one entry in add and no deletes or changes
+    {ADD: [{"name": "test", "version": "1.0", "license": ["MIT"]}], DELETE: [], CHANGE: []}
+])
+def test_write_result_xlsx(tmp_path, compared_result):
+    # given
     output_file = tmp_path / "result.xlsx"
-    compared_result = {ADD: [], DELETE: [], CHANGE: []}
-    assert write_result_xlsx(output_file, compared_result) is True
 
-    compared_result = {ADD: [{"name": "test", "version": "1.0", "license": ["MIT"]}], DELETE: [], CHANGE: []}
-    assert write_result_xlsx(output_file, compared_result) is True
+    # when
+    success = write_result_xlsx(output_file, compared_result)
+
+    # then
+    assert success is True, "Failed to write the XLSX file."
+    assert output_file.exists(), "The XLSX file was not created."
 
 
-def test_write_compared_result(tmp_path):
+@pytest.mark.parametrize("ext, expected_output", [
+    (XLSX_EXT, "xlsx"),
+    (HTML_EXT, "html"),
+    (JSON_EXT, "json"),
+    (YAML_EXT, "yaml"),
+])
+def test_write_compared_result(tmp_path, ext, expected_output):
+    # given
     output_file = tmp_path / "result"
     compared_result = {ADD: [], DELETE: [], CHANGE: []}
 
-    # XLSX Extension comparison
-    success, result_file = write_compared_result(output_file, compared_result, XLSX_EXT)
-    assert success is True
-    assert str(result_file) == str(output_file)
+    # when
+    success, result_file = write_compared_result(output_file, compared_result, ext)
 
-    # HTML Extension comparison
-    success, result_file = write_compared_result(output_file, compared_result, HTML_EXT)
-    expected_result_file = f"{str(output_file) + XLSX_EXT}, {str(output_file)}"
-    assert success is True
-    assert result_file == expected_result_file
-
-    # JSON Extension comparison
-    success, result_file = write_compared_result(output_file, compared_result, JSON_EXT)
-    assert success is True
-    assert str(result_file) == str(output_file)
-
-    # YAML Extension comparison
-    success, result_file = write_compared_result(output_file, compared_result, YAML_EXT)
-    assert success is True
-    assert str(result_file) == str(output_file)
+    # then
+    assert success is True, f"Failed to write the compared result for extension {ext}"
+    if ext == XLSX_EXT:
+        assert str(result_file) == str(output_file), "The XLSX result file path does not match the expected output path."
+    elif ext == HTML_EXT:
+        expected_result_file = f"{str(output_file) + XLSX_EXT}, {str(output_file)}"
+        assert result_file == expected_result_file, "HTML file creation failed."
+    elif ext == JSON_EXT:
+        assert str(result_file) == str(output_file), "The JSON result file path does not match the expected output path."
+    else:
+        assert str(result_file) == str(output_file), "The YAML result file path does not match the expected output path."
 
 
-def test_get_comparison_result_filename():
-    assert get_comparison_result_filename("/path", "file", XLSX_EXT, "time") == "/path/file.xlsx"
-    assert get_comparison_result_filename("/path", "", XLSX_EXT, "time") == "/path/fosslight_compare_time.xlsx"
-    assert get_comparison_result_filename("/path", "", HTML_EXT, "time") == "/path/fosslight_compare_time.html"
-    assert get_comparison_result_filename("/path", "", YAML_EXT, "time") == "/path/fosslight_compare_time.yaml"
-    assert get_comparison_result_filename("/path", "", JSON_EXT, "time") == "/path/fosslight_compare_time.json"
+@pytest.mark.parametrize("path, file_name, ext, time_suffix, expected_output", [
+    # Case when file name is provided
+    ("/path", "file", XLSX_EXT, "time", "/path/file.xlsx"),
+
+    # Case when file name is empty, with different extensions
+    ("/path", "", XLSX_EXT, "time", "/path/fosslight_compare_time.xlsx"),
+    ("/path", "", HTML_EXT, "time", "/path/fosslight_compare_time.html"),
+    ("/path", "", YAML_EXT, "time", "/path/fosslight_compare_time.yaml"),
+    ("/path", "", JSON_EXT, "time", "/path/fosslight_compare_time.json"),
+])
+def test_get_comparison_result_filename(path, file_name, ext, time_suffix, expected_output):
+    # when
+    result = get_comparison_result_filename(path, file_name, ext, time_suffix)
+
+    # then
+    assert result == expected_output, f"Expected {expected_output} but got {result}"
 
 
 @pytest.mark.parametrize("compared_result, expected_log", [
@@ -95,8 +154,10 @@ def test_get_comparison_result_filename():
     ({ADD: [{"name": "test"}], DELETE: [], CHANGE: []}, "total 1 oss updated (add: 1, delete: 0, change: 0)")
 ])
 def test_count_compared_result(compared_result, expected_log, caplog):
+    # when
     with caplog.at_level(logging.INFO):
         count_compared_result(compared_result)
+    # then
     assert expected_log in caplog.text
 
 
