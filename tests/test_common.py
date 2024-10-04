@@ -1,3 +1,9 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+# Copyright (c) 2020 LG Electronics Inc.
+# SPDX-License-Identifier: Apache-2.0
+
+
 import os
 import pytest
 from fosslight_util.oss_item import OssItem

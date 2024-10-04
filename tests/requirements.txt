@@ -1,4 +1,0 @@
-future
-pandas
-xlrd
-pytest
