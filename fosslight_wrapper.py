@@ -7,7 +7,6 @@ import subprocess
 import logging
 from datetime import datetime
 import os
-import platform
 
 
 def setup_logging():
@@ -19,18 +18,19 @@ def setup_logging():
 
 
 def is_double_clicked():
-    return (sys.argv[0].endswith('.exe') and len(sys.argv) == 1) or \
-           (sys.argv[0].endswith('.app') and len(sys.argv) == 2 and sys.argv[1] == '-psn_0_0')
+    return sys.argv[0].endswith('.exe') and len(sys.argv) == 1
 
 
 def check_and_pull_image(image_name):
     try:
+        # Check if the image exists locally
         result = subprocess.run(["docker", "image", "inspect", image_name],
                                 capture_output=True, text=True)
         if result.returncode == 0:
             logging.info(f"Image {image_name} already exists locally.")
             return True
 
+        # If the image doesn't exist, pull it
         logging.info(f"Pulling the image {image_name} from Docker Hub")
         subprocess.run(["docker", "pull", image_name], check=True)
         logging.info(f"Successfully pulled the image {image_name}")
@@ -170,15 +170,8 @@ def remove_wfp_file(output_path):
 
 
 def run_fosslight(image, analysis_type, input_source, output_path, additional_options):
-    # Convert paths to Docker-compatible paths based on OS
-    if platform.system() == 'Windows':
-        output_path = output_path.replace('\\', '/').replace('C:', '/c')
-        if analysis_type == 'local':
-            input_source = input_source.replace('\\', '/').replace('C:', '/c')
-    elif platform.system() == 'Darwin':  # macOS
-        output_path = output_path.replace('/Volumes/', '/').replace(' ', '\ ')
-        if analysis_type == 'local':
-            input_source = input_source.replace('/Volumes/', '/').replace(' ', '\ ')
+    # Convert Windows paths to Docker-compatible paths
+    output_path = output_path.replace('\\', '/').replace('C:', '/c')
 
     # Construct the Docker command
     docker_cmd = [
@@ -187,7 +180,8 @@ def run_fosslight(image, analysis_type, input_source, output_path, additional_op
     ]
 
     if analysis_type == 'local':
-        docker_cmd.extend(["-v", f"{input_source}:/src"])
+        input_path = input_source.replace('\\', '/').replace('C:', '/c')
+        docker_cmd.extend(["-v", f"{input_path}:/src"])
 
     docker_cmd.extend([
         image,
@@ -230,9 +224,7 @@ def run_fosslight(image, analysis_type, input_source, output_path, additional_op
 
 
 def get_execution_mode():
-    if platform.system() == 'Darwin' and sys.argv[0].endswith('.app'):
-        return "auto"
-    elif len(sys.argv) > 1 and sys.argv[1] == "--manual":
+    if len(sys.argv) > 1 and sys.argv[1] == "--manual":
         return "manual"
     return "auto"
 
@@ -246,9 +238,8 @@ def main():
     execution_mode = get_execution_mode()
 
     if execution_mode == "auto":
-        logging.info("Executing in automatic mode")
-        # nanayah99 -> fosslight 수정 필요
-        image_name = "nanayah99/fosslight_scanner:latest"
+        logging.info("Executing in automatic mode (double-click)")
+        image_name = "fosslight/fosslight_scanner:latest"
         if not check_and_pull_image(image_name):
             print(f"Failed to ensure the presence of the Docker image: {image_name}")
             input("Press Enter to exit...")
@@ -259,7 +250,7 @@ def main():
         output_path = current_dir
         additional_options = ["-f", "excel"]
     else:
-        logging.info("Executing in manual mode")
+        logging.info("Executing in manual mode (command prompt)")
         image, analysis_type, input_source = get_user_input()
         output_path = input("Enter path for output: ")
         additional_options = get_additional_options()
