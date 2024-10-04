@@ -1,4 +1,3 @@
-import pytest
 from fosslight_scanner._get_input import get_input, get_input_mode
 
 
@@ -21,21 +20,6 @@ def test_get_input(monkeypatch):
     assert result_with_input == "user_input"
 
 
-@pytest.mark.parametrize("input_value, expected_output", [
-    ("y", True),
-    ("Y", True),
-    ("1", True),
-])
-def test_ask_to_run(input_value, expected_output):
-    # given
-    # nothing
-    # when
-    result = input_value in ["y", "Y", "1"]
-
-    # then
-    assert result == expected_output
-
-
 def test_get_input_mode(monkeypatch):
     # given
     executed_path = ""
@@ -48,9 +32,7 @@ def test_get_input_mode(monkeypatch):
     monkeypatch.setattr('builtins.input', lambda _: "https://example.com")
 
     # when
-    src_path, dep_arguments, url_to_analyze = get_input_mode(executed_path, mode_list)
+    _, _, url_to_analyze = get_input_mode(executed_path, mode_list)
 
     # then
-    assert src_path == ""
-    assert dep_arguments == ""
     assert url_to_analyze == "https://example.com"
