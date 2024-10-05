@@ -218,7 +218,7 @@ def main():
 
     if execution_mode == "auto":
         logging.info("Executing in automatic mode")
-        image_name = "nanayah99/fosslight_scanner:latest"
+        image_name = "fosslight/fosslight_scanner:latest"
         if not check_and_pull_image(image_name):
             print(f"Failed to ensure the presence of the Docker image: {image_name}")
             sys.exit(1)
