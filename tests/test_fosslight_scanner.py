@@ -1,25 +1,26 @@
-from fosslight_scanner.fosslight_scanner import run_scanner, download_source, init, run_main
-# run_dependency,
+from fosslight_scanner.fosslight_scanner import run_scanner, download_source, init, run_main, run_dependency
+from fosslight_util.oss_item import ScannerItem
 
-# def test_run_dependency(tmp_path):
-#     # given
-#     path_to_analyze = tmp_path / "test_project"
-#     output_file_with_path = tmp_path / "output_file"
-#     params = "-m 'npm' -a 'activate_cmd' -d 'deactivate_cmd' -c 'custom_dir' -n 'app_name' -t 'token_value'"
-#     path_to_exclude = ["node_modules"]
 
-#     # Create the directory to analyze
-#     path_to_analyze.mkdir(parents=True, exist_ok=True)
+def test_run_dependency(tmp_path):
+    # given
+    path_to_analyze = tmp_path / "test_project"
+    output_file_with_path = tmp_path / "output_file"
+    params = "-m 'npm' -a 'activate_cmd' -d 'deactivate_cmd' -c 'custom_dir' -n 'app_name' -t 'token_value'"
+    path_to_exclude = ["node_modules"]
 
-#     # when
-#     result_list = run_dependency(str(path_to_analyze), str(output_file_with_path), params, path_to_exclude)
+    # Create the directory to analyze
+    path_to_analyze.mkdir(parents=True, exist_ok=True)
 
-#     # then
-#     # Check that result_list is a list
-#     assert isinstance(result_list, list), "Result should be a list."
+    # when
+    result = run_dependency(str(path_to_analyze), str(output_file_with_path), params, path_to_exclude)
 
-#     # Check that result_list is not None (even if empty, it's still a valid list)
-#     assert result_list is not None, "Result should not be None."
+    # then
+    # Check that result is an instance of ScannerItem
+    assert isinstance(result, ScannerItem), "Result should be an instance of ScannerItem."
+
+    # Check that result is not None
+    assert result is not None, "Result should not be None."
 
 
 def test_run_scanner(tmp_path):
