@@ -103,38 +103,14 @@ def test_correct_scanner_result():
     pass
 
 
-def test_check_exclude_dir():
-    # given
-    # Create dummy OssItem objects for the test
-    oss_list = [
-        OssItem("dummy_value"),
-        OssItem("dummy_value"),
-        OssItem("dummy_value"),
-        OssItem("dummy_value"),
-        OssItem("dummy_value"),
-    ]
-
-    oss_list[0].name = "package1"
-    oss_list[0].source_name_or_path = ["/project/venv/file.py"]
-
-    oss_list[1].name = "package2"
-    oss_list[1].source_name_or_path = ["/project/src/file.py"]
-
-    oss_list[2].name = "package3"
-    oss_list[2].source_name_or_path = ["/project/node_modules/module.js"]
-
-    oss_list[3].name = "package4"
-    oss_list[3].source_name_or_path = ["/project/Carthage/Build"]
-
-    oss_list[4].name = "package5"
-    oss_list[4].source_name_or_path = ["/project/Pods/framework"]
-
-    # when
-    updated_oss_list = check_exclude_dir(oss_list)
-
-    # then
-    assert updated_oss_list[0].exclude is True
-    assert updated_oss_list[1].exclude is not True
-    assert updated_oss_list[2].exclude is True
-    assert updated_oss_list[3].exclude is True
-    assert updated_oss_list[4].exclude is True
+@pytest.mark.parametrize("source_name_or_path, file_item_exclude, expected", [
+    ("project/venv/file.py", False, True),
+    ("project/node_modules/file.js", False, True),
+    ("project/Pods/file.m", False, True),
+    ("project/Carthage/file.swift", False, True),
+    ("project/src/file.py", False, False),
+    ("project/src/file.py", True, True),
+    ("project/venv/file.py", True, True),
+])
+def test_check_exclude_dir(source_name_or_path, file_item_exclude, expected):
+    assert check_exclude_dir(source_name_or_path, file_item_exclude) == expected
