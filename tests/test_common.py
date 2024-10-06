@@ -6,7 +6,8 @@
 
 import os
 import pytest
-from fosslight_scanner.common import copy_file, run_analysis, call_analysis_api, check_exclude_dir
+from fosslight_scanner.common import copy_file, run_analysis, call_analysis_api, check_exclude_dir, \
+    create_scancodejson, correct_scanner_result
 
 
 def test_copy_file_success(tmp_path):
@@ -94,12 +95,91 @@ def test_call_analysis_api_without_path():
     assert result == []
 
 
-def test_create_scancodejson():
-    pass
+def test_create_scancodejson(monkeypatch):
+    # Given
+
+    # Mocking os.walk
+    def mock_os_walk(path):
+        return [("/mocked/absolute/path", ["dir1"], ["file1", "file2"])]
+
+    # Mocking write_scancodejson
+    def mock_write_scancodejson(dirname, basename, all_scan_item):
+        pass
+
+    # Mocking copy.deepcopy
+    def mock_deepcopy(obj):
+        return obj
+
+    # Mocking os.path.abspath
+    monkeypatch.setattr("os.path.abspath", lambda x: "/mocked/absolute/path")
+
+    # Mocking os.path.basename
+    monkeypatch.setattr("os.path.basename", lambda x: "mocked_parent")
+    monkeypatch.setattr("os.walk", mock_os_walk)
+    monkeypatch.setattr("fosslight_scanner.common.write_scancodejson", mock_write_scancodejson)
+    monkeypatch.setattr("copy.deepcopy", mock_deepcopy)
+
+    # Mocking FOSSLIGHT_DEPENDENCY and FOSSLIGHT_SOURCE
+    global FOSSLIGHT_DEPENDENCY, FOSSLIGHT_SOURCE
+    FOSSLIGHT_DEPENDENCY = "fosslight_dependency"
+    FOSSLIGHT_SOURCE = "fosslight_source"
+
+    # Mocking all_scan_item_origin
+    class AllScanItem:
+        def __init__(self):
+            self.file_items = {
+                FOSSLIGHT_DEPENDENCY: [],
+                FOSSLIGHT_SOURCE: []
+            }
+
+    all_scan_item_origin = AllScanItem()
+    ui_mode_report = "/mocked/ui_mode_report"
+    src_path = "/mocked/src_path"
+
+    # When
+    success, err_msg = create_scancodejson(all_scan_item_origin, ui_mode_report, src_path)
+
+    # Then
+    assert success is True
+    assert err_msg == ''
 
 
-def test_correct_scanner_result():
-    pass
+def test_correct_scanner_result(monkeypatch):
+    # Given
+    class MockOSSItem:
+        def __init__(self, license, exclude=False):
+            self.license = license
+            self.exclude = exclude
+
+    class MockFileItem:
+        def __init__(self, source_name_or_path, oss_items, exclude=False):
+            self.source_name_or_path = source_name_or_path
+            self.oss_items = oss_items
+            self.exclude = exclude
+
+    class MockAllScanItem:
+        def __init__(self, file_items):
+            self.file_items = file_items
+
+    src_oss_item = MockOSSItem(license="MIT")
+    bin_oss_item = MockOSSItem(license="")
+
+    src_file_item = MockFileItem("path/to/source", [src_oss_item])
+    bin_file_item = MockFileItem("path/to/source", [bin_oss_item])
+
+    all_scan_item = MockAllScanItem({
+        "FOSSLIGHT_SOURCE": [src_file_item],
+        "FOSSLIGHT_BINARY": [bin_file_item]
+    })
+
+    def mock_check_exclude_dir(source_name_or_path, file_item_exclude):
+        return file_item_exclude
+
+    monkeypatch.setattr("fosslight_scanner.common.check_exclude_dir", mock_check_exclude_dir)
+    # When
+    result = correct_scanner_result(all_scan_item)
+    # Then
+    assert len(result.file_items["FOSSLIGHT_BINARY"][0].oss_items) == 1
 
 
 @pytest.mark.parametrize("source_name_or_path, file_item_exclude, expected", [
