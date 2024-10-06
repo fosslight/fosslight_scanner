@@ -1,5 +1,39 @@
 # Changelog
 
+## v2.0.1 (09/09/2024)
+## Changes
+## 🔧 Maintenance
+
+- Revert "Remove prechecker" @dd-jy (#120)
+
+---
+
+## v2.0.0 (06/09/2024)
+## Changes
+## 🔧 Maintenance
+
+- Remove prechecker @dd-jy (#119)
+- Refactoring OSS item @dd-jy (#118)
+
+---
+
+## v1.7.31 (06/09/2024)
+## Changes
+## 🚀 Features
+
+- Setting.json with source_scanner selection @soonhong99 (#109)
+
+## 🐛 Hotfixes
+
+- Fix a bug related to path_to_exclude @soimkim (#116)
+
+## 🔧 Maintenance
+
+- Limit installation fosslight package @dd-jy (#117)
+- Add simple_mode parameter to CoverItem constructor @YongGoose (#108)
+
+---
+
 ## v1.7.30 (22/07/2024)
 ## Changes
 ## 🚀 Features
@@ -263,31 +297,3 @@
 
 - Change the report file name @dd-jy (#48)
 - Modify help msg if invalid input @bjk7119 (#47)
-
----
-
-## v1.7.3 (01/09/2022)
-## Changes
-## 🚀 Features
-
-- Support 'xlsx' report for Compare mode @dd-jy (#46)
-
-## 🔧 Maintenance
-
-- Change the required version of Python to 3.7 @soimkim (#45)
-
----
-
-## v1.7.2 (16/08/2022)
-## Changes
-## 🚀 Features
-
-- Support yaml format of FOSSLight Report @dd-jy (#42)
-
----
-
-## v1.7.1 (22/07/2022)
-## Changes
-## 🐛 Hotfixes
-
-- Change FL Reuse to FL Prechecker @bjk7119 (#43)
