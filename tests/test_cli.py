@@ -12,7 +12,7 @@ from fosslight_scanner.cli import main, set_args
 def test_set_args(monkeypatch):
     # Mocking os.path.isfile to return True
     monkeypatch.setattr("os.path.isfile", lambda x: True)
-    
+
     # Mocking the open function to return a mock file object
     mock_file_data = json.dumps({
         "mode": ["test_mode"],
@@ -35,25 +35,25 @@ def test_set_args(monkeypatch):
         "source_time_out": 100,
         "binary_simple": True
     })
-    
+
     def mock_open(*args, **kwargs):
         from io import StringIO
         return StringIO(mock_file_data)
-    
+
     monkeypatch.setattr("builtins.open", mock_open)
-    
+
     # Call the function with some arguments
     result = set_args(
         mode=None, path=None, dep_argument=None, output=None, format=None, link=None, db_url=None, timer=None,
         raw=None, core=-1, no_correction=None, correct_fpath=None, ui=None, setting="dummy_path", exclude_path=None
     )
-    
+
     # Expected result
     expected = (
         ["test_mode"], ["test_path"], "test_dep_argument", "test_output", "test_format", "test_link", "test_db_url", True,
         True, 4, True, "test_correct_fpath", True, ["test_exclude_path"], "test_scanner", True, True, 100, True
     )
-    
+
     assert result == expected
 
 
