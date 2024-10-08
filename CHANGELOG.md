@@ -1,5 +1,18 @@
 # Changelog
 
+## v2.1.0 (08/10/2024)
+## Changes
+## 🚀 Features
+
+- Support multi format and spdx @dd-jy (#130)
+
+## 🔧 Maintenance
+
+- Change the test code to use pytest @cjho0316 (#124)
+- ci: Add Docker build and push workflow for automated releases @soonhong99 (#122)
+
+---
+
 ## v2.0.1 (09/09/2024)
 ## Changes
 ## 🔧 Maintenance
@@ -288,12 +301,3 @@
 ## 🔧 Maintenance
 
 - Fix the binary text copy issue @dd-jy (#49)
-
----
-
-## v1.7.4 (15/09/2022)
-## Changes
-## 🔧 Maintenance
-
-- Change the report file name @dd-jy (#48)
-- Modify help msg if invalid input @bjk7119 (#47)
