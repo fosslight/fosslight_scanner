@@ -25,8 +25,9 @@ _HELP_MESSAGE_SCANNER = """
                                      * Compare mode input file: Two FOSSLight reports (supports excel, yaml)
                                        (ex, -p {before_name}.xlsx {after_name}.xlsx)
             -w <link>\t\t    Link to be analyzed can be downloaded by wget or git clone
-            -f <format>\t\t    FOSSLight Report file format (excel, yaml)
+            -f <formats> [<format> ...]\t    FOSSLight Report file format (excel, csv, opossum, yaml, spdx-tag, spdx-yaml, spdx-json, spdx-xml)
                                      * Compare mode result file: supports excel, json, yaml, html
+                                     * Multiple formats can be specified separated by space.
             -e <path>\t\t    Path to exclude from analysis (ex, -e {dir} {file})
             -o <output>\t\t    Output directory or file
             -c <number>\t\t    Number of processes to analyze source

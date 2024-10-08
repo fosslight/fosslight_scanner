@@ -28,8 +28,8 @@ def test_run_scanner(tmp_path):
     src_path = tmp_path / "test_src"
     output_path = tmp_path / "output"
     dep_arguments = ""
-    output_file = "test_output"
-    output_extension = ".yaml"
+    output_file = ['test_output']
+    output_extension = [".yaml"]
 
     # Create necessary directories and files for the test
     src_path.mkdir(parents=True, exist_ok=True)
@@ -51,8 +51,8 @@ def test_run_scanner(tmp_path):
         run_prechecker=False,
         remove_src_data=False,
         result_log={},
-        output_file=output_file,
-        output_extension=output_extension,
+        output_files=output_file,
+        output_extensions=output_extension,
         num_cores=1,
         path_to_exclude=[]
     )
@@ -121,7 +121,7 @@ def test_run_main(tmp_path):
     path_arg = [str(tmp_path / "test_src")]
     dep_arguments = []
     output_file_or_dir = str(tmp_path / "output")
-    file_format = "yaml"
+    file_format = ['yaml']
     url_to_analyze = ""
     db_url = ""
 

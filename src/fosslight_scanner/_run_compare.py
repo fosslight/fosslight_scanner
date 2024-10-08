@@ -203,7 +203,7 @@ def write_compared_result(output_file, compared_result, file_ext, before_f='', a
 def get_comparison_result_filename(output_path, output_file, output_extension, _start_time):
     result_file = ""
     compare_prefix = f"fosslight_compare_{_start_time}"
-    if output_file != "":
+    if output_file != '':
         result_file = f"{output_file}{output_extension}"
     else:
         if output_extension == XLSX_EXT or output_extension == "":
@@ -232,7 +232,7 @@ def count_compared_result(compared_result):
     logger.info(f"Comparison result: {count_str}")
 
 
-def run_compare(before_f, after_f, output_path, output_file, file_ext, _start_time, _output_dir):
+def run_compare(before_f, after_f, output_path, output_files, file_ext, _start_time, _output_dir):
     ret = False
     before_yaml = ''
     after_yaml = ''
@@ -254,8 +254,6 @@ def run_compare(before_f, after_f, output_path, output_file, file_ext, _start_ti
         tmp_a_yaml = f'{os.path.basename(after_f).rstrip(XLSX_EXT)}{YAML_EXT}'
         after_yaml = after_f if after_ext == YAML_EXT else os.path.join(_output_dir, tmp_a_yaml)
 
-    result_file = get_comparison_result_filename(output_path, output_file, file_ext, _start_time)
-
     before_basepath = os.path.dirname(before_f)
     after_basepath = os.path.dirname(after_f)
     if XLSX_EXT == before_ext:
@@ -267,13 +265,17 @@ def run_compare(before_f, after_f, output_path, output_file, file_ext, _start_ti
     elif YAML_EXT == after_ext:
         after_fileitems, _, _ = parsing_yml(after_yaml, after_basepath)
 
+    if output_files:
+        output_file = output_files[0]
     compared_result = compare_yaml(before_fileitems, after_fileitems)
     if compared_result != '':
         count_compared_result(compared_result)
-        ret, result_file = write_compared_result(result_file, compared_result, file_ext, before_yaml, after_yaml)
-        if ret:
-            logger.info(f"Success to write compared result: {result_file}")
-        else:
-            logger.error("Fail to write compared result file.")
+        for f_ext in file_ext:
+            result_file = get_comparison_result_filename(output_path, output_file, f_ext, _start_time)
+            ret, result_file = write_compared_result(result_file, compared_result, f_ext, before_yaml, after_yaml)
+            if ret:
+                logger.info(f"Output file: {result_file}")
+            else:
+                logger.error("Fail to write compared result file.")
 
     return ret
