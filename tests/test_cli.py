@@ -19,7 +19,7 @@ def test_set_args(monkeypatch):
         "path": ["test_path"],
         "dep_argument": "test_dep_argument",
         "output": "test_output",
-        "format": "test_format",
+        "format": ["test_format"],
         "link": "test_link",
         "db_url": "test_db_url",
         "timer": True,
@@ -50,7 +50,7 @@ def test_set_args(monkeypatch):
 
     # Expected result
     expected = (
-        ["test_mode"], ["test_path"], "test_dep_argument", "test_output", "test_format", "test_link", "test_db_url", True,
+        ["test_mode"], ["test_path"], "test_dep_argument", "test_output", ["test_format"], "test_link", "test_db_url", True,
         True, 4, True, "test_correct_fpath", True, ["test_exclude_path"], "test_scanner", True, True, 100, True
     )
 

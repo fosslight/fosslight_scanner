@@ -12,6 +12,7 @@ import yaml
 import shutil
 import shlex
 import subprocess
+import platform
 from pathlib import Path
 from datetime import datetime
 
@@ -23,7 +24,7 @@ from ._get_input import get_input_mode
 from fosslight_util.set_log import init_log
 from fosslight_util.timer_thread import TimerThread
 import fosslight_util.constant as constant
-from fosslight_util.output_format import check_output_format
+from fosslight_util.output_format import check_output_formats_v2
 from fosslight_prechecker._precheck import run_lint as prechecker_lint
 from fosslight_util.cover import CoverItem
 from fosslight_util.oss_item import ScannerItem
@@ -56,7 +57,7 @@ SCANNER_MODE = [
 ]
 
 
-def run_dependency(path_to_analyze, output_file_with_path, params="", path_to_exclude=[]):
+def run_dependency(path_to_analyze, output_file_with_path, params="", path_to_exclude=[], formats=[]):
     result = []
 
     package_manager = ""
@@ -99,7 +100,7 @@ def run_dependency(path_to_analyze, output_file_with_path, params="", path_to_ex
             output_file_with_path,
             pip_activate_cmd, pip_deactivate_cmd,
             output_custom_dir, app_name,
-            github_token, path_to_exclude=path_to_exclude
+            github_token, formats, True, path_to_exclude=path_to_exclude
         )
         if success:
             result = scan_item
@@ -114,33 +115,62 @@ def source_analysis_wrapper(*args, **kwargs):
     source_write_json_file = kwargs.pop('source_write_json_file', False)
     source_print_matched_text = kwargs.pop('source_print_matched_text', False)
     source_time_out = kwargs.pop('source_time_out', 120)
+    formats = kwargs.pop('formats', [])
     args = list(args)
     args.insert(2, source_write_json_file)
     args.insert(5, source_print_matched_text)
+    args.insert(6, formats)
 
     return source_analysis(*args, selected_scanner=selected_scanner, time_out=source_time_out, **kwargs)
 
 
 def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                 run_src=True, run_bin=True, run_dep=True, run_prechecker=False,
-                remove_src_data=True, result_log={}, output_file="",
-                output_extension="", num_cores=-1, db_url="",
+                remove_src_data=True, result_log={}, output_files=[],
+                output_extensions=[], num_cores=-1, db_url="",
                 default_oss_name="", default_oss_version="", url="",
                 correct_mode=True, correct_fpath="", ui_mode=False, path_to_exclude=[],
                 selected_source_scanner="all", source_write_json_file=False, source_print_matched_text=False,
-                source_time_out=120, binary_simple=False):
+                source_time_out=120, binary_simple=False, formats=[]):
     final_excel_dir = output_path
     success = True
     all_cover_items = []
     all_scan_item = ScannerItem(PKG_NAME, _start_time)
+    _json_ext = '.json'
     if not remove_src_data:
         success, final_excel_dir, result_log = init(output_path)
 
-    if output_file == "":
-        output_file = OUTPUT_REPORT_PREFIX + _start_time
-
-    if output_extension == "":
-        output_extension = ".xlsx"
+    if not output_files:
+        # If -o does not contains file name, set default name
+        while len(output_files) < len(output_extensions):
+            output_files.append(None)
+        to_remove = []  # elements of spdx format on windows that should be removed
+        for i, output_extension in enumerate(output_extensions):
+            if output_files[i] is None or output_files[i] == "":
+                if formats:
+                    if formats[i].startswith('spdx'):
+                        if platform.system() != 'Windows':
+                            output_files[i] = f"fosslight_spdx_all_{_start_time}"
+                        else:
+                            logger.warning('spdx format is not supported on Windows. Please remove spdx from format.')
+                            to_remove.append(i)
+                    else:
+                        if output_extension == _json_ext:
+                            output_files[i] = f"fosslight_opossum_all_{_start_time}"
+                        else:
+                            output_files[i] = f"fosslight_report_all_{_start_time}"
+                else:
+                    if output_extension == _json_ext:
+                        output_files[i] = f"fosslight_opossum_all_{_start_time}"
+                    else:
+                        output_files[i] = f"fosslight_report_all_{_start_time}"
+        for index in sorted(to_remove, reverse=True):
+            # remove elements of spdx format on windows
+            del output_files[index]
+            del output_extensions[index]
+            del formats[index]
+        if len(output_extensions) < 1:
+            sys.exit(0)
 
     if not correct_fpath:
         correct_fpath = src_path
@@ -150,21 +180,16 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
         abs_path = os.path.abspath(src_path)
 
         if success:
-            output_files = {"SRC": f"fosslight_src_{_start_time}{output_extension}",
-                            "BIN": f"fosslight_bin_{_start_time}{output_extension}",
-                            "DEP": f"fosslight_dep_{_start_time}{output_extension}",
-                            "PRECHECKER": f"fosslight_lint_{_start_time}.yaml"}
             if run_prechecker:
-                output_prechecker = os.path.join(_output_dir, output_files["PRECHECKER"])
                 success, result = call_analysis_api(src_path, "Prechecker Lint",
                                                     -1, prechecker_lint,
-                                                    abs_path, False, output_prechecker,
+                                                    abs_path, False, _output_dir,
                                                     exclude_path=path_to_exclude)
 
             if run_src:
                 try:
                     if fosslight_source_installed:
-                        src_output = os.path.join(_output_dir, output_files["SRC"])
+                        src_output = _output_dir
                         success, result = call_analysis_api(
                                     src_path,
                                     "Source Analysis",
@@ -177,17 +202,17 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                                     selected_scanner=selected_source_scanner,
                                     source_write_json_file=source_write_json_file,
                                     source_print_matched_text=source_print_matched_text,
-                                    source_time_out=source_time_out
+                                    source_time_out=source_time_out,
+                                    formats=formats
                         )
                         if success:
                             all_scan_item.file_items.update(result[2].file_items)
                             all_cover_items.append(result[2].cover)
 
                     else:  # Run fosslight_source by using docker image
-                        src_output = os.path.join("output", output_files["SRC"])
                         output_rel_path = os.path.relpath(abs_path, os.getcwd())
                         command = shlex.quote(f"docker run -it -v {_output_dir}:/app/output "
-                                              f"fosslight -p {output_rel_path} -o {src_output}")
+                                              f"fosslight -p {output_rel_path} -o output")
                         if path_to_exclude:
                             command += f" -e {' '.join(path_to_exclude)}"
                         command_result = subprocess.run(command, stdout=subprocess.PIPE, text=True)
@@ -200,8 +225,8 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                 success, result = call_analysis_api(src_path, "Binary Analysis",
                                                     1, binary_analysis.find_binaries,
                                                     abs_path,
-                                                    os.path.join(_output_dir, output_files["BIN"]),
-                                                    "", db_url, binary_simple,
+                                                    _output_dir,
+                                                    formats, db_url, binary_simple,
                                                     correct_mode, correct_fpath,
                                                     path_to_exclude=path_to_exclude)
                 if success:
@@ -209,11 +234,10 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                     all_cover_items.append(result.cover)
 
             if run_dep:
-                dep_scanitem = run_dependency(src_path, os.path.join(_output_dir, output_files["DEP"]),
-                                              dep_arguments, path_to_exclude)
+                dep_scanitem = run_dependency(src_path, _output_dir,
+                                              dep_arguments, path_to_exclude, formats)
                 all_scan_item.file_items.update(dep_scanitem.file_items)
                 all_cover_items.append(dep_scanitem.cover)
-
         else:
             return
 
@@ -221,8 +245,6 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
         logger.error(f"Scanning: {ex}")
 
     try:
-        output_file_without_ext = os.path.join(final_excel_dir, output_file)
-        final_report = f"{output_file_without_ext}{output_extension}"
         cover = CoverItem(tool_name=PKG_NAME,
                           start_time=_start_time,
                           input_path=abs_path,
@@ -239,17 +261,32 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
 
         if remove_src_data:
             all_scan_item = update_oss_item(all_scan_item, default_oss_name, default_oss_version, url)
-        success, err_msg, final_report = write_output_file(output_file_without_ext, output_extension, all_scan_item)
+        
+        combined_paths_and_files = [os.path.join(final_excel_dir, file) for file in output_files]
+        results = []
+        final_reports = []
+        for combined_path_and_file, output_extension, output_format in zip(combined_paths_and_files, output_extensions, formats):
+            results.append(write_output_file(combined_path_and_file, output_extension, all_scan_item, {}, {}, output_format))
+        for success, msg, result_file in results:
+            if success:
+                final_reports.append(result_file)
+                logger.info(f"Output file: {result_file}")
+            else:
+                logger.error(f"Fail to generate result file {result_file}. msg:({msg})")
+        
         if success:
-            if os.path.isfile(final_report):
-                logger.info(f'Generated the result file: {final_report}')
-                result_log["Output File"] = final_report
+            if final_reports:
+                logger.info(f'Generated the result file: {", ".join(final_reports)}')
+                result_log["Output File"] = ', '.join(final_reports)
             else:
                 result_log["Output File"] = 'Nothing is detected from the scanner so output file is not generated.'
-        else:
-            logger.error(f"Fail to generate a result file({final_report}): {err_msg}")
 
         if ui_mode:
+            if output_files:
+                output_file = output_files[0]
+            else:
+                output_file = OUTPUT_REPORT_PREFIX + _start_time
+            output_file_without_ext = os.path.join(final_excel_dir, output_file)
             ui_mode_report = f"{output_file_without_ext}.json"
             success, err_msg = create_scancodejson(all_scan_item, ui_mode_report, src_path)
             if success and os.path.isfile(ui_mode_report):
@@ -328,7 +365,7 @@ def run_main(mode_list, path_arg, dep_arguments, output_file_or_dir, file_format
              source_time_out=120, binary_simple=False):
     global _executed_path, _start_time
 
-    output_file = ""
+    output_files = []
     default_oss_name = ""
     default_oss_version = ""
     src_path = ""
@@ -352,7 +389,7 @@ def run_main(mode_list, path_arg, dep_arguments, output_file_or_dir, file_format
             logger.error("Enter two FOSSLight report file with 'p' option.")
             return False
     else:
-        CUSTOMIZED_FORMAT = {'excel': '.xlsx', 'yaml': '.yaml'}
+        CUSTOMIZED_FORMAT = {}
         if isinstance(path_arg, list):
             if len(path_arg) == 1:
                 src_path = path_arg[0]
@@ -370,10 +407,12 @@ def run_main(mode_list, path_arg, dep_arguments, output_file_or_dir, file_format
             else:
                 logger.warning(f"Cannot analyze with multiple path: {path_arg}")
 
-    success, msg, output_path, output_file, output_extension = check_output_format(output_file_or_dir, file_format,
-                                                                                   CUSTOMIZED_FORMAT)
+    success, msg, output_path, output_files, output_extensions, formats = check_output_formats_v2(output_file_or_dir, file_format,
+                                                                                       CUSTOMIZED_FORMAT)
     if output_path == "":
         output_path = _executed_path
+    else:
+        output_path = os.path.abspath(output_path)
 
     if not success:
         logger.error(msg)
@@ -392,7 +431,7 @@ def run_main(mode_list, path_arg, dep_arguments, output_file_or_dir, file_format
             ret, final_excel_dir, result_log = init(output_path)
 
             run_compare(os.path.join(_executed_path, before_comp_f), os.path.join(_executed_path, after_comp_f),
-                        final_excel_dir, output_file, output_extension, _start_time, _output_dir)
+                        final_excel_dir, output_files, output_extensions, _start_time, _output_dir)
         else:
             run_src = False
             run_bin = False
@@ -430,22 +469,15 @@ def run_main(mode_list, path_arg, dep_arguments, output_file_or_dir, file_format
                     remove_downloaded_source = True
                     success, src_path, default_oss_name, default_oss_version = download_source(url_to_analyze, output_path)
 
-                if output_extension == ".yaml":
-                    correct_mode = False
-                    correct_fpath = ""
-                else:
-                    if not correct_fpath:
-                        correct_fpath = src_path
-
                 if src_path != "":
                     run_scanner(src_path, dep_arguments, output_path, keep_raw_data,
                                 run_src, run_bin, run_dep, run_prechecker,
-                                remove_downloaded_source, {}, output_file,
-                                output_extension, num_cores, db_url,
+                                remove_downloaded_source, {}, output_files,
+                                output_extensions, num_cores, db_url,
                                 default_oss_name, default_oss_version, url_to_analyze,
                                 correct_mode, correct_fpath, ui_mode, path_to_exclude,
                                 selected_source_scanner, source_write_json_file, source_print_matched_text, source_time_out,
-                                binary_simple)
+                                binary_simple, formats)
 
                 if extract_folder:
                     shutil.rmtree(extract_folder)
