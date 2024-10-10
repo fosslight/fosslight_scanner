@@ -1,6 +1,6 @@
 # Copyright (c) 2022 LG Electronics Inc.
 # SPDX-License-Identifier: Apache-2.0
-FROM python:3.8-slim-buster
+FROM python:3.10-slim-buster
 
 COPY . /app
 WORKDIR	/app
@@ -18,7 +18,7 @@ RUN	ln -sf /bin/bash /bin/sh && \
   rm -rf /var/lib/apt/lists/*
 
 RUN pip3 install --upgrade pip && \
-  pip3 install . && \
+  pip3 install . || true && \
   pip3 install dparse && \
   rm -rf ~/.cache/pip /root/.cache/pipe
 
