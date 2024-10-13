@@ -18,7 +18,7 @@ RUN	ln -sf /bin/bash /bin/sh && \
   rm -rf /var/lib/apt/lists/*
 
 RUN pip3 install --upgrade pip && \
-  pip3 install . || true && \
+  pip3 install . && \
   pip3 install dparse && \
   rm -rf ~/.cache/pip /root/.cache/pipe
 
