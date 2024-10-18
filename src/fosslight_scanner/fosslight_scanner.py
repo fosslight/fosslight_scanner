@@ -386,7 +386,7 @@ def run_main(mode_list, path_arg, dep_arguments, output_file_or_dir, file_format
             before_comp_f = path_arg[0]
             after_comp_f = path_arg[1]
         else:
-            logger.error("Enter two FOSSLight report file with 'p' option.")
+            logger.error("(compare mode) Enter two FOSSLight report file with 'p' option.")
             return False
     else:
         CUSTOMIZED_FORMAT = {}
@@ -405,7 +405,7 @@ def run_main(mode_list, path_arg, dep_arguments, output_file_or_dir, file_format
                             extract_folder = src_path
                         break
             else:
-                logger.warning(f"Cannot analyze with multiple path: {path_arg}")
+                logger.warning(f"(-p option) Cannot analyze with multiple path: {path_arg}")
 
     success, msg, output_path, output_files, output_extensions, formats = check_output_formats_v2(output_file_or_dir, file_format,
                                                                                        CUSTOMIZED_FORMAT)
@@ -420,13 +420,13 @@ def run_main(mode_list, path_arg, dep_arguments, output_file_or_dir, file_format
     try:
         if "compare" in mode_list:
             if before_comp_f == '' or after_comp_f == '':
-                logger.error("before and after files are necessary.")
+                logger.error("(compare mode) before and after files are necessary.")
                 return False
             if not os.path.exists(os.path.join(_executed_path, before_comp_f)):
-                logger.error("Cannot find before FOSSLight report file (1st param with -y option).")
+                logger.error("(compare mode) Cannot find before FOSSLight report file (1st param with -y option).")
                 return False
             if not os.path.exists(os.path.join(_executed_path, after_comp_f)):
-                logger.error("Cannot find after FOSSLight report file (2nd param with -y option).")
+                logger.error("(compare mode) Cannot find after FOSSLight report file (2nd param with -y option).")
                 return False
             ret, final_excel_dir, result_log = init(output_path)
 
@@ -482,7 +482,7 @@ def run_main(mode_list, path_arg, dep_arguments, output_file_or_dir, file_format
                 if extract_folder:
                     shutil.rmtree(extract_folder)
             else:
-                logger.error("No mode has been selected for analysis.")
+                logger.error("(mode) No mode has been selected for analysis.")
         try:
             if not keep_raw_data:
                 logger.debug(f"Remove temporary files: {_output_dir}")
