@@ -16,6 +16,7 @@ from fosslight_util.write_scancodejson import write_scancodejson
 from fosslight_util.read_excel import read_oss_report
 from fosslight_util.output_format import write_output_file
 from fosslight_util.oss_item import OssItem
+from typing import List, Tuple, Dict, Union, Any
 
 logger = logging.getLogger(constant.LOGGER_NAME)
 SRC_SHEET = 'SRC_FL_Source'
@@ -27,7 +28,7 @@ BIN_EXT_HEADER = {'BIN_FL_Binary': ['ID', 'Binary Path', 'OSS Name',
 BIN_HIDDEN_HEADER = {'TLSH', "SHA1"}
 
 
-def copy_file(source, destination):
+def copy_file(source: str, destination: str) -> Tuple[bool, str]:
     copied_file = ""
     try:
         shutil.copy(source, destination)
@@ -42,7 +43,7 @@ def copy_file(source, destination):
         return True, copied_file
 
 
-def run_analysis(path_to_run, params, func, str_run_start, output, exe_path):
+def run_analysis(path_to_run: str, params: List[str], func: Any, str_run_start: str, output: str, exe_path: str) -> Any:
     # This function will be replaced by call_analysis_api().
     logger.info("## Start to run "+str_run_start)
     return_value = ""
@@ -62,7 +63,7 @@ def run_analysis(path_to_run, params, func, str_run_start, output, exe_path):
     return return_value
 
 
-def call_analysis_api(path_to_run, str_run_start, return_idx, func, *args, **kwargs):
+def call_analysis_api(path_to_run: str, str_run_start: str, return_idx: int, func: Any, *args: Any, **kwargs: Any) -> Tuple[bool, List[Any]]:
     # return_idx == -1 : Raw return value itself
     logger.info(f"## Start to run {str_run_start}")
     success = True
@@ -93,7 +94,7 @@ def call_analysis_api(path_to_run, str_run_start, return_idx, func, *args, **kwa
     return success, result
 
 
-def overwrite_excel(excel_file_path, oss_name, column_name='OSS Name'):
+def overwrite_excel(excel_file_path: str, oss_name: str, column_name: str ='OSS Name') -> None:
     if oss_name != "":
         try:
             files = os.listdir(excel_file_path)
@@ -115,8 +116,8 @@ def overwrite_excel(excel_file_path, oss_name, column_name='OSS Name'):
             logger.debug(f"overwrite_excel:{ex}")
 
 
-def merge_yamls(_output_dir, merge_yaml_files, final_report, remove_src_data=False,
-                default_oss_name='', default_oss_version='', url=''):
+def merge_yamls(_output_dir: str, merge_yaml_files: List[str], final_report: str, remove_src_data: bool =False,
+                default_oss_name: str ='', default_oss_version: str ='', url: str ='') -> Tuple[bool, Union[str, Exception]]:
     success = True
     err_msg = ''
 
@@ -154,7 +155,7 @@ def merge_yamls(_output_dir, merge_yaml_files, final_report, remove_src_data=Fal
     return success, err_msg
 
 
-def create_scancodejson(final_report, output_extension, ui_mode_report, src_path=""):
+def create_scancodejson(final_report: str, output_extension: str, ui_mode_report: str, src_path: str ="") ->  Tuple[bool, str]:
     success = True
     err_msg = ''
 
@@ -199,7 +200,7 @@ def create_scancodejson(final_report, output_extension, ui_mode_report, src_path
     return success, err_msg
 
 
-def correct_scanner_result(_output_dir, output_files, output_extension, exist_src, exist_bin):
+def correct_scanner_result(_output_dir: str, output_files: Dict[str, str], output_extension: str, exist_src: bool, exist_bin: bool) -> None:
     src_oss_list = []
     bin_oss_list = []
     duplicates = False
@@ -252,7 +253,7 @@ def correct_scanner_result(_output_dir, output_files, output_extension, exist_sr
     return
 
 
-def write_output_with_osslist(oss_list, output_dir, output_file, output_extension, sheetname, extended_hdr={}, hidden_hdr={}):
+def write_output_with_osslist(oss_list: List[OssItem], output_dir: str, output_file: str, output_extension: str, sheetname: str, extended_hdr: Dict[str, List[str]] ={}, hidden_hdr: set ={}) -> Tuple[bool, str]:
     new_oss_list = []
     sheet_list = {}
     sheet_list[sheetname] = []
@@ -268,7 +269,7 @@ def write_output_with_osslist(oss_list, output_dir, output_file, output_extensio
     return success, err_msg
 
 
-def get_osslist(_output_dir, output_file, output_extension, sheet_name=''):
+def get_osslist(_output_dir: str, output_file: str, output_extension: str, sheet_name: str ='') -> List[OssItem]:
     err_reason = ''
     oss_list = []
     oss_file_with_fullpath = os.path.join(_output_dir, output_file)
@@ -285,7 +286,7 @@ def get_osslist(_output_dir, output_file, output_extension, sheet_name=''):
     return oss_list
 
 
-def check_exclude_dir(oss_list):
+def check_exclude_dir(oss_list: List[OssItem]) -> List[OssItem]:
     _exclude_dirs = ["venv", "node_modules", "Pods", "Carthage"]
 
     for oss_item in oss_list:

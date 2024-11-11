@@ -1,0 +1,3 @@
+[console_scripts]
+fosslight = fosslight_scanner.cli:main
+fosslight_scanner = fosslight_scanner.cli:main

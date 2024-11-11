@@ -48,6 +48,6 @@ _HELP_MESSAGE_SCANNER = """
             -d <dependency_argument>\t    Additional arguments for running dependency analysis"""
 
 
-def print_help_msg():
+def print_help_msg() -> None:
     helpMsg = PrintHelpMsg(_HELP_MESSAGE_SCANNER)
     helpMsg.print_help_msg(True)

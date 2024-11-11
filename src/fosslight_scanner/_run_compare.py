@@ -15,6 +15,7 @@ from bs4 import BeautifulSoup
 import fosslight_util.constant as constant
 from fosslight_util.compare_yaml import compare_yaml
 from fosslight_util.convert_excel_to_yaml import convert_excel_to_yaml
+from typing import Tuple, Union, List, Dict, Any
 
 logger = logging.getLogger(constant.LOGGER_NAME)
 ADD = "add"
@@ -28,7 +29,7 @@ HTML_EXT = '.html'
 XLSX_EXT = '.xlsx'
 
 
-def write_result_json_yaml(output_file, compared_result, file_ext):
+def write_result_json_yaml(output_file: str, compared_result: Dict[str, Any], file_ext: str) -> bool:
     ret = True
     try:
         with open(output_file, 'w') as f:
@@ -41,7 +42,7 @@ def write_result_json_yaml(output_file, compared_result, file_ext):
     return ret
 
 
-def parse_result_for_table(oi, status):
+def parse_result_for_table(oi: Dict[str, Any], status: str) -> List[str]:
     compared_row = []
     if status == ADD or status == DELETE:
         oi_ver = '' if oi['version'] == '' else f"({oi['version']})"
@@ -69,7 +70,7 @@ def parse_result_for_table(oi, status):
     return compared_row
 
 
-def get_sample_html():
+def get_sample_html() -> Union[codecs.StreamReaderWriter, str]:
     RESOURCES_DIR = 'resources'
     SAMPLE_HTML = f'bom_compare{HTML_EXT}'
     html_file = os.path.join(RESOURCES_DIR, SAMPLE_HTML)
@@ -89,7 +90,7 @@ def get_sample_html():
     return html_f
 
 
-def write_result_html(output_file, compared_result, before_f, after_f):
+def write_result_html(output_file: str, compared_result: Dict[str, Any], before_f: str, after_f: str) -> bool:
     ret = True
     html_f = get_sample_html()
     if html_f != '':
@@ -147,7 +148,7 @@ def write_result_html(output_file, compared_result, before_f, after_f):
     return ret
 
 
-def write_result_xlsx(output_file, compared_result):
+def write_result_xlsx(output_file: str, compared_result: Dict[str, Any]) -> bool:
     HEADER = ['Status', 'OSS_Before', 'License_Before', 'OSS_After', 'License_After']
     ret = True
 
@@ -176,7 +177,7 @@ def write_result_xlsx(output_file, compared_result):
     return ret
 
 
-def write_compared_result(output_file, compared_result, file_ext, before_f='', after_f=''):
+def write_compared_result(output_file: str, compared_result: Dict[str, Any], file_ext: str, before_f: str ='', after_f: str ='') -> Tuple[bool, str]:
     success = False
     if file_ext == "" or file_ext == XLSX_EXT:
         success = write_result_xlsx(output_file, compared_result)
@@ -199,7 +200,7 @@ def write_compared_result(output_file, compared_result, file_ext, before_f='', a
     return success, output_file
 
 
-def get_comparison_result_filename(output_path, output_file, output_extension, _start_time):
+def get_comparison_result_filename(output_path: str, output_file: str, output_extension: str, _start_time: str) -> str:
     result_file = ""
     compare_prefix = f"fosslight_compare_{_start_time}"
     if output_file != "":
@@ -221,7 +222,7 @@ def get_comparison_result_filename(output_path, output_file, output_extension, _
     return result_file
 
 
-def count_compared_result(compared_result):
+def count_compared_result(compared_result: Dict[str, Any]) -> None:
     comp_len = [len(compared_result[st]) for st in COMP_STATUS]
     if sum(comp_len) == 0:
         count_str = "all oss lists are the same."
@@ -231,7 +232,7 @@ def count_compared_result(compared_result):
     logger.info(f"Comparison result: {count_str}")
 
 
-def run_compare(before_f, after_f, output_path, output_file, file_ext, _start_time, _output_dir):
+def run_compare(before_f: str, after_f: str, output_path: str, output_file: str, file_ext: str, _start_time: str, _output_dir: str) -> bool:
     ret = False
     before_yaml = ''
     after_yaml = ''

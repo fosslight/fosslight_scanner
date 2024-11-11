@@ -4,11 +4,12 @@
 # SPDX-License-Identifier: Apache-2.0
 import sys
 from pip._vendor.distlib.compat import raw_input
+from typing import Tuple, List
 
 _PYTHON_VERSION = 3
 
 
-def get_input(ask_msg, default_value=""):
+def get_input(ask_msg: str, default_value: str ="") -> str:
 
     return_value = raw_input(
         ask_msg) if _PYTHON_VERSION < 3 else input(ask_msg)
@@ -18,14 +19,14 @@ def get_input(ask_msg, default_value=""):
     return return_value
 
 
-def ask_to_run(ask_msg):
+def ask_to_run(ask_msg: str) -> bool:
     return_true_item = ["y", "Y", "1"]
     return_value = raw_input(
         ask_msg) if _PYTHON_VERSION < 3 else input(ask_msg)
     return return_value in return_true_item
 
 
-def get_input_mode(_executed_path, mode_list=["all"]):
+def get_input_mode(_executed_path: str, mode_list: List[str] =["all"]) -> Tuple[str, str, str]:
     global _PYTHON_VERSION
     _PYTHON_VERSION = sys.version_info[0]
 

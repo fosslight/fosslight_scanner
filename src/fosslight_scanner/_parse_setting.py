@@ -2,9 +2,10 @@
 # -*- coding: utf-8 -*-
 # Copyright (c) 2021 LG Electronics Inc.
 # SPDX-License-Identifier: Apache-2.0
+from typing import Tuple, List
 
 
-def parse_setting_json(data):
+def parse_setting_json(data: dict) -> Tuple[List[str], List[str], str, str, str, str, str, bool, bool, int, bool, str, bool, List[str]]:
     # check type, if invalid = init value
     mode = data.get('mode', [])
     path = data.get('path', [])

@@ -30,6 +30,7 @@ from .common import (copy_file, call_analysis_api,
 from fosslight_util.write_excel import merge_excels, merge_cover_comment
 from ._run_compare import run_compare
 from fosslight_util.cover import CoverItem
+from typing import List, Any, Tuple, Dict, Union
 fosslight_source_installed = True
 try:
     from fosslight_source.cli import run_scanners as source_analysis
@@ -48,7 +49,7 @@ SRC_DIR_FROM_LINK_PREFIX = "fosslight_src_dir_"
 SCANNER_MODE = ["all", "compare", "reuse", "prechecker", "binary", "bin", "src", "source", "dependency", "dep"]
 
 
-def run_dependency(path_to_analyze, output_file_with_path, params="", path_to_exclude=[]):
+def run_dependency(path_to_analyze: str, output_file_with_path: str, params: str = "", path_to_exclude: List[str] = []) -> List[Any]:
     result_list = []
 
     package_manager = ""
@@ -101,12 +102,12 @@ def run_dependency(path_to_analyze, output_file_with_path, params="", path_to_ex
     return result_list
 
 
-def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
-                run_src=True, run_bin=True, run_dep=True, run_prechecker=False,
-                remove_src_data=True, result_log={}, output_file="",
-                output_extension="", num_cores=-1, db_url="",
-                default_oss_name="", default_oss_version="", url="",
-                correct_mode=True, correct_fpath="", ui_mode=False, path_to_exclude=[]):
+def run_scanner(src_path: str, dep_arguments: str, output_path: str, keep_raw_data: bool =False,
+                run_src: bool =True, run_bin: bool =True, run_dep: bool =True, run_prechecker: bool =False,
+                remove_src_data: bool =True, result_log: Dict[str, Any] ={}, output_file: str ="",
+                output_extension: str ="", num_cores: int =-1, db_url: str ="",
+                default_oss_name: str ="", default_oss_version: str ="", url: str ="",
+                correct_mode: bool =True, correct_fpath: str ="", ui_mode: bool =False, path_to_exclude: List[str] =[]) ->None:
     final_excel_dir = output_path
     success = True
     temp_output_fiiles = []
@@ -254,7 +255,7 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
         logger.debug(f"Error to remove temp files:{ex}")
 
 
-def download_source(link, out_dir):
+def download_source(link: str, out_dir: str) -> Tuple[bool, str, str, str]:
     start_time = datetime.now().strftime('%Y%m%d_%H%M%S')
     success = False
     temp_src_dir = ""
@@ -281,7 +282,7 @@ def download_source(link, out_dir):
     return success, temp_src_dir, oss_name, oss_version
 
 
-def init(output_path="", make_outdir=True):
+def init(output_path: str ="", make_outdir: bool =True) -> Tuple[bool, str, Dict[str, Any]]:
     global _output_dir, _log_file, _start_time, logger
 
     result_log = {}
@@ -305,9 +306,9 @@ def init(output_path="", make_outdir=True):
     return os.path.isdir(_output_dir), output_root_dir, result_log
 
 
-def run_main(mode_list, path_arg, dep_arguments, output_file_or_dir, file_format, url_to_analyze,
-             db_url, hide_progressbar=False, keep_raw_data=False, num_cores=-1,
-             correct_mode=True, correct_fpath="", ui_mode=False, path_to_exclude=[]):
+def run_main(mode_list: List[str], path_arg: Union[str, List[str]], dep_arguments: str, output_file_or_dir: str, file_format: str, url_to_analyze: str,
+             db_url, hide_progressbar: bool =False, keep_raw_data: bool =False, num_cores: int=-1,
+             correct_mode: bool =True, correct_fpath: str ="", ui_mode: bool =False, path_to_exclude: List[str] =[]) -> bool:
     global _executed_path, _start_time
 
     output_file = ""

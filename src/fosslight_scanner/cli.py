@@ -10,10 +10,12 @@ from .fosslight_scanner import run_main, PKG_NAME
 from ._parse_setting import parse_setting_json
 from fosslight_util.help import print_package_version
 import os.path
+from typing import Tuple, List, Union
 
 
-def set_args(mode, path, dep_argument, output, format, link, db_url, timer,
-             raw, core, no_correction, correct_fpath, ui, setting, exclude_path):
+def set_args(mode: List[str], path: List[str], dep_argument: str, output: str, format: str, link: str, db_url: str,
+             timer: bool, raw: bool, core: int, no_correction: bool, correct_fpath: str, ui: bool, setting: str,
+             exclude_path: List[str]) -> Tuple[List[str], List[str], str, str, str, str, str, bool, bool, int, bool, str, bool, List[str]]:
     if setting and os.path.isfile(setting):
         try:
             with open(setting, 'r', encoding='utf-8') as file:
@@ -43,7 +45,7 @@ def set_args(mode, path, dep_argument, output, format, link, db_url, timer,
         raw, core, no_correction, correct_fpath, ui, exclude_path
 
 
-def main():
+def main() -> None:
     parser = ArgumentParser(description='FOSSLight Scanner', prog='fosslight_scanner', add_help=False)
     parser.add_argument('mode', nargs='*', help='source| dependency| binary| all| compare', default="")
     parser.add_argument('--path', '-p', help='Path to analyze (In compare mode, two FOSSLight reports',
