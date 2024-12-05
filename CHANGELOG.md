@@ -1,10 +1,22 @@
 # Changelog
 
+## v2.1.1 (05/12/2024)
+## Changes
+## 🚀 Features
+
+- Support cycloneDX format @dd-jy (#135)
+
+## 🔧 Maintenance
+
+- Print option name with error msg @bjk7119 (#132)
+
+---
+
 ## v2.1.0 (08/10/2024)
 ## Changes
 ## 🚀 Features
 
-- Support multi format and spdx @dd-jy (#130)
+- Support multi format and spdx (spdx only Linux) @dd-jy (#130)
 
 ## 🔧 Maintenance
 
@@ -293,11 +305,3 @@
 ## 🔧 Maintenance
 
 - Analyze current path if not input path @bjk7119 (#51)
-
----
-
-## v1.7.5 (06/10/2022)
-## Changes
-## 🔧 Maintenance
-
-- Fix the binary text copy issue @dd-jy (#49)
