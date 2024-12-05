@@ -148,12 +148,15 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
         for i, output_extension in enumerate(output_extensions):
             if output_files[i] is None or output_files[i] == "":
                 if formats:
-                    if formats[i].startswith('spdx'):
-                        if platform.system() != 'Windows':
-                            output_files[i] = f"fosslight_spdx_all_{_start_time}"
-                        else:
-                            logger.warning('spdx format is not supported on Windows. Please remove spdx from format.')
+                    if formats[i].startswith('spdx') or formats[i].startswith('cyclonedx'):
+                        if platform.system() == 'Windows':
+                            logger.warning(f'{formats[i]} is not supported on Windows. Please remove {formats[i]} from format.')
                             to_remove.append(i)
+                        else:
+                            if formats[i].startswith('spdx'):
+                                output_files[i] = f"fosslight_spdx_all_{_start_time}"
+                            elif formats[i].startswith('cyclonedx'):
+                                output_files[i] = f'fosslight_cyclonedx_all_{_start_time}'
                     else:
                         if output_extension == _json_ext:
                             output_files[i] = f"fosslight_opossum_all_{_start_time}"
