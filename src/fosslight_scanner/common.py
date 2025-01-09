@@ -118,6 +118,9 @@ def create_scancodejson(all_scan_item_origin, ui_mode_report, src_path=""):
         all_scan_item = copy.deepcopy(all_scan_item_origin)
         if FOSSLIGHT_DEPENDENCY in all_scan_item.file_items:
             del all_scan_item.file_items[FOSSLIGHT_DEPENDENCY]
+        first_sheet = FOSSLIGHT_SOURCE
+        if all_scan_item.file_items:
+            first_sheet = next(iter(all_scan_item.file_items))
         if src_path:
             fileitems_without_oss = []
             for root, _, files in os.walk(src_path):
@@ -127,7 +130,6 @@ def create_scancodejson(all_scan_item_origin, ui_mode_report, src_path=""):
                     included = False
                     item_path = os.path.join(root, file)
                     item_path = item_path.replace(parent + os.path.sep, '', 1)
-
                     for file_items in all_scan_item.file_items.values():
                         for file_item in file_items:
                             if file_item.source_name_or_path:
@@ -138,7 +140,7 @@ def create_scancodejson(all_scan_item_origin, ui_mode_report, src_path=""):
                         fi_without_oss.source_name_or_path = item_path
                         fileitems_without_oss.append(fi_without_oss)
             if len(fileitems_without_oss) > 0:
-                all_scan_item.file_items[FOSSLIGHT_SOURCE].extend(fileitems_without_oss)
+                all_scan_item.file_items[first_sheet].extend(fileitems_without_oss)
         if root_dir:
             for file_items in all_scan_item.file_items.values():
                 for fi in file_items:
