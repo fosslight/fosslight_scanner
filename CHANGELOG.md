@@ -1,5 +1,13 @@
 # Changelog
 
+## v2.1.2 (09/01/2025)
+## Changes
+## 🐛 Hotfixes
+
+- Fix json output error when not analyzing source @soimkim (#136)
+
+---
+
 ## v2.1.1 (05/12/2024)
 ## Changes
 ## 🚀 Features
@@ -293,15 +301,3 @@
 ## 🔧 Maintenance
 
 - Fix the output file msg if nothing scanned @dd-jy (#52)
-
----
-
-## v1.7.6 (04/11/2022)
-## Changes
-## 🐛 Hotfixes
-
-- Fix bug about dep. arg input when not dep. running @bjk7119 (#50)
-
-## 🔧 Maintenance
-
-- Analyze current path if not input path @bjk7119 (#51)
