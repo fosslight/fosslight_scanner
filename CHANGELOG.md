@@ -1,5 +1,14 @@
 # Changelog
 
+## v2.1.3 (05/02/2025)
+## Changes
+## 🐛 Hotfixes
+
+- Update platform in docker build workflow @soimkim (#138)
+- Change base image to fix docker build error on macOS @soimkim (#137)
+
+---
+
 ## v2.1.2 (09/01/2025)
 ## Changes
 ## 🐛 Hotfixes
@@ -293,11 +302,3 @@
 ## 🔧 Maintenance
 
 - Update version of package for actions @bjk7119 (#54)
-
----
-
-## v1.7.7 (18/11/2022)
-## Changes
-## 🔧 Maintenance
-
-- Fix the output file msg if nothing scanned @dd-jy (#52)
