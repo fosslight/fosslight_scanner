@@ -1,5 +1,17 @@
 # Changelog
 
+## v2.1.4 (24/04/2025)
+## Changes
+## 🐛 Hotfixes
+
+- Fix ui mode error when analyzing only dependency @dd-jy (#140)
+
+## 🔧 Maintenance
+
+- Remove prechecker @dd-jy (#139)
+
+---
+
 ## v2.1.3 (05/02/2025)
 ## Changes
 ## 🐛 Hotfixes
@@ -294,11 +306,3 @@
 
 - Change package to get release package @bjk7119 (#56)
 - Add the cron job to check daily build @dd-jy (#55)
-
----
-
-## v1.7.8 (02/01/2023)
-## Changes
-## 🔧 Maintenance
-
-- Update version of package for actions @bjk7119 (#54)
