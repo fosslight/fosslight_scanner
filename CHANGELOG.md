@@ -1,5 +1,13 @@
 # Changelog
 
+## v2.1.5 (02/05/2025)
+## Changes
+## 🚀 Features
+
+- Add dep item in ui result @dd-jy (#141)
+
+---
+
 ## v2.1.4 (24/04/2025)
 ## Changes
 ## 🐛 Hotfixes
@@ -297,12 +305,3 @@
 ## 🔧 Maintenance
 
 - Apply additional return val of 'parsing_yml' @bjk7119 (#57)
-
----
-
-## v1.7.9 (30/01/2023)
-## Changes
-## 🔧 Maintenance
-
-- Change package to get release package @bjk7119 (#56)
-- Add the cron job to check daily build @dd-jy (#55)
