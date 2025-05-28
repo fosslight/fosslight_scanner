@@ -1,5 +1,13 @@
 # Changelog
 
+## v2.1.6 (28/05/2025)
+## Changes
+## 🐛 Hotfixes
+
+- Fix the correct mode bug @dd-jy (#142)
+
+---
+
 ## v2.1.5 (02/05/2025)
 ## Changes
 ## 🚀 Features
@@ -297,11 +305,3 @@
 ## 🔧 Maintenance
 
 - Add the package name to result file and log @dd-jy (#58)
-
----
-
-## v1.7.10 (10/02/2023)
-## Changes
-## 🔧 Maintenance
-
-- Apply additional return val of 'parsing_yml' @bjk7119 (#57)
