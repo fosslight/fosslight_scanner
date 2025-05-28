@@ -8,6 +8,7 @@ import sys
 import logging
 import shutil
 import copy
+import traceback
 from fosslight_util.constant import LOGGER_NAME, FOSSLIGHT_SOURCE, FOSSLIGHT_BINARY, FOSSLIGHT_DEPENDENCY
 from fosslight_util.write_scancodejson import write_scancodejson
 from fosslight_util.oss_item import OssItem, FileItem
@@ -177,7 +178,10 @@ def correct_scanner_result(all_scan_item):
                         bin_empty_license_exists = all(not oss_item.license for oss_item in bin_fileitem.oss_items)
 
                         if src_all_licenses_non_empty and bin_empty_license_exists:
-                            exclude = bin_fileitem.oss_items[0].exclude
+                            if bin_fileitem.oss_items:
+                                exclude = bin_fileitem.oss_items[0].exclude
+                            else:
+                                exclude = False
                             bin_fileitem.oss_items = []
                             for src_oss_item in src_fileitem.oss_items:
                                 src_oss_item.exclude = exclude
@@ -190,13 +194,11 @@ def correct_scanner_result(all_scan_item):
                 for i in sorted(remove_src_idx_list, reverse=True):
                     del src_fileitems[i]
         except Exception as ex:
-            logger.warning(f"correct the scanner result:{ex}")
+            logger.warning(f"Fail to correct the scanner result:{ex}")
+            logger.warning(traceback.format_exc())
 
-    try:
-        if duplicates:
-            logger.info('Success to correct the src/bin scanner result')
-    except Exception as ex:
-        logger.warning(f"Corrected src/bin scanner result:{ex}")
+    if duplicates:
+        logger.info('Success to correct the src/bin scanner result')
     return all_scan_item
 
 
