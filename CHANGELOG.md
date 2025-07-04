@@ -1,5 +1,13 @@
 # Changelog
 
+## v2.1.7 (04/07/2025)
+## Changes
+## 🐛 Hotfixes
+
+- Fix the compare output bug @dd-jy (#143)
+
+---
+
 ## v2.1.6 (28/05/2025)
 ## Changes
 ## 🐛 Hotfixes
@@ -297,11 +305,3 @@
 - Fix the correct mode bug for yaml format @dd-jy (#63)
 - Update the git config for gh action @dd-jy (#61)
 - Update the ubuntu version for deploy action @dd-jy (#60)
-
----
-
-## v1.7.11 (23/02/2023)
-## Changes
-## 🔧 Maintenance
-
-- Add the package name to result file and log @dd-jy (#58)
