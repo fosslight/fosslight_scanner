@@ -43,6 +43,7 @@ except ModuleNotFoundError:
     fosslight_source_installed = False
 
 OUTPUT_REPORT_PREFIX = "fosslight_report_all_"
+COMPARE_OUTPUT_REPORT_PREFIX = "fosslight_compare_"
 PKG_NAME = "fosslight_scanner"
 logger = logging.getLogger(constant.LOGGER_NAME)
 warnings.simplefilter(action='ignore', category=FutureWarning)
@@ -426,7 +427,8 @@ def run_main(mode_list, path_arg, dep_arguments, output_file_or_dir, file_format
                 logger.error("(compare mode) Cannot find after FOSSLight report file (2nd param with -y option).")
                 return False
             ret, final_excel_dir, result_log = init(output_path)
-
+            if not output_files:
+                output_files = [COMPARE_OUTPUT_REPORT_PREFIX + _start_time]
             run_compare(os.path.join(_executed_path, before_comp_f), os.path.join(_executed_path, after_comp_f),
                         final_excel_dir, output_files, output_extensions, _start_time, _output_dir)
         else:
