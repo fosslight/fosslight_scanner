@@ -1,6 +1,6 @@
 tox
 pytest
 pytest-cov
-flake8==3.9.2
+flake8
 pytest-flake8
-importlib-metadata==4.2.0 
+importlib-metadata
