@@ -42,12 +42,12 @@ SPDX-License-Identifier: Apache-2.0
 
 ## 📋 Prerequisite
 
-FOSSLight Scanner needs a Python 3.6+.
+FOSSLight Scanner needs a Python 3.10+.
 
 ## 🎉 How to install
 
 
-It can be installed using pip3. It is recommended to install it in the [python 3.7 + virtualenv]([etc/guide_virtualenv.md](https://fosslight.org/fosslight-guide-en/scanner/etc/guide_virtualenv.html)) environment.
+It can be installed using pip3. It is recommended to install it in the [virtualenv]([etc/guide_virtualenv.md](https://fosslight.org/fosslight-guide-en/scanner/etc/guide_virtualenv.html)) environment.
 
 ```
 $ pip3 install fosslight_scanner
