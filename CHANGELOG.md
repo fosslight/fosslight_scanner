@@ -1,5 +1,13 @@
 # Changelog
 
+## v2.1.8 (17/07/2025)
+## Changes
+## 🔧 Maintenance
+
+- Update python support ver 3.10~3.12 @dd-jy (#144)
+
+---
+
 ## v2.1.7 (04/07/2025)
 ## Changes
 ## 🐛 Hotfixes
@@ -291,17 +299,3 @@
 ## 🔧 Maintenance
 
 - Modify exclude item not to compare for correct mode @dd-jy (#64)
-
----
-
-## v1.7.12 (02/06/2023)
-## Changes
-## 🚀 Features
-
-- Correct the source/bin scanner result @dd-jy (#62)
-
-## 🐛 Hotfixes
-
-- Fix the correct mode bug for yaml format @dd-jy (#63)
-- Update the git config for gh action @dd-jy (#61)
-- Update the ubuntu version for deploy action @dd-jy (#60)
