@@ -168,10 +168,12 @@ def correct_scanner_result(all_scan_item):
         try:
             remove_src_idx_list = []
             for idx_src, src_fileitem in enumerate(src_fileitems):
-                src_fileitem.exclude = check_exclude_dir(src_fileitem.source_name_or_path, src_fileitem.exclude)
+                if check_package_dir(src_fileitem.source_name_or_path):
+                    continue
                 dup_flag = False
                 for bin_fileitem in bin_fileitems:
-                    bin_fileitem.exclude = check_exclude_dir(bin_fileitem.source_name_or_path, bin_fileitem.exclude)
+                    if check_package_dir(bin_fileitem.source_name_or_path):
+                        continue
                     if src_fileitem.source_name_or_path == bin_fileitem.source_name_or_path:
                         dup_flag = True
                         src_all_licenses_non_empty = all(oss_item.license for oss_item in src_fileitem.oss_items)
@@ -202,14 +204,12 @@ def correct_scanner_result(all_scan_item):
     return all_scan_item
 
 
-def check_exclude_dir(source_name_or_path, file_item_exclude):
-    if file_item_exclude:
-        return True
-    _exclude_dirs = ["venv", "node_modules", "Pods", "Carthage"]
-    exclude = False
+def check_package_dir(source_name_or_path):
+    _package_dirs = ["venv", "node_modules", "Pods", "Carthage"]
+    is_pkg = False
 
-    for exclude_dir in _exclude_dirs:
-        if exclude_dir in source_name_or_path.split(os.path.sep):
-            exclude = True
+    for package_dir in _package_dirs:
+        if package_dir in source_name_or_path.split(os.path.sep):
+            is_pkg = True
             break
-    return exclude
+    return is_pkg

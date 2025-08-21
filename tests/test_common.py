@@ -6,7 +6,7 @@
 
 import os
 import pytest
-from fosslight_scanner.common import copy_file, run_analysis, call_analysis_api, check_exclude_dir, \
+from fosslight_scanner.common import copy_file, run_analysis, call_analysis_api, check_package_dir, \
     create_scancodejson, correct_scanner_result
 
 
@@ -172,24 +172,21 @@ def test_correct_scanner_result(monkeypatch):
         "FOSSLIGHT_BINARY": [bin_file_item]
     })
 
-    def mock_check_exclude_dir(source_name_or_path, file_item_exclude):
-        return file_item_exclude
-
-    monkeypatch.setattr("fosslight_scanner.common.check_exclude_dir", mock_check_exclude_dir)
     # When
     result = correct_scanner_result(all_scan_item)
     # Then
     assert len(result.file_items["FOSSLIGHT_BINARY"][0].oss_items) == 1
 
 
-@pytest.mark.parametrize("source_name_or_path, file_item_exclude, expected", [
-    ("project/venv/file.py", False, True),
-    ("project/node_modules/file.js", False, True),
-    ("project/Pods/file.m", False, True),
-    ("project/Carthage/file.swift", False, True),
-    ("project/src/file.py", False, False),
-    ("project/src/file.py", True, True),
-    ("project/venv/file.py", True, True),
+@pytest.mark.parametrize("source_name_or_path, expected", [
+    ("project/venv/file.py", True),
+    ("project/node_modules/file.js", True),
+    ("project/Pods/file.m", True),
+    ("project/Carthage/file.swift", True),
+    ("project/src/file.py", False),
+    ("project/venv/file.py", True),
 ])
-def test_check_exclude_dir(source_name_or_path, file_item_exclude, expected):
-    assert check_exclude_dir(source_name_or_path, file_item_exclude) == expected
+def test_check_package_dir(source_name_or_path, expected):
+    result = check_package_dir(source_name_or_path)
+    # Then
+    assert result == expected

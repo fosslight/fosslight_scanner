@@ -25,7 +25,6 @@ from fosslight_util.set_log import init_log
 from fosslight_util.timer_thread import TimerThread
 import fosslight_util.constant as constant
 from fosslight_util.output_format import check_output_formats_v2
-from fosslight_prechecker._precheck import run_lint as prechecker_lint
 from fosslight_util.cover import CoverItem
 from fosslight_util.oss_item import ScannerItem
 from fosslight_util.output_format import write_output_file
