@@ -1,5 +1,13 @@
 # Changelog
 
+## v2.1.9 (21/08/2025)
+## Changes
+## 🔧 Maintenance
+
+- Skip merge if path includes package dir @dd-jy (#145)
+
+---
+
 ## v2.1.8 (17/07/2025)
 ## Changes
 ## 🔧 Maintenance
@@ -281,21 +289,3 @@
 ## 🐛 Hotfixes
 
 - Fix the source analysis fail issue @dd-jy (#65)
-
----
-
-## v1.7.13 (14/07/2023)
-## Changes
-## 🚀 Features
-
-- Correct the source/bin scanner result @dd-jy (#62)
-
-## 🐛 Hotfixes
-
-- Fix the correct mode bug for yaml format @dd-jy (#63)
-- Update the git config for gh action @dd-jy (#61)
-- Update the ubuntu version for deploy action @dd-jy (#60)
-
-## 🔧 Maintenance
-
-- Modify exclude item not to compare for correct mode @dd-jy (#64)
