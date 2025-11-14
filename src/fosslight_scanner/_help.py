@@ -40,13 +40,14 @@ _HELP_MESSAGE_SCANNER = """
             --no_correction\t    Enter if you don't want to correct OSS information with sbom-info.yaml
                                      * Correction mode only supported xlsx format.
             --correct_fpath <path>  Path to the sbom-info.yaml file
-            --ui\t\t\t  Generate UI mode result file
+            --ui\t\t    Generate UI mode result file
+            --recursive_dep\t    Recursively analyze dependencies
 
         Options for only 'all' or 'bin' mode
             -u <db_url>\t\t    DB Connection(format :'postgresql://username:password@host:port/database_name')
 
         Options for only 'all' or 'dependency' mode
-            -d <dependency_argument>\t    Additional arguments for running dependency analysis"""
+            -d <dependency_arg>\t    Additional arguments for running dependency analysis"""
 
 
 def print_help_msg():

@@ -25,12 +25,13 @@ def parse_setting_json(data):
     source_print_matched_text = data.get('source_print_matched_text', False)
     source_time_out = data.get('source_time_out', 120)
     binary_simple = data.get('binary_simple', False)
+    recursive_dep = data.get('recursive_dep', False)
     str_lists = [mode, path, exclude_path]
     strings = [
         dep_argument, output, format, db_url,
         correct_fpath, link, selected_source_scanner
     ]
-    booleans = [timer, raw, no_correction, ui, source_write_json_file, source_print_matched_text, binary_simple]
+    booleans = [timer, raw, no_correction, ui, source_write_json_file, source_print_matched_text, binary_simple, recursive_dep]
 
     is_incorrect = False
 
@@ -65,4 +66,4 @@ def parse_setting_json(data):
     return mode, path, dep_argument, output, format, link, db_url, timer, \
         raw, core, no_correction, correct_fpath, ui, exclude_path, \
         selected_source_scanner, source_write_json_file, source_print_matched_text, source_time_out, \
-        binary_simple
+        binary_simple, recursive_dep
