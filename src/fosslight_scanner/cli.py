@@ -15,7 +15,8 @@ from fosslight_util.help import print_package_version
 
 
 def set_args(mode, path, dep_argument, output, format, link, db_url, timer,
-             raw, core, no_correction, correct_fpath, ui, setting, exclude_path):
+             raw, core, no_correction, correct_fpath, ui, setting, exclude_path,
+             recursive_dep):
 
     selected_source_scanner = "all"
     source_write_json_file = False
@@ -30,7 +31,7 @@ def set_args(mode, path, dep_argument, output, format, link, db_url, timer,
             s_mode, s_path, s_dep_argument, s_output, s_format, s_link, s_db_url, s_timer, s_raw, s_core, \
                 s_no_correction, s_correct_fpath, s_ui, s_exclude_path, \
                 s_selected_source_scanner, s_source_write_json_file, s_source_print_matched_text, \
-                s_source_time_out, s_binary_simple = parse_setting_json(data)
+                s_source_time_out, s_binary_simple, s_recursive_dep = parse_setting_json(data)
 
             # direct cli arguments have higher priority than setting file
             mode = mode or s_mode
@@ -47,6 +48,7 @@ def set_args(mode, path, dep_argument, output, format, link, db_url, timer,
             correct_fpath = correct_fpath or s_correct_fpath
             ui = ui or s_ui
             exclude_path = exclude_path or s_exclude_path
+            recursive_dep = recursive_dep or s_recursive_dep
 
             # These options are only set from the setting file, not from CLI arguments
             selected_source_scanner = s_selected_source_scanner or selected_source_scanner
@@ -60,7 +62,7 @@ def set_args(mode, path, dep_argument, output, format, link, db_url, timer,
     return mode, path, dep_argument, output, format, link, db_url, timer, \
         raw, core, no_correction, correct_fpath, ui, exclude_path, \
         selected_source_scanner, source_write_json_file, source_print_matched_text, source_time_out, \
-        binary_simple
+        binary_simple, recursive_dep
 
 
 def main():
@@ -79,7 +81,7 @@ def main():
                         type=str, dest='format',nargs='*', default=[])
     parser.add_argument('--output', '-o', help='Output directory or file',
                         type=str, dest='output', default="")
-    parser.add_argument('--dependency', '-d', help='Dependency arguments',
+    parser.add_argument('--dependency', '-d', help='Dependency arguments (e.g. -d "-m pip" )',
                         type=str, dest='dep_argument', default="")
     parser.add_argument('--url', '-u', help="DB Url",
                         type=str, dest='db_url', default="")
@@ -105,6 +107,8 @@ def main():
                         type=str, required=False, default='')
     parser.add_argument('--ui', help='Generate UI mode result file',
                         action='store_true', required=False, default=False)
+    parser.add_argument('--recursive_dep', '-rd', help='Recursively analyze dependencies',
+                        action='store_true', dest='recursive_dep', default=False)
 
     try:
         args = parser.parse_args()
@@ -118,16 +122,16 @@ def main():
     else:
         mode, path, dep_argument, output, format, link, db_url, timer, raw, core, no_correction, correct_fpath, \
             ui, exclude_path, selected_source_scanner, source_write_json_file, source_print_matched_text, \
-            source_time_out, binary_simple, = set_args(
+            source_time_out, binary_simple, recursive_dep = set_args(
                 args.mode, args.path, args.dep_argument, args.output,
                 args.format, args.link, args.db_url, args.timer, args.raw,
                 args.core, args.no_correction, args.correct_fpath, args.ui,
-                args.setting, args.exclude_path)
+                args.setting, args.exclude_path, args.recursive_dep)
 
         run_main(mode, path, dep_argument, output, format, link, db_url, timer,
                  raw, core, not no_correction, correct_fpath, ui, exclude_path,
                  selected_source_scanner, source_write_json_file, source_print_matched_text,
-                 source_time_out, binary_simple)
+                 source_time_out, binary_simple, recursive_dep)
 
 
 if __name__ == "__main__":

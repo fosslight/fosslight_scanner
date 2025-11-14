@@ -31,5 +31,5 @@ def test_parse_setting_json_valid_data():
     result = parse_setting_json(data)
     assert result == (
         ['test'], ['/some/path'], 'arg', 'output', 'json', 'http://example.com', 'sqlite:///:memory:', True,
-        True, 4, True, '/correct/path', True, ['/exclude/path'], 'scanner', True, True, 60, True
+        True, 4, True, '/correct/path', True, ['/exclude/path'], 'scanner', True, True, 60, True, False
     )

@@ -57,7 +57,8 @@ SCANNER_MODE = [
 ]
 
 
-def run_dependency(path_to_analyze, output_file_with_path, params="", path_to_exclude=[], formats=[]):
+def run_dependency(path_to_analyze, output_file_with_path, params="", path_to_exclude=[], formats=[],
+                   recursive_dep=False):
     result = []
 
     package_manager = ""
@@ -100,7 +101,9 @@ def run_dependency(path_to_analyze, output_file_with_path, params="", path_to_ex
             output_file_with_path,
             pip_activate_cmd, pip_deactivate_cmd,
             output_custom_dir, app_name,
-            github_token, formats, True, path_to_exclude=path_to_exclude
+            github_token, formats, True, path_to_exclude=path_to_exclude,
+            graph_path="", graph_size=(600,600),
+            recursive=recursive_dep
         )
         if success:
             result = scan_item
@@ -131,7 +134,7 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                 default_oss_name="", default_oss_version="", url="",
                 correct_mode=True, correct_fpath="", ui_mode=False, path_to_exclude=[],
                 selected_source_scanner="all", source_write_json_file=False, source_print_matched_text=False,
-                source_time_out=120, binary_simple=False, formats=[]):
+                source_time_out=120, binary_simple=False, formats=[], recursive_dep=False):
     final_excel_dir = output_path
     success = True
     all_cover_items = []
@@ -232,7 +235,8 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
 
             if run_dep:
                 dep_scanitem = run_dependency(src_path, _output_dir,
-                                              dep_arguments, path_to_exclude, formats)
+                                              dep_arguments, path_to_exclude, formats,
+                                              recursive_dep)
                 all_scan_item.file_items.update(dep_scanitem.file_items)
                 all_cover_items.append(dep_scanitem.cover)
         else:
@@ -359,7 +363,7 @@ def run_main(mode_list, path_arg, dep_arguments, output_file_or_dir, file_format
              db_url, hide_progressbar=False, keep_raw_data=False, num_cores=-1,
              correct_mode=True, correct_fpath="", ui_mode=False, path_to_exclude=[],
              selected_source_scanner="all", source_write_json_file=False, source_print_matched_text=False,
-             source_time_out=120, binary_simple=False):
+             source_time_out=120, binary_simple=False, recursive_dep=False):
     global _executed_path, _start_time
 
     output_files = []
@@ -470,7 +474,7 @@ def run_main(mode_list, path_arg, dep_arguments, output_file_or_dir, file_format
                                 default_oss_name, default_oss_version, url_to_analyze,
                                 correct_mode, correct_fpath, ui_mode, path_to_exclude,
                                 selected_source_scanner, source_write_json_file, source_print_matched_text, source_time_out,
-                                binary_simple, formats)
+                                binary_simple, formats, recursive_dep)
 
                 if extract_folder:
                     shutil.rmtree(extract_folder)
