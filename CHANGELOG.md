@@ -1,5 +1,13 @@
 # Changelog
 
+## v2.1.10 (14/11/2025)
+## Changes
+## 🚀 Features
+
+- Add dependency recursive mode @dd-jy (#146)
+
+---
+
 ## v2.1.9 (21/08/2025)
 ## Changes
 ## 🔧 Maintenance
@@ -281,11 +289,3 @@
 ## 🚀 Features
 
 - Generate ui mode result file @dd-jy (#66)
-
----
-
-## v1.7.14 (26/07/2023)
-## Changes
-## 🐛 Hotfixes
-
-- Fix the source analysis fail issue @dd-jy (#65)
