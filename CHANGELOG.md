@@ -1,5 +1,14 @@
 # Changelog
 
+## v2.1.11 (24/12/2025)
+## Changes
+## 🔧 Maintenance
+
+- Update supported format @dd-jy (#148)
+- Add recursive_dep param in setting.json @dd-jy (#147)
+
+---
+
 ## v2.1.10 (14/11/2025)
 ## Changes
 ## 🚀 Features
@@ -281,11 +290,3 @@
 
 - Include the parent directory for ScanCode @soimkim (#71)
 - Fix the vulnerability @dd-jy (#69)
-
----
-
-## v1.7.15 (14/08/2023)
-## Changes
-## 🚀 Features
-
-- Generate ui mode result file @dd-jy (#66)
