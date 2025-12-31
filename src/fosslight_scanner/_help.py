@@ -29,7 +29,9 @@ _HELP_MESSAGE_SCANNER = f"""
             -f <formats> [<format> ...]\t    FOSSLight Report file format ({', '.join(SUPPORT_FORMAT)})
                                      * Compare mode result file: supports excel, json, yaml, html
                                      * Multiple formats can be specified separated by space.
-            -e <path>\t\t    Path to exclude from analysis (ex, -e [dir] [file])
+            -e <path>\t\t    Path to exclude from analysis (files and directories)
+                                     * IMPORTANT: Always wrap patterns in double quotes ("") to avoid shell expansion.
+                                       Example) fosslight -e "test/abc.py" "*.jar"
             -o <output>\t\t    Output directory or file
             -c <number>\t\t    Number of processes to analyze source
             -r\t\t\t    Keep raw data
