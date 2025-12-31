@@ -80,7 +80,9 @@ Options:
                                  * Compare mode result file: supports excel, json, yaml, html
         -o <output>             Output directory or file
         -c <number>             Number of processes to analyze source
-        -e <path>               Path to exclude from analysis (ex, -e {dir} {file})
+        -e <path>               Path to exclude from analysis (files and directories, pattern matching is available
+                                 * IMPORTANT: Always wrap patterns in quotes("") to avoid shell expansion.
+                                   Example) fosslight_bin -e "test/abc.py" "*.jar" "test/"
         -r                      Keep raw data
         -t                      Hide the progress bar
         -v                      Print FOSSLight Scanner version
