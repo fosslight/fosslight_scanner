@@ -82,7 +82,7 @@ Options:
         -c <number>             Number of processes to analyze source
         -e <path>               Path to exclude from analysis (files and directories, pattern matching is available
                                  * IMPORTANT: Always wrap patterns in quotes("") to avoid shell expansion.
-                                   Example) fosslight_bin -e "test/abc.py" "*.jar" "test/"
+                                   Example) fosslight -e "test/abc.py" "*.jar" "test/"
         -r                      Keep raw data
         -t                      Hide the progress bar
         -v                      Print FOSSLight Scanner version
@@ -93,6 +93,10 @@ Options:
 - Refs. 
     - Additional arguments for running dependency analysis. See the [FOSSLight Dependency Guide][fd_guide] for instructions.
     - In the case of DB URL, it is the [DB connection information to be used in FOSSLight Binary][flbindb].
+- Pattern Matching Pattern matching guide Guide for the -e Option
+⚠️ Make sure to use double quotes ("") when entering values.
+Example) fosslight -e "test/abc.py" "*.jar" "test/"
+⚠️ File names and extensions are case-sensitive, so please enter them exactly as intended.
 
 [flbindb]: https://fosslight.org/fosslight-guide-en/scanner/etc/binary_db.html
 [fd_guide]: https://fosslight.org/fosslight-guide-en/scanner/2_dependency.html
