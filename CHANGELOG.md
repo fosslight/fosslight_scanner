@@ -1,5 +1,13 @@
 # Changelog
 
+## v2.1.12 (16/01/2026)
+## Changes
+## 🔧 Maintenance
+
+- Update exclude function with fosslight_util @dd-jy (#150)
+
+---
+
 ## v2.1.11 (24/12/2025)
 ## Changes
 ## 🔧 Maintenance
@@ -281,12 +289,3 @@
 ## 🔧 Maintenance
 
 - Print even files that were not detected @soimkim (#72)
-
----
-
-## v1.7.16 (31/08/2023)
-## Changes
-## 🔧 Maintenance
-
-- Include the parent directory for ScanCode @soimkim (#71)
-- Fix the vulnerability @dd-jy (#69)
