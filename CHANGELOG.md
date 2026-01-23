@@ -1,5 +1,16 @@
 # Changelog
 
+## v2.1.13 (23/01/2026)
+## Changes
+- Remove duplicated exclude logic for all mode @dd-jy (#151)
+
+## 🔧 Maintenance
+
+- Exclude temp outputs after source analysis @bjk7119 (#152)
+- Add how to use -e option @bjk7119 (#149)
+
+---
+
 ## v2.1.12 (16/01/2026)
 ## Changes
 ## 🔧 Maintenance
@@ -281,11 +292,3 @@
 ## 🐛 Hotfixes
 
 - Fix absolute path related bugs @soimkim (#75)
-
----
-
-## v1.7.17 (01/09/2023)
-## Changes
-## 🔧 Maintenance
-
-- Print even files that were not detected @soimkim (#72)
