@@ -28,6 +28,7 @@ from fosslight_util.output_format import check_output_formats_v2
 from fosslight_util.cover import CoverItem
 from fosslight_util.oss_item import ScannerItem
 from fosslight_util.output_format import write_output_file
+from fosslight_util.exclude import get_excluded_paths
 
 from .common import (
     call_analysis_api, update_oss_item,
@@ -181,6 +182,10 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
     if not correct_fpath:
         correct_fpath = src_path
 
+    excluded_path_with_default_exclusion, excluded_path_without_dot, excluded_files, cnt_file_except_skipped = (
+            get_excluded_paths(src_path, path_to_exclude))
+    logger.debug(f"Skipped paths: {excluded_path_with_default_exclusion}")
+
     try:
         final_excel_dir = os.path.abspath(final_excel_dir)
         abs_path = os.path.abspath(src_path)
@@ -203,7 +208,10 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                                     source_write_json_file=source_write_json_file,
                                     source_print_matched_text=source_print_matched_text,
                                     source_time_out=source_time_out,
-                                    formats=formats
+                                    formats=formats,
+                                    all_exclude_mode=(excluded_path_with_default_exclusion,
+                                                      excluded_path_without_dot,
+                                                      excluded_files, cnt_file_except_skipped)
                         )
                         if success:
                             all_scan_item.file_items.update(result[2].file_items)
@@ -228,7 +236,11 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                                                     _output_dir,
                                                     formats, db_url, binary_simple,
                                                     correct_mode, correct_fpath,
-                                                    path_to_exclude=path_to_exclude)
+                                                    path_to_exclude=path_to_exclude,
+                                                    all_exclude_mode=(excluded_path_with_default_exclusion,
+                                                                      excluded_path_without_dot,
+                                                                      excluded_files,
+                                                                      cnt_file_except_skipped))
                 if success:
                     all_scan_item.file_items.update(result.file_items)
                     all_cover_items.append(result.cover)
@@ -236,7 +248,10 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
             if run_dep:
                 dep_scanitem = run_dependency(src_path, _output_dir,
                                               dep_arguments, path_to_exclude, formats,
-                                              recursive_dep)
+                                              recursive_dep,
+                                              all_exclude_mode=(excluded_path_with_default_exclusion,
+                                                                excluded_path_without_dot,
+                                                                excluded_files, cnt_file_except_skipped))
                 all_scan_item.file_items.update(dep_scanitem.file_items)
                 all_cover_items.append(dep_scanitem.cover)
         else:
@@ -249,7 +264,7 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
         cover = CoverItem(tool_name=PKG_NAME,
                           start_time=_start_time,
                           input_path=abs_path,
-                          exclude_path=path_to_exclude,
+                          exclude_path=excluded_path_without_dot,
                           simple_mode=False)
         merge_comment = []
         for ci in all_cover_items:
