@@ -6,51 +6,88 @@ from fosslight_util.help import PrintHelpMsg
 from fosslight_util.output_format import SUPPORT_FORMAT
 
 _HELP_MESSAGE_SCANNER = f"""
-    FOSSLight Scanner performs open source analysis after downloading the source from URL that can be cloned by git or wget.
-    Instead, open source analysis and checking copyright/license rules can be performed for the local source path.
-    The output result is generated in OSS Report format.
+    📖 Usage
+    ────────────────────────────────────────────────────────────────────
+    fosslight [mode] [options] <arguments>
 
-    Usage: fosslight [Mode] [option1] <arg1> [option2] <arg2>...
+    📝 Description
+    ────────────────────────────────────────────────────────────────────
+    FOSSLight Scanner performs comprehensive open source analysis by running
+    multiple modes (Source, Dependency, Binary) together. It can download
+    source code from URLs (git/wget) or analyze local paths, and generates
+    results in OSS Report format.
 
-    Parameters:
-        Mode: Multiple modes can be entered by separating them with , (ex. source,binary)
-            all\t\t\t    Run all scanners(Default)
-            source\t\t    Run FOSSLight Source Scanner
-            dependency\t\t    Run FOSSLight Dependency Scanner
-            binary\t\t    Run FOSSLight Binary Scanner
-            compare\t\t    Compare two FOSSLight reports
+    📚 Guide: https://fosslight.org/fosslight-guide/scanner/
 
-        Options:
-            -h\t\t\t    Print help message
-            -p <path>\t\t    Path to analyze (ex, -p [input_path])
-                                     * Compare mode input file: Two FOSSLight reports (supports excel, yaml)
-                                       (ex, -p [before_name].xlsx [after_name].xlsx)
-            -w <link>\t\t    Link to be analyzed can be downloaded by wget or git clone
-            -f <formats> [<format> ...]\t    FOSSLight Report file format ({', '.join(SUPPORT_FORMAT)})
-                                     * Compare mode result file: supports excel, json, yaml, html
-                                     * Multiple formats can be specified separated by space.
-            -e <path>\t\t    Path to exclude from analysis (files and directories)
-                                     * IMPORTANT: Always wrap patterns in double quotes ("") to avoid shell expansion.
-                                       Example) fosslight -e "test/abc.py" "*.jar"
-            -o <output>\t\t    Output directory or file
-            -c <number>\t\t    Number of processes to analyze source
-            -r\t\t\t    Keep raw data
-            -t\t\t\t    Hide the progress bar
-            -v\t\t\t    Print FOSSLight Scanner version
-            -s <path>\t            Path to apply setting from file (check format with 'setting.json' in this repository)
-                                     * Direct cli flags have higher priority than setting file
-                                       (ex, '-f yaml -s setting.json' - result file extension is .yaml)
-            --no_correction\t    Enter if you don't want to correct OSS information with sbom-info.yaml
-                                     * Correction mode only supported xlsx format.
-            --correct_fpath <path>  Path to the sbom-info.yaml file
-            --ui\t\t    Generate UI mode result file
-            --recursive_dep\t    Recursively analyze dependencies
+    🔧 Modes
+    ────────────────────────────────────────────────────────────────────
+    all (default)          Run all modes (Source, Dependency, Binary)
+    source                 Run FOSSLight Source analysis only
+    dependency             Run FOSSLight Dependency analysis only
+    binary                 Run FOSSLight Binary analysis only
+    compare                Compare two FOSSLight reports
 
-        Options for only 'all' or 'bin' mode
-            -u <db_url>\t\t    DB Connection(format :'postgresql://username:password@host:port/database_name')
+    Note: Multiple modes can be specified separated by comma
+          Example: fosslight source,binary -p /path/to/analyze
 
-        Options for only 'all' or 'dependency' mode
-            -d <dependency_arg>\t    Additional arguments for running dependency analysis"""
+    ⚙️  General Options
+    ────────────────────────────────────────────────────────────────────
+    -p <path>              Path to analyze
+                           • Compare mode: path to two FOSSLight reports (excel/yaml)
+    -w <url>               URL to download and analyze (git clone or wget)
+    -f <format>            Output format ({', '.join(SUPPORT_FORMAT)})
+                           • Compare mode: excel, json, yaml, html
+                           • Multiple formats: ex) -f excel yaml json (separated by space)
+    -e <pattern>           Exclude paths from analysis (files and directories)
+                           ⚠️  IMPORTANT: Always wrap in quotes to avoid shell expansion
+                           Example: fosslight -e "test/" "*.jar"
+    -o <path>              Output directory or file name
+    -c <number>            Number of processes for source analysis
+    -r                     Keep raw data from scanners
+    -t                     Hide progress bar
+    -h                     Show this help message
+    -v                     Show version information
+    -s <path>              Apply settings from JSON file(check format with 'setting.json' in this repository)
+                           Note: CLI flags override settings file
+                           Example: -f yaml -s setting.json → output is .yaml
+    --no_correction        Skip OSS information correction with sbom-info.yaml
+                           (Correction only supports excel format)
+    --correct_fpath <path> Path to sbom-info.yaml file for correction
+    --ui                   Generate UI mode result file
+    --recursive_dep        Recursively analyze dependencies
+
+    🔍 Mode-Specific Options
+    ────────────────────────────────────────────────────────────────────
+    For 'all' or 'binary' mode:
+      -u <db_url>          Database connection string
+                           Format: postgresql://username:password@host:port/database
+
+    For 'all' or 'dependency' mode:
+      -d <args>            Additional arguments for dependency analysis
+
+    💡 Examples
+    ────────────────────────────────────────────────────────────────────
+    # Scan current directory with all scanners
+    fosslight
+
+    # Scan specific path with exclusions
+    fosslight -p /path/to/source -e "test/" "node_modules/" "*.pyc"
+
+    # Generate output in specific format
+    fosslight -p /path/to/source -f yaml
+
+    # Run specific modes only
+    fosslight source,dependency -p /path/to/source
+
+    # Download and analyze from git repository
+    fosslight -w https://github.com/user/repo.git -o result_dir
+
+    # Compare two FOSSLight reports
+    fosslight compare -p report_v1.xlsx report_v2.xlsx -f excel
+
+    # Run with database connection for binary analysis
+    fosslight binary -p /path/to/binary -u "postgresql://user:pass@localhost:5432/sample"
+    """
 
 
 def print_help_msg():
