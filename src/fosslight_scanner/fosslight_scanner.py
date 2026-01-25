@@ -136,6 +136,7 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                 correct_mode=True, correct_fpath="", ui_mode=False, path_to_exclude=[],
                 selected_source_scanner="all", source_write_json_file=False, source_print_matched_text=False,
                 source_time_out=120, binary_simple=False, formats=[], recursive_dep=False):
+
     final_excel_dir = output_path
     success = True
     all_cover_items = []
@@ -143,6 +144,7 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
     _json_ext = '.json'
     if not remove_src_data:
         success, final_excel_dir, result_log = init(output_path)
+
 
     if not output_files:
         # If -o does not contains file name, set default name
@@ -430,6 +432,9 @@ def run_main(mode_list, path_arg, dep_arguments, output_file_or_dir, file_format
     else:
         output_path = os.path.abspath(output_path)
 
+    final_dir = output_path
+    output_path = os.path.join(os.path.dirname(output_path), f".fosslight_temp_{datetime.now().strftime('%Y%m%d_%H%M%S')}")
+
     if not success:
         logger.error(msg)
         sys.exit(1)
@@ -499,6 +504,11 @@ def run_main(mode_list, path_arg, dep_arguments, output_file_or_dir, file_format
             if not keep_raw_data:
                 logger.debug(f"Remove temporary files: {_output_dir}")
                 shutil.rmtree(_output_dir)
+            if os.path.exists(output_path):
+                os.makedirs(final_dir, exist_ok=True)
+                for item in os.listdir(output_path):
+                    shutil.move(os.path.join(output_path, item), os.path.join(final_dir, item))
+                shutil.rmtree(output_path)
         except Exception as ex:
             logger.debug(f"Error to remove temp files:{ex}")
     except Exception as ex:
