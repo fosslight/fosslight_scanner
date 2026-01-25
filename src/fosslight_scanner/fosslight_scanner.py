@@ -47,7 +47,7 @@ COMPARE_OUTPUT_REPORT_PREFIX = "fosslight_compare_"
 PKG_NAME = "fosslight_scanner"
 logger = logging.getLogger(constant.LOGGER_NAME)
 warnings.simplefilter(action='ignore', category=FutureWarning)
-_output_dir = ".fosslight_raw_data"
+_output_dir = "fosslight_raw_data"
 _log_file = "fosslight_log_all_"
 _start_time = ""
 _executed_path = ""
@@ -350,38 +350,6 @@ def download_source(link, out_dir):
     return success, temp_src_dir, oss_name, oss_version
 
 
-def rename_and_remove_hidden_folder(output_path, output_dir, keep_raw_data=False):
-    try:
-        hidden_log_dir = os.path.join(output_path, ".fosslight_log")
-        visible_log_dir = os.path.join(output_path, "fosslight_log")
-        if os.path.exists(hidden_log_dir):
-            try:
-                if os.path.exists(visible_log_dir):
-                    shutil.rmtree(visible_log_dir)
-                shutil.move(hidden_log_dir, visible_log_dir)
-            except Exception as ex:
-                logger.debug(f"Error renaming log folder: {ex}")
-        
-        if keep_raw_data:
-            visible_raw_dir = os.path.join(os.path.dirname(output_dir), "fosslight_raw_data")
-            if os.path.exists(output_dir):
-                if os.path.exists(visible_raw_dir):
-                    shutil.rmtree(visible_raw_dir)
-                shutil.move(output_dir, visible_raw_dir)
-                logger.debug(f"Renamed {output_dir} to {visible_raw_dir}")
-        else:
-            logger.debug(f"Remove temporary files: {output_dir}")
-            if os.path.exists(output_dir):
-                shutil.rmtree(output_dir)
-            
-            visible_raw_dir = os.path.join(os.path.dirname(output_dir), "fosslight_raw_data")
-            if os.path.exists(visible_raw_dir):
-                shutil.rmtree(visible_raw_dir)
-                logger.debug(f"Removed previous raw data folder: {visible_raw_dir}")
-    except Exception as ex:
-        logger.debug(f"Error cleaning up output directories: {ex}")
-
-
 def init(output_path="", make_outdir=True):
     global _output_dir, _log_file, _start_time, logger
 
@@ -399,7 +367,7 @@ def init(output_path="", make_outdir=True):
         Path(_output_dir).mkdir(parents=True, exist_ok=True)
         _output_dir = os.path.abspath(_output_dir)
 
-    log_dir = os.path.join(output_root_dir, ".fosslight_log")
+    log_dir = os.path.join(output_root_dir, "fosslight_log")
     logger, result_log = init_log(os.path.join(log_dir, f"{_log_file}{_start_time}.txt"),
                                   True, logging.INFO, logging.DEBUG, PKG_NAME)
 
@@ -527,9 +495,12 @@ def run_main(mode_list, path_arg, dep_arguments, output_file_or_dir, file_format
                     shutil.rmtree(extract_folder)
             else:
                 logger.error("(mode) No mode has been selected for analysis.")
-        
-        rename_and_remove_hidden_folder(output_path, _output_dir, keep_raw_data)
-
+        try:
+            if not keep_raw_data:
+                logger.debug(f"Remove temporary files: {_output_dir}")
+                shutil.rmtree(_output_dir)
+        except Exception as ex:
+            logger.debug(f"Error to remove temp files:{ex}")
     except Exception as ex:
         logger.warning(str(ex))
         return False
