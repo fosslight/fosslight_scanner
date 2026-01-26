@@ -59,7 +59,7 @@ SCANNER_MODE = [
 
 
 def run_dependency(path_to_analyze, output_file_with_path, params="", path_to_exclude=[], formats=[],
-                   recursive_dep=False):
+                   recursive_dep=False, all_exclude_mode=()):
     result = []
 
     package_manager = ""
@@ -104,7 +104,8 @@ def run_dependency(path_to_analyze, output_file_with_path, params="", path_to_ex
             output_custom_dir, app_name,
             github_token, formats, True, path_to_exclude=path_to_exclude,
             graph_path="", graph_size=(600,600),
-            recursive=recursive_dep
+            recursive=recursive_dep,
+            all_exclude_mode=all_exclude_mode
         )
         if success:
             result = scan_item
