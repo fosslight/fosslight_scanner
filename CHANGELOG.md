@@ -1,5 +1,13 @@
 # Changelog
 
+## v2.1.14 (26/01/2026)
+## Changes
+## 🐛 Hotfixes
+
+- Fix dependency bug for all_exclude_mode @dd-jy (#155)
+
+---
+
 ## v2.1.13 (23/01/2026)
 ## Changes
 - Remove duplicated exclude logic for all mode @dd-jy (#151)
@@ -284,11 +292,3 @@
 ## 🔧 Maintenance
 
 - Fix importing from  fl source @JustinWonjaePark (#76)
-
----
-
-## v1.7.18 (05/09/2023)
-## Changes
-## 🐛 Hotfixes
-
-- Fix absolute path related bugs @soimkim (#75)
