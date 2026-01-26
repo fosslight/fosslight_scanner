@@ -138,6 +138,7 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                 source_time_out=120, binary_simple=False, formats=[], recursive_dep=False):
 
     final_excel_dir = output_path
+    final_reports = []
     success = True
     all_cover_items = []
     all_scan_item = ScannerItem(PKG_NAME, _start_time)
@@ -288,16 +289,8 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
         for success, msg, result_file in results:
             if success:
                 final_reports.append(result_file)
-                logger.info(f"Output file: {result_file}")
             else:
                 logger.error(f"Fail to generate result file {result_file}. msg:({msg})")
-        
-        if success:
-            if final_reports:
-                logger.info(f'Generated the result file: {", ".join(final_reports)}')
-                result_log["Output File"] = ', '.join(final_reports)
-            else:
-                result_log["Output File"] = 'Nothing is detected from the scanner so output file is not generated.'
 
         if ui_mode:
             if output_files:
@@ -308,7 +301,7 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
             ui_mode_report = f"{output_file_without_ext}.json"
             success, err_msg = create_scancodejson(all_scan_item, ui_mode_report, src_path)
             if success and os.path.isfile(ui_mode_report):
-                logger.info(f'Generated the ui mode result file: {ui_mode_report}')
+                final_reports.append(ui_mode_report)
             else:
                 logger.error(f'Fail to generate a ui mode result file({ui_mode_report}): {err_msg}')
 
@@ -323,6 +316,7 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
             shutil.rmtree(src_path)
     except Exception as ex:
         logger.debug(f"Error to remove temp files:{ex}")
+    return final_reports
 
 
 def download_source(link, out_dir):
@@ -434,7 +428,7 @@ def run_main(mode_list, path_arg, dep_arguments, output_file_or_dir, file_format
 
     final_dir = output_path
     output_path = os.path.join(os.path.dirname(output_path), f".fosslight_temp_{datetime.now().strftime('%Y%m%d_%H%M%S')}")
-
+    final_reports = []
     if not success:
         logger.error(msg)
         sys.exit(1)
@@ -487,14 +481,14 @@ def run_main(mode_list, path_arg, dep_arguments, output_file_or_dir, file_format
                     success, src_path, default_oss_name, default_oss_version = download_source(url_to_analyze, output_path)
 
                 if src_path != "":
-                    run_scanner(src_path, dep_arguments, output_path, keep_raw_data,
-                                run_src, run_bin, run_dep, run_prechecker,
-                                remove_downloaded_source, {}, output_files,
-                                output_extensions, num_cores, db_url,
-                                default_oss_name, default_oss_version, url_to_analyze,
-                                correct_mode, correct_fpath, ui_mode, path_to_exclude,
-                                selected_source_scanner, source_write_json_file, source_print_matched_text, source_time_out,
-                                binary_simple, formats, recursive_dep)
+                    final_reports = run_scanner(src_path, dep_arguments, output_path, keep_raw_data,
+                                                run_src, run_bin, run_dep, run_prechecker,
+                                                remove_downloaded_source, {}, output_files,
+                                                output_extensions, num_cores, db_url,
+                                                default_oss_name, default_oss_version, url_to_analyze,
+                                                correct_mode, correct_fpath, ui_mode, path_to_exclude,
+                                                selected_source_scanner, source_write_json_file, source_print_matched_text, source_time_out,
+                                                binary_simple, formats, recursive_dep)
 
                 if extract_folder:
                     shutil.rmtree(extract_folder)
@@ -509,6 +503,9 @@ def run_main(mode_list, path_arg, dep_arguments, output_file_or_dir, file_format
                 for item in os.listdir(output_path):
                     shutil.move(os.path.join(output_path, item), os.path.join(final_dir, item))
                 shutil.rmtree(output_path)
+                if final_reports:
+                    final_reports = [report.replace(output_path, final_dir) for report in final_reports]
+                    logger.info(f'Output File: {", ".join(final_reports)}')
         except Exception as ex:
             logger.debug(f"Error to remove temp files:{ex}")
     except Exception as ex:
