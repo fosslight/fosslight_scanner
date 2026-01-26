@@ -501,7 +501,13 @@ def run_main(mode_list, path_arg, dep_arguments, output_file_or_dir, file_format
             if os.path.exists(output_path):
                 os.makedirs(final_dir, exist_ok=True)
                 for item in os.listdir(output_path):
-                    shutil.move(os.path.join(output_path, item), os.path.join(final_dir, item))
+                    src_item = os.path.join(output_path, item)
+                    dst_item = os.path.join(final_dir, item)
+                    if os.path.isdir(src_item) and os.path.exists(dst_item):
+                        for sub_item in os.listdir(src_item):
+                            shutil.move(os.path.join(src_item, sub_item), os.path.join(dst_item, sub_item))
+                    else:
+                        shutil.move(src_item, dst_item)
                 shutil.rmtree(output_path)
                 if final_reports:
                     final_reports = [report.replace(output_path, final_dir) for report in final_reports]
