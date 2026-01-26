@@ -270,10 +270,7 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                           input_path=abs_path,
                           exclude_path=excluded_path_without_dot,
                           simple_mode=False)
-        merge_comment = []
-        for ci in all_cover_items:
-            merge_comment.append(str(f'[{ci.tool_name}] {ci.comment}'))
-        cover.comment = '\n'.join(merge_comment)
+        cover.comment = cover.create_merged_comment(all_cover_items)
         all_scan_item.cover = cover
 
         if correct_mode:
