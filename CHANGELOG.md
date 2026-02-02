@@ -1,5 +1,13 @@
 # Changelog
 
+## v2.1.16 (02/02/2026)
+## Changes
+## 🔧 Maintenance
+
+- Update help message @bjk7119 (#153)
+
+---
+
 ## v2.1.15 (26/01/2026)
 ## Changes
 ## 🔧 Maintenance
@@ -284,13 +292,3 @@
 ## 🐛 Hotfixes
 
 - Fix the fs output path @dd-jy (#81)
-
----
-
-## v1.7.20 (30/10/2023)
-## Changes
-## 🔧 Maintenance
-
-- Update supported python version @dd-jy (#80)
-- Fetch base-check-commit-message.yml from fosslight/.github @cookienc (#78)
-- Upgrade Python minimum version to 3.8 @JustinWonjaePark (#79)
