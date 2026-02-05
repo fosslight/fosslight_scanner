@@ -1,5 +1,14 @@
 # Changelog
 
+## v2.1.17 (05/02/2026)
+## Changes
+## 🔧 Maintenance
+
+- Remove ui option in help msg @dd-jy (#159)
+- Remove unnecessary description @bjk7119 (#158)
+
+---
+
 ## v2.1.16 (02/02/2026)
 ## Changes
 ## 🔧 Maintenance
@@ -284,11 +293,3 @@
 - Normalize pypi package name (PEP 0503) @dd-jy (#83)
 - Support oss name with files.pythonhosted.org url @dd-jy (#82)
 - Optimize Dockerfile to reduce image size @cookienc (#68)
-
----
-
-## v1.7.21 (06/11/2023)
-## Changes
-## 🐛 Hotfixes
-
-- Fix the fs output path @dd-jy (#81)
