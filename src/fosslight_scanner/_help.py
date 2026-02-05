@@ -52,7 +52,6 @@ _HELP_MESSAGE_SCANNER = f"""
                            Example: -f yaml -s setting.json → output is .yaml
     --no_correction        Skip OSS information correction with sbom-info.yaml
     --correct_fpath <path> Path to sbom-info.yaml file for correction
-    --ui                   Generate UI mode result file
     --recursive_dep        Recursively analyze dependencies
 
     🔍 Mode-Specific Options
