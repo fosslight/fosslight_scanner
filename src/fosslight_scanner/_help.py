@@ -53,7 +53,6 @@ _HELP_MESSAGE_SCANNER = f"""
     --no_correction        Skip OSS information correction with sbom-info.yaml
                            (Correction only supports excel format)
     --correct_fpath <path> Path to sbom-info.yaml file for correction
-    --ui                   Generate UI mode result file
     --recursive_dep        Recursively analyze dependencies
 
     🔍 Mode-Specific Options
