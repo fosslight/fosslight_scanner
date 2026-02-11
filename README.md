@@ -24,7 +24,7 @@ SPDX-License-Identifier: Apache-2.0
 [rule]: https://oss.lge.com/guide/process/osc_process/1-identification/copyright_license_rule.html
 
 ## Contents
-
+Please refer to https://fosslight.org/fosslight-guide/scanner/ for the FOSSLight Scanner User Guide.    
 - [FOSSLight Scanner](#fosslight-scanner)
   - [Contents](#contents)
   - [📋 Prerequisite](#-prerequisite)
