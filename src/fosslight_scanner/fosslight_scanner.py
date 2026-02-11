@@ -13,6 +13,7 @@ import shutil
 import shlex
 import subprocess
 import platform
+import time
 from pathlib import Path
 from datetime import datetime
 
@@ -234,6 +235,13 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                     logger.warning(f"Failed to run source analysis: {ex}")
 
             if run_bin:
+                # Restore local timezone before Binary Analysis
+                # (TZ might have been set to UTC by scancode import in Source Scanner)
+                original_tz = os.environ.get('TZ')
+                if 'TZ' in os.environ:
+                    del os.environ['TZ']
+                time.tzset()
+                
                 success, result = call_analysis_api(src_path, "Binary Analysis",
                                                     1, binary_analysis.find_binaries,
                                                     abs_path,
@@ -245,17 +253,34 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                                                                       excluded_path_without_dot,
                                                                       excluded_files,
                                                                       cnt_file_except_skipped))
+                
+                # Restore original TZ if it was set
+                if original_tz:
+                    os.environ['TZ'] = original_tz
+                    time.tzset()
                 if success:
                     all_scan_item.file_items.update(result.file_items)
                     all_cover_items.append(result.cover)
 
             if run_dep:
+                # Restore local timezone before Dependency Analysis
+                # (TZ might have been set to UTC by scancode import in Source Scanner)
+                original_tz = os.environ.get('TZ')
+                if 'TZ' in os.environ:
+                    del os.environ['TZ']
+                time.tzset()
+                
                 dep_scanitem = run_dependency(src_path, _output_dir,
                                               dep_arguments, path_to_exclude, formats,
                                               recursive_dep,
                                               all_exclude_mode=(excluded_path_with_default_exclusion,
                                                                 excluded_path_without_dot,
                                                                 excluded_files, cnt_file_except_skipped))
+                
+                # Restore original TZ if it was set
+                if original_tz:
+                    os.environ['TZ'] = original_tz
+                    time.tzset()
                 all_scan_item.file_items.update(dep_scanitem.file_items)
                 all_cover_items.append(dep_scanitem.cover)
         else:
