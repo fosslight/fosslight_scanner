@@ -197,8 +197,6 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
 
         if success:
             if run_src:
-                # Save TZ before Source Analysis
-                # (scancode import will set TZ to UTC)
                 original_tz = os.environ.get('TZ')
                 
                 try:
@@ -238,8 +236,6 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                 except Exception as ex:
                     logger.warning(f"Failed to run source analysis: {ex}")
                 finally:
-                    # Restore TZ after Source Analysis
-                    # (scancode import sets TZ to UTC, restore to original or local timezone)
                     if original_tz:
                         os.environ['TZ'] = original_tz
                     elif 'TZ' in os.environ:
