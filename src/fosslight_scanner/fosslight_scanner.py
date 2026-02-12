@@ -13,6 +13,7 @@ import shutil
 import shlex
 import subprocess
 import platform
+import time
 from pathlib import Path
 from datetime import datetime
 
@@ -196,6 +197,8 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
 
         if success:
             if run_src:
+                original_tz = os.environ.get('TZ')
+                
                 try:
                     if fosslight_source_installed:
                         src_output = _output_dir
@@ -232,6 +235,12 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
 
                 except Exception as ex:
                     logger.warning(f"Failed to run source analysis: {ex}")
+                finally:
+                    if original_tz:
+                        os.environ['TZ'] = original_tz
+                    elif 'TZ' in os.environ:
+                        del os.environ['TZ']
+                    time.tzset()
 
             if run_bin:
                 success, result = call_analysis_api(src_path, "Binary Analysis",
