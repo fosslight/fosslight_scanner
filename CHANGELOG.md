@@ -1,5 +1,13 @@
 # Changelog
 
+## v2.1.18 (13/02/2026)
+## Changes
+## 🐛 Hotfixes
+
+- Fix incorrect timestamp in raw data output file names when running all scanners with -r option @hyesung22 (#160)
+
+---
+
 ## v2.1.17 (05/02/2026)
 ## Changes
 ## 🔧 Maintenance
@@ -278,18 +286,3 @@
 ## 🔧 Maintenance
 
 - Remove FL Prechecker mode @bjk7119 (#88)
-
----
-
-## v1.7.22 (29/01/2024)
-## Changes
-## 🚀 Features
-
-- Download the latest version of package url @dd-jy (#86)
-- Supports multiple input modes @soimkim (#85)
-
-## 🔧 Maintenance
-
-- Normalize pypi package name (PEP 0503) @dd-jy (#83)
-- Support oss name with files.pythonhosted.org url @dd-jy (#82)
-- Optimize Dockerfile to reduce image size @cookienc (#68)
