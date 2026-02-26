@@ -29,3 +29,7 @@ License: Apache-2.0
 Files: src/fosslight_scanner/resources/bom_compare.html
 Copyright: 2022 LG Electronics
 License: Apache-2.0
+
+Files: .coderabbit.yaml
+Copyright: 2026 LG Electronics
+License: Apache-2.0
