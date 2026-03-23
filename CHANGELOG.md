@@ -1,5 +1,15 @@
 # Changelog
 
+## v2.1.19 (23/03/2026)
+## Changes
+## 🔧 Maintenance
+
+- Remove "Type of change" section from PR default template @woocheol-lge (#165)
+- Update .coderabbit.yaml for auto reviewing. @soimkim (#164)
+- Update test configuration format in setting.json @woocheol-lge (#162)
+
+---
+
 ## v2.1.18 (13/02/2026)
 ## Changes
 ## 🐛 Hotfixes
@@ -278,11 +288,3 @@
 ## 🚀 Features
 
 - Add detection summary message (cover sheet) @dd-jy (#89)
-
----
-
-## v1.7.23 (12/03/2024)
-## Changes
-## 🔧 Maintenance
-
-- Remove FL Prechecker mode @bjk7119 (#88)
