@@ -198,7 +198,7 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
             if run_src:
                 try:
                     if fosslight_source_installed:
-                        src_output = _output_dir
+                        src_output = os.path.join(_output_dir, f"fosslight_report_src_{_start_time}.xlsx")
                         success, result = call_analysis_api(
                                     src_path,
                                     "Source Analysis",
@@ -237,7 +237,7 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                 success, result = call_analysis_api(src_path, "Binary Analysis",
                                                     1, binary_analysis.find_binaries,
                                                     abs_path,
-                                                    _output_dir,
+                                                    os.path.join(_output_dir, f"fosslight_report_bin_{_start_time}.xlsx"),
                                                     formats, db_url, binary_simple,
                                                     correct_mode, correct_fpath,
                                                     path_to_exclude=path_to_exclude,
@@ -250,7 +250,7 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                     all_cover_items.append(result.cover)
 
             if run_dep:
-                dep_scanitem = run_dependency(src_path, _output_dir,
+                dep_scanitem = run_dependency(src_path, os.path.join(_output_dir, f"fosslight_report_dep_{_start_time}.xlsx"),
                                               dep_arguments, path_to_exclude, formats,
                                               recursive_dep,
                                               all_exclude_mode=(excluded_path_with_default_exclusion,
