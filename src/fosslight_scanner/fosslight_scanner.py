@@ -198,7 +198,7 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
         if success:
             if run_src:
                 original_tz = os.environ.get('TZ')
-                
+
                 try:
                     if fosslight_source_installed:
                         src_output = _output_dir
@@ -240,7 +240,8 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                         os.environ['TZ'] = original_tz
                     elif 'TZ' in os.environ:
                         del os.environ['TZ']
-                    time.tzset()
+                    if hasattr(time, 'tzset'):
+                        time.tzset()
 
             if run_bin:
                 success, result = call_analysis_api(src_path, "Binary Analysis",
@@ -287,7 +288,7 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
 
         if remove_src_data:
             all_scan_item = update_oss_item(all_scan_item, default_oss_name, default_oss_version, url)
-        
+
         combined_paths_and_files = [os.path.join(final_excel_dir, file) for file in output_files]
         results = []
         final_reports = []
