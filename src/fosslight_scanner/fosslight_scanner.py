@@ -517,9 +517,7 @@ def run_main(mode_list, path_arg, dep_arguments, output_file_or_dir, file_format
                     else:
                         shutil.move(src_item, dst_item)
                 shutil.rmtree(output_path)
-        except Exception as ex:
-            logger.debug(f"Error to remove temp files:{ex}")
     except Exception as ex:
-        logger.warning(str(ex))
+        print(str(ex))
         return False
     return True
