@@ -1,5 +1,17 @@
 # Changelog
 
+## v2.1.20 (26/03/2026)
+## Changes
+## 🐛 Hotfixes
+
+- Correct incorrect timestamp in raw data output filenames @soimkim (#167)
+
+## 🔧 Maintenance
+
+- Add reference to the FOSSLight Scanner User Guide in the README. @soimkim (#168)
+
+---
+
 ## v2.1.19 (23/03/2026)
 ## Changes
 ## 🔧 Maintenance
@@ -280,11 +292,3 @@
 ## 🚀 Features
 
 - Add TLSH, SHA1 column for binary analysis @bjk7119 (#90)
-
----
-
-## v1.7.24 (26/04/2024)
-## Changes
-## 🚀 Features
-
-- Add detection summary message (cover sheet) @dd-jy (#89)
