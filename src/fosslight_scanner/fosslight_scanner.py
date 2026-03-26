@@ -493,6 +493,16 @@ def run_main(mode_list, path_arg, dep_arguments, output_file_or_dir, file_format
             else:
                 logger.error("(mode) No mode has been selected for analysis.")
         try:
+            if final_reports:
+                final_reports = [report.replace(output_path, final_dir) for report in final_reports]
+                logger.info(f'Output File: {", ".join(final_reports)}')
+
+            for handler in logger.handlers[:]:
+                try:
+                    handler.close()
+                    logger.removeHandler(handler)
+                except Exception:
+                    pass
             if not keep_raw_data:
                 logger.debug(f"Remove temporary files: {_output_dir}")
                 shutil.rmtree(_output_dir)
@@ -507,9 +517,6 @@ def run_main(mode_list, path_arg, dep_arguments, output_file_or_dir, file_format
                     else:
                         shutil.move(src_item, dst_item)
                 shutil.rmtree(output_path)
-                if final_reports:
-                    final_reports = [report.replace(output_path, final_dir) for report in final_reports]
-                    logger.info(f'Output File: {", ".join(final_reports)}')
         except Exception as ex:
             logger.debug(f"Error to remove temp files:{ex}")
     except Exception as ex:
