@@ -58,6 +58,25 @@ SCANNER_MODE = [
 ]
 
 
+def _close_file_handlers_under(directory):
+    """Close FileHandlers pointing inside directory so OS can delete/move it safely."""
+    prefix = os.path.normcase(os.path.abspath(directory)) + os.sep
+    all_loggers = [logging.root] + [
+        lg for lg in logging.Logger.manager.loggerDict.values()
+        if not isinstance(lg, logging.PlaceHolder)
+    ]
+    for lg in all_loggers:
+        for h in list(lg.handlers):
+            if isinstance(h, logging.FileHandler):
+                try:
+                    if os.path.normcase(os.path.abspath(h.baseFilename)).startswith(prefix):
+                        h.flush()
+                        h.close()
+                        lg.removeHandler(h)
+                except (OSError, AttributeError, ValueError):
+                    pass
+
+
 def run_dependency(path_to_analyze, output_file_with_path, params="", path_to_exclude=[], formats=[],
                    recursive_dep=False, all_exclude_mode=()):
     result = []
@@ -492,9 +511,10 @@ def run_main(mode_list, path_arg, dep_arguments, output_file_or_dir, file_format
                     shutil.rmtree(extract_folder)
             else:
                 logger.error("(mode) No mode has been selected for analysis.")
+
         try:
+            _close_file_handlers_under(output_path)
             if not keep_raw_data:
-                logger.debug(f"Remove temporary files: {_output_dir}")
                 shutil.rmtree(_output_dir)
             if os.path.exists(output_path):
                 os.makedirs(final_dir, exist_ok=True)
@@ -506,13 +526,15 @@ def run_main(mode_list, path_arg, dep_arguments, output_file_or_dir, file_format
                             shutil.move(os.path.join(src_item, sub_item), os.path.join(dst_item, sub_item))
                     else:
                         shutil.move(src_item, dst_item)
-                shutil.rmtree(output_path)
                 if final_reports:
                     final_reports = [report.replace(output_path, final_dir) for report in final_reports]
-                    logger.info(f'Output File: {", ".join(final_reports)}')
+                    print(f'Output File: {", ".join(final_reports)}')
+
+                print(f"Remove temporary directory: {output_path}")
+                shutil.rmtree(output_path)
         except Exception as ex:
-            logger.debug(f"Error to remove temp files:{ex}")
+            print(f"Error to remove temp files:{ex}")
     except Exception as ex:
-        logger.warning(str(ex))
+        print(str(ex))
         return False
     return True
