@@ -1,0 +1,53 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2021 LG Electronics
+
+[build-system]
+requires = ["setuptools>=77", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fosslight_scanner"
+version = "2.1.20"
+description = "FOSSLight Scanner"
+readme = "README.md"
+license = "Apache-2.0"
+authors = [{ name = "LG Electronics" }]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+]
+requires-python = ">=3.10,<3.15"
+dependencies = [
+    "future",
+    "pandas",
+    "openpyxl",
+    "progress",
+    "pyyaml",
+    "beautifulsoup4",
+    "fosslight_util>=2.1.38,<3.0.0",
+    "fosslight_source>=2.2.3,<3.0.0",
+    "fosslight_dependency>=4.1.31,<5.0.0",
+    "fosslight_binary>=5.1.17,<6.0.0",
+    "fosslight_prechecker>=4.0.0,<5.0.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/fosslight/fosslight_scanner"
+Download = "https://github.com/fosslight/fosslight_scanner"
+
+[project.scripts]
+fosslight = "fosslight_scanner.cli:main"
+fosslight_scanner = "fosslight_scanner.cli:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+fosslight_scanner = ["resources/bom_compare.html"]
