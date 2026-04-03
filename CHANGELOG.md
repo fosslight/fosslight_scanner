@@ -1,5 +1,14 @@
 # Changelog
 
+## v2.1.21 (03/04/2026)
+## Changes
+## 🔧 Maintenance
+
+- feat(log_file): move log file from temp dir to final output dir @bjk7119 (#171)
+- feat(python): support Python 3.13/3.14 and migrate from setup.py to pyproject.toml @woocheol-lge (#172)
+
+---
+
 ## v2.1.20 (26/03/2026)
 ## Changes
 ## 🐛 Hotfixes
@@ -284,11 +293,3 @@
 
 - Update the requirements.txt @bjk7119 (#93)
 - Modify FL Binary required ver. to 4.1.29 @bjk7119 (#91)
-
----
-
-## v1.7.25 (07/05/2024)
-## Changes
-## 🚀 Features
-
-- Add TLSH, SHA1 column for binary analysis @bjk7119 (#90)
