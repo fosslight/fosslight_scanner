@@ -21,7 +21,7 @@ from fosslight_dependency.run_dependency_scanner import run_dependency_scanner
 from fosslight_util.download import cli_download_and_extract, compression_extension
 from fosslight_util.download import extract_compressed_file as extract_file
 from ._get_input import get_input_mode
-from fosslight_util.set_log import init_log
+from fosslight_util.set_log import init_log, move_log_file
 from fosslight_util.timer_thread import TimerThread
 import fosslight_util.constant as constant
 from fosslight_util.output_format import check_output_formats_v2
@@ -493,6 +493,15 @@ def run_main(mode_list, path_arg, dep_arguments, output_file_or_dir, file_format
             else:
                 logger.error("(mode) No mode has been selected for analysis.")
         try:
+            try:
+                log_file_path = os.path.join(output_path, "fosslight_log", f"{_log_file}{_start_time}.txt")
+                final_log_dir = os.path.join(final_dir, "fosslight_log")
+                os.makedirs(final_log_dir, exist_ok=True)
+                final_log_path = os.path.join(final_log_dir, f"{_log_file}{_start_time}.txt")
+                move_log_file(log_file_path, final_log_path)
+            except Exception as ex:
+                logger.debug(f"Failed to move log file: {ex}")
+
             if not keep_raw_data:
                 logger.debug(f"Remove temporary files: {_output_dir}")
                 shutil.rmtree(_output_dir)
