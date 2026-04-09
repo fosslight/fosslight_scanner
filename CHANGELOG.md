@@ -1,5 +1,13 @@
 # Changelog
 
+## v2.1.22 (09/04/2026)
+## Changes
+## 🔧 Maintenance
+
+- Align download_source with fosslight_util 5-tuple return @soimkim (#173)
+
+---
+
 ## v2.1.21 (03/04/2026)
 ## Changes
 ## 🔧 Maintenance
@@ -284,12 +292,3 @@
 ## 🔧 Maintenance
 
 - Modify column name @bjk7119 (#94)
-
----
-
-## v1.7.26 (29/05/2024)
-## Changes
-## 🔧 Maintenance
-
-- Update the requirements.txt @bjk7119 (#93)
-- Modify FL Binary required ver. to 4.1.29 @bjk7119 (#91)

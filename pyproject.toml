@@ -7,7 +7,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "fosslight_scanner"
-version = "2.1.21"
+version = "2.1.22"
 description = "FOSSLight Scanner"
 readme = "README.md"
 license = "Apache-2.0"
