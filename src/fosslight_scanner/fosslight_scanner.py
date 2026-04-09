@@ -330,7 +330,7 @@ def download_source(link, out_dir):
 
         link = link.strip()
         logger.info(f"Link to download: {link}")
-        success, msg, oss_name, oss_version = cli_download_and_extract(
+        success, msg, oss_name, oss_version, _ = cli_download_and_extract(
             link, temp_src_dir, _output_dir)
 
         if success:
