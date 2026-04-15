@@ -85,6 +85,7 @@ def call_analysis_api(path_to_run, str_run_start, return_idx, func, *args, **kwa
     except Exception as ex:
         logger.debug(f"Get return value:{ex}")
         success = False
+    logger.info(f"## Complete {str_run_start}\n")
     return success, result or []
 
 
