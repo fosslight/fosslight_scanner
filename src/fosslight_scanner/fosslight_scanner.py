@@ -278,7 +278,7 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
 
         if remove_src_data:
             all_scan_item = update_oss_item(all_scan_item, default_oss_name, default_oss_version, url)
-        
+
         combined_paths_and_files = [os.path.join(final_excel_dir, file) for file in output_files]
         results = []
         final_reports = []
@@ -364,6 +364,8 @@ def init(output_path="", make_outdir=True):
     log_dir = os.path.join(output_root_dir, "fosslight_log")
     logger, result_log = init_log(os.path.join(log_dir, f"{_log_file}{_start_time}.txt"),
                                   True, logging.INFO, logging.DEBUG, PKG_NAME)
+
+    logger.info(f"Tool Info : {result_log['Tool Info']}")
 
     return os.path.isdir(_output_dir), output_root_dir, result_log
 
