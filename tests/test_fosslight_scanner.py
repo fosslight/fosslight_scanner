@@ -1,5 +1,26 @@
+import openpyxl
+import pytest
 from fosslight_scanner.fosslight_scanner import run_scanner, download_source, init, run_main, run_dependency
 from fosslight_util.oss_item import ScannerItem
+from fosslight_util.constant import FOSSLIGHT_BINARY, FOSSLIGHT_DEPENDENCY, FOSSLIGHT_SOURCE, SHEET_NAME_FOR_SCANNER
+
+_SRC = SHEET_NAME_FOR_SCANNER[FOSSLIGHT_SOURCE]       # 'SRC_FL_Source'
+_BIN = SHEET_NAME_FOR_SCANNER[FOSSLIGHT_BINARY]       # 'BIN_FL_Binary'
+_DEP = SHEET_NAME_FOR_SCANNER[FOSSLIGHT_DEPENDENCY]   # 'DEP_FL_Dependency'
+
+SHEET_CHECK_PARAMS = [
+    pytest.param(["all"],        [_SRC, _BIN, _DEP], id="all"),
+    pytest.param(["source"],     [_SRC],             id="source"),
+    pytest.param(["binary"],     [_BIN],             id="binary"),
+    pytest.param(["dependency"], [_DEP],             id="dependency"),
+]
+
+
+def _get_sheet_names(xlsx_path: str) -> list:
+    wb = openpyxl.load_workbook(xlsx_path, read_only=True, data_only=True)
+    names = wb.sheetnames
+    wb.close()
+    return names
 
 
 def test_run_dependency(tmp_path):
@@ -148,3 +169,48 @@ def test_run_main(tmp_path):
 
     # then
     assert result is True
+
+
+@pytest.mark.parametrize("mode_list,expected_sheets", SHEET_CHECK_PARAMS)
+def test_output_excel_contains_required_sheets(tmp_path, mode_list, expected_sheets):
+    # given
+    src_path = tmp_path / "test_src"
+    output_dir = tmp_path / "output"
+    src_path.mkdir(parents=True, exist_ok=True)
+    (src_path / "hello.py").write_text("# test\nprint('hello')\n")
+
+    # when
+    result = run_main(
+        mode_list=mode_list,
+        path_arg=[str(src_path)],
+        dep_arguments=[],
+        output_file_or_dir=str(output_dir),
+        file_format=["excel"],
+        url_to_analyze="",
+        db_url="",
+        hide_progressbar=True,
+        keep_raw_data=False,
+        num_cores=1,
+        correct_mode=False,
+        correct_fpath="",
+        ui_mode=False,
+        path_to_exclude=[]
+    )
+
+    # then
+    assert result is True, "run_main should return True on success."
+
+    # Find the generated xlsx file
+    xlsx_files = list(output_dir.glob("*.xlsx"))
+    assert len(xlsx_files) == 1, (
+        f"Expected exactly one Excel report in {output_dir}, got {len(xlsx_files)}: {xlsx_files}"
+    )
+    xlsx_file = str(xlsx_files[0])
+
+    actual_sheets = _get_sheet_names(xlsx_file)
+    for sheet in expected_sheets:
+        assert sheet in actual_sheets, (
+            f"[mode={mode_list}] Sheet '{sheet}' not found. "
+            f"Actual sheets: {actual_sheets}. "
+            "One of the scanners may have failed silently."
+        )
