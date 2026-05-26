@@ -4,3 +4,4 @@ pytest-cov
 flake8
 pytest-flake8
 importlib-metadata
+openpyxl>=3.1.2
