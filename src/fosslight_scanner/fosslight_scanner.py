@@ -58,6 +58,19 @@ SCANNER_MODE = [
 ]
 
 
+def _all_exclude_mode_for_scanner(
+        excluded_path_with_default_exclusion,
+        excluded_path_without_dot,
+        excluded_files,
+        cnt_file_except_skipped):
+    return (
+        list(excluded_path_with_default_exclusion),
+        list(excluded_path_without_dot),
+        list(excluded_files),
+        cnt_file_except_skipped,
+    )
+
+
 def run_dependency(path_to_analyze, output_file_with_path, params="", path_to_exclude=[], formats=[],
                    recursive_dep=False, all_exclude_mode=()):
     result = []
@@ -213,9 +226,11 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                                     source_print_matched_text=source_print_matched_text,
                                     source_time_out=source_time_out,
                                     formats=formats,
-                                    all_exclude_mode=(excluded_path_with_default_exclusion,
-                                                      excluded_path_without_dot,
-                                                      excluded_files, cnt_file_except_skipped)
+                                    all_exclude_mode=_all_exclude_mode_for_scanner(
+                                        excluded_path_with_default_exclusion,
+                                        excluded_path_without_dot,
+                                        excluded_files,
+                                        cnt_file_except_skipped)
                         )
                         if success:
                             all_scan_item.file_items.update(result[2].file_items)
@@ -241,10 +256,11 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                                                     formats, db_url, binary_simple,
                                                     correct_mode, correct_fpath,
                                                     path_to_exclude=path_to_exclude,
-                                                    all_exclude_mode=(excluded_path_with_default_exclusion,
-                                                                      excluded_path_without_dot,
-                                                                      excluded_files,
-                                                                      cnt_file_except_skipped))
+                                                    all_exclude_mode=_all_exclude_mode_for_scanner(
+                                                        excluded_path_with_default_exclusion,
+                                                        excluded_path_without_dot,
+                                                        excluded_files,
+                                                        cnt_file_except_skipped))
                 if success:
                     all_scan_item.file_items.update(result.file_items)
                     all_cover_items.append(result.cover)
@@ -253,9 +269,11 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                 dep_scanitem = run_dependency(src_path, os.path.join(_output_dir, f"fosslight_report_dep_{_start_time}.xlsx"),
                                               dep_arguments, path_to_exclude, formats,
                                               recursive_dep,
-                                              all_exclude_mode=(excluded_path_with_default_exclusion,
-                                                                excluded_path_without_dot,
-                                                                excluded_files, cnt_file_except_skipped))
+                                              all_exclude_mode=_all_exclude_mode_for_scanner(
+                                                  excluded_path_with_default_exclusion,
+                                                  excluded_path_without_dot,
+                                                  excluded_files,
+                                                  cnt_file_except_skipped))
                 all_scan_item.file_items.update(dep_scanitem.file_items)
                 all_cover_items.append(dep_scanitem.cover)
         else:
