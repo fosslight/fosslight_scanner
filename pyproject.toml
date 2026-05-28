@@ -35,6 +35,16 @@ dependencies = [
     "fosslight_prechecker>=4.0.0,<5.0.0",
 ]
 
+[project.optional-dependencies]
+dev = [
+    "tox",
+    "pytest",
+    "pytest-cov",
+    "flake8",
+    "pytest-flake8",
+    "importlib-metadata",
+]
+
 [project.urls]
 Homepage = "https://github.com/fosslight/fosslight_scanner"
 Download = "https://github.com/fosslight/fosslight_scanner"
