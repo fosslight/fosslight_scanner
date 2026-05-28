@@ -25,6 +25,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
+        pip install tox
         pip install .
         sudo npm install -g license-checker
     - name: Checkout example repository
@@ -34,3 +35,6 @@ jobs:
         git clone https://github.com/LGE-OSS/example
         cd example
         fosslight_scanner -p .
+    - name: Run Tox
+      run: |
+        tox -e release
