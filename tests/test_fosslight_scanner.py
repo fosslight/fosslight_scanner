@@ -1,5 +1,6 @@
 import openpyxl
 import pytest
+from pathlib import Path
 from fosslight_scanner.fosslight_scanner import run_scanner, download_source, init, run_main, run_dependency
 from fosslight_util.oss_item import ScannerItem
 from fosslight_util.constant import FOSSLIGHT_BINARY, FOSSLIGHT_DEPENDENCY, FOSSLIGHT_SOURCE, SHEET_NAME_FOR_SCANNER
@@ -7,6 +8,8 @@ from fosslight_util.constant import FOSSLIGHT_BINARY, FOSSLIGHT_DEPENDENCY, FOSS
 _SRC = SHEET_NAME_FOR_SCANNER[FOSSLIGHT_SOURCE]       # 'SRC_FL_Source'
 _BIN = SHEET_NAME_FOR_SCANNER[FOSSLIGHT_BINARY]       # 'BIN_FL_Binary'
 _DEP = SHEET_NAME_FOR_SCANNER[FOSSLIGHT_DEPENDENCY]   # 'DEP_FL_Dependency'
+_TESTS_DIR = Path(__file__).resolve().parent
+_MIN_DATA_ROWS = 2
 
 SHEET_CHECK_PARAMS = [
     pytest.param(["all"],        [_SRC, _BIN, _DEP], id="all"),
@@ -21,6 +24,14 @@ def _get_sheet_names(xlsx_path: str) -> list:
     names = wb.sheetnames
     wb.close()
     return names
+
+
+def _get_sheet_row_count(xlsx_path: str, sheet_name: str) -> int:
+    wb = openpyxl.load_workbook(xlsx_path, read_only=True, data_only=True)
+    ws = wb[sheet_name]
+    row_count = ws.max_row or 0
+    wb.close()
+    return row_count
 
 
 def test_run_dependency(tmp_path):
@@ -174,15 +185,12 @@ def test_run_main(tmp_path):
 @pytest.mark.parametrize("mode_list,expected_sheets", SHEET_CHECK_PARAMS)
 def test_output_excel_contains_required_sheets(tmp_path, mode_list, expected_sheets):
     # given
-    src_path = tmp_path / "test_src"
     output_dir = tmp_path / "output"
-    src_path.mkdir(parents=True, exist_ok=True)
-    (src_path / "hello.py").write_text("# test\nprint('hello')\n")
 
     # when
     result = run_main(
         mode_list=mode_list,
-        path_arg=[str(src_path)],
+        path_arg=[str(_TESTS_DIR)],
         dep_arguments=[],
         output_file_or_dir=str(output_dir),
         file_format=["excel"],
@@ -200,11 +208,11 @@ def test_output_excel_contains_required_sheets(tmp_path, mode_list, expected_she
     # then
     assert result is True, "run_main should return True on success."
 
-    # Find the generated xlsx file
     xlsx_files = list(output_dir.glob("*.xlsx"))
     assert len(xlsx_files) == 1, (
         f"Expected exactly one Excel report in {output_dir}, got {len(xlsx_files)}: {xlsx_files}"
     )
+
     xlsx_file = str(xlsx_files[0])
 
     actual_sheets = _get_sheet_names(xlsx_file)
@@ -213,4 +221,11 @@ def test_output_excel_contains_required_sheets(tmp_path, mode_list, expected_she
             f"[mode={mode_list}] Sheet '{sheet}' not found. "
             f"Actual sheets: {actual_sheets}. "
             "One of the scanners may have failed silently."
+        )
+
+    for sheet in expected_sheets:
+        row_count = _get_sheet_row_count(xlsx_file, sheet)
+        assert row_count >= _MIN_DATA_ROWS, (
+            f"[mode={mode_list}] Sheet '{sheet}' has {row_count} row(s), "
+            f"expected at least {_MIN_DATA_ROWS}."
         )
