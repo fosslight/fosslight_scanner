@@ -1,5 +1,19 @@
 # Changelog
 
+## v2.1.23 (04/06/2026)
+## Changes
+## 🐛 Hotfixes
+
+- Pass copied exclude lists to each sub-scanner @soimkim (#176)
+
+## 🔧 Maintenance
+
+- Scan tests fixture and verify Excel sheet data rows @soimkim (#177)
+- Validate report sheets instead of relying on tox exit code @woocheol-lge (#175)
+- Add scanner version and complete analysis logs @woocheol-lge (#174)
+
+---
+
 ## v2.1.22 (09/04/2026)
 ## Changes
 ## 🔧 Maintenance
@@ -276,19 +290,3 @@
 ## 🚀 Features
 
 - Supports for excluding paths from analysis @SeongjunJo (#95)
-
----
-
-## v1.7.27 (13/06/2024)
-## Changes
-## 🚀 Features
-
-- Supports for multiple modes @SeongjunJo (#92)
-
-## 🐛 Hotfixes
-
-- When merging src to bin, remove src info instead of excluding @dd-jy (#96)
-
-## 🔧 Maintenance
-
-- Modify column name @bjk7119 (#94)
