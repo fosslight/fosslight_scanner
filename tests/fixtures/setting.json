@@ -1,6 +1,6 @@
 {
   "mode": ["binary", "source"],
-  "path": ["tests"],
+  "path": ["tests/fixtures/scan_project"],
   "dep_argument": "",
   "output": "test_result_dir",
   "format": ["excel"],
@@ -13,7 +13,7 @@
   "correct_fpath": "",
   "ui": false,
   "exclude": ["test", "sample_license.txt"],
-  "selected_source_scanner": "scancode",  
+  "selected_source_scanner": "scancode",
   "source_write_json_file": true,
   "source_print_matched_text": true,
   "source_time_out": 120,
