@@ -1,0 +1,5 @@
+venv_osc_dep_tmp/
+build/
+*.egg-info/
+tmp_pip_*.json
+tmp_list.txt

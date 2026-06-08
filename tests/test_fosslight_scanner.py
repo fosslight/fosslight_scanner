@@ -9,6 +9,7 @@ _SRC = SHEET_NAME_FOR_SCANNER[FOSSLIGHT_SOURCE]       # 'SRC_FL_Source'
 _BIN = SHEET_NAME_FOR_SCANNER[FOSSLIGHT_BINARY]       # 'BIN_FL_Binary'
 _DEP = SHEET_NAME_FOR_SCANNER[FOSSLIGHT_DEPENDENCY]   # 'DEP_FL_Dependency'
 _TESTS_DIR = Path(__file__).resolve().parent
+_SCAN_PROJECT_DIR = _TESTS_DIR / "fixtures" / "scan_project"
 _MIN_DATA_ROWS = 2
 
 SHEET_CHECK_PARAMS = [
@@ -190,7 +191,7 @@ def test_output_excel_contains_required_sheets(tmp_path, mode_list, expected_she
     # when
     result = run_main(
         mode_list=mode_list,
-        path_arg=[str(_TESTS_DIR)],
+        path_arg=[str(_SCAN_PROJECT_DIR)],
         dep_arguments=[],
         output_file_or_dir=str(output_dir),
         file_format=["excel"],

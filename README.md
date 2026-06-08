@@ -92,9 +92,9 @@ Options:
         -r                      Keep raw data
         -t                      Hide the progress bar
         -v                      Print FOSSLight Scanner version
-        -s <path>               Path to apply setting from json file (check format with 'setting.json' in this repository)
+        -s <path>               Path to apply setting from json file (check format with 'tests/fixtures/setting.json' in this repository)
                                  * Direct cli flags have higher priority than setting file
-                                   (ex, '-f yaml -s setting.json' - result file extension is .yaml)
+                                   (ex, '-f yaml -s tests/fixtures/setting.json' - result file extension is .yaml)
 ```
 
 - Refs.

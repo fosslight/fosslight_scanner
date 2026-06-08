@@ -47,9 +47,9 @@ _HELP_MESSAGE_SCANNER = f"""
     -t                     Hide progress bar
     -h                     Show this help message
     -v                     Show version information
-    -s <path>              Apply settings from JSON file(check format with 'setting.json' in this repository)
+    -s <path>              Apply settings from JSON file (check format with 'tests/fixtures/setting.json' in this repository)
                            Note: CLI flags override settings file
-                           Example: -f yaml -s setting.json → output is .yaml
+                           Example: -f yaml -s tests/fixtures/setting.json → output is .yaml
     --no_correction        Skip OSS information correction with sbom-info.yaml
     --correct_fpath <path> Path to sbom-info.yaml file for correction
     --recursive_dep        Recursively analyze dependencies
