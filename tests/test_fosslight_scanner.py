@@ -1,3 +1,4 @@
+import shutil
 import openpyxl
 import pytest
 from pathlib import Path
@@ -18,6 +19,12 @@ SHEET_CHECK_PARAMS = [
     pytest.param(["binary"],     [_BIN],             id="binary"),
     pytest.param(["dependency"], [_DEP],             id="dependency"),
 ]
+
+
+def _prepare_scan_fixture(tmp_path: Path) -> Path:
+    scan_path = tmp_path / "scan_project"
+    shutil.copytree(_SCAN_PROJECT_DIR, scan_path)
+    return scan_path
 
 
 def _get_sheet_names(xlsx_path: str) -> list:
@@ -187,11 +194,12 @@ def test_run_main(tmp_path):
 def test_output_excel_contains_required_sheets(tmp_path, mode_list, expected_sheets):
     # given
     output_dir = tmp_path / "output"
+    scan_path = _prepare_scan_fixture(tmp_path)
 
     # when
     result = run_main(
         mode_list=mode_list,
-        path_arg=[str(_SCAN_PROJECT_DIR)],
+        path_arg=[str(scan_path)],
         dep_arguments=[],
         output_file_or_dir=str(output_dir),
         file_format=["excel"],
@@ -199,7 +207,7 @@ def test_output_excel_contains_required_sheets(tmp_path, mode_list, expected_she
         db_url="",
         hide_progressbar=True,
         keep_raw_data=False,
-        num_cores=1,
+        num_cores=0,
         correct_mode=False,
         correct_fpath="",
         ui_mode=False,
