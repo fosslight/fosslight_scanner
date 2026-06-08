@@ -85,7 +85,7 @@ def test_run_scanner(tmp_path):
         result_log={},
         output_files=output_file,
         output_extensions=output_extension,
-        num_cores=1,
+        num_cores=0,
         path_to_exclude=[]
     )
 
@@ -171,7 +171,7 @@ def test_run_main(tmp_path):
         db_url=db_url,
         hide_progressbar=True,  # Disable progress bar for testing
         keep_raw_data=True,     # Keep raw data to avoid cleanup during test
-        num_cores=1,
+        num_cores=0,
         correct_mode=True,
         correct_fpath="",
         ui_mode=False,
@@ -198,7 +198,7 @@ def test_output_excel_contains_required_sheets(tmp_path, mode_list, expected_she
         db_url="",
         hide_progressbar=True,
         keep_raw_data=False,
-        num_cores=1,
+        num_cores=0,
         correct_mode=False,
         correct_fpath="",
         ui_mode=False,
