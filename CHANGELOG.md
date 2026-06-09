@@ -1,5 +1,15 @@
 # Changelog
 
+## v2.1.24 (09/06/2026)
+## Changes
+## 🔧 Maintenance
+
+- Remove 'vulnerability link' column from result report @bjk7119 (#181)
+- Isolate scan fixture per test run @soimkim (#179)
+- Reorganize fixtures and surface run_main logs on sheet assertion failures @soimkim (#178)
+
+---
+
 ## v2.1.23 (04/06/2026)
 ## Changes
 ## 🐛 Hotfixes
@@ -282,11 +292,3 @@
 
 - Change the json key and value format @soimkim (#99)
 - Allow more than two modes to be entered @soimkim (#98)
-
----
-
-## v1.7.28 (01/07/2024)
-## Changes
-## 🚀 Features
-
-- Supports for excluding paths from analysis @SeongjunJo (#95)
