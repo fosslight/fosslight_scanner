@@ -16,14 +16,6 @@ from fosslight_util.oss_item import OssItem, FileItem
 logger = logging.getLogger(LOGGER_NAME)
 SRC_SHEET = 'SRC_FL_Source'
 BIN_SHEET = 'BIN_FL_Binary'
-BIN_EXT_HEADER = {
-    'BIN_FL_Binary': [
-        'ID', 'Binary Path', 'OSS Name', 'OSS Version', 'License',
-        'Download Location', 'Homepage', 'Copyright Text', 'Exclude',
-        'Comment', 'Vulnerability Link', 'TLSH', 'SHA1'
-    ]
-}
-BIN_HIDDEN_HEADER = {'TLSH', 'SHA1'}
 
 
 def copy_file(source, destination):
