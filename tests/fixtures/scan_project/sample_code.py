@@ -78,7 +78,7 @@ def main():
                         type=str, dest='link', default="")
     parser.add_argument('--formats', '-f',
                         help='Scanner output file format (excel,yaml), Compare mode (excel,html,yaml,json)',
-                        type=str, dest='format',nargs='*', default=[])
+                        type=str, dest='format', nargs='*', default=[])
     parser.add_argument('--output', '-o', help='Output directory or file',
                         type=str, dest='output', default="")
     parser.add_argument('--dependency', '-d', help='Dependency arguments (e.g. -d "-m pip" )',

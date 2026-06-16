@@ -116,7 +116,7 @@ def run_dependency(path_to_analyze, output_file_with_path, params="", path_to_ex
             pip_activate_cmd, pip_deactivate_cmd,
             output_custom_dir, app_name,
             github_token, formats, True, path_to_exclude=path_to_exclude,
-            graph_path="", graph_size=(600,600),
+            graph_path="", graph_size=(600, 600),
             recursive=recursive_dep,
             all_exclude_mode=all_exclude_mode
         )
@@ -159,7 +159,6 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
     _json_ext = '.json'
     if not remove_src_data:
         success, final_excel_dir, result_log = init(output_path)
-
 
     if not output_files:
         # If -o does not contains file name, set default name
@@ -363,7 +362,7 @@ def download_source(link, out_dir):
 
 
 def init(output_path="", make_outdir=True):
-    global _output_dir, _log_file, _start_time, logger
+    global _output_dir, _start_time, logger
 
     result_log = {}
     output_root_dir = ""
@@ -393,7 +392,7 @@ def run_main(mode_list, path_arg, dep_arguments, output_file_or_dir, file_format
              correct_mode=True, correct_fpath="", ui_mode=False, path_to_exclude=[],
              selected_source_scanner="all", source_write_json_file=False, source_print_matched_text=False,
              source_time_out=120, binary_simple=False, recursive_dep=False):
-    global _executed_path, _start_time
+    global _executed_path
 
     output_files = []
     default_oss_name = ""
@@ -438,7 +437,7 @@ def run_main(mode_list, path_arg, dep_arguments, output_file_or_dir, file_format
                 logger.warning(f"(-p option) Cannot analyze with multiple path: {path_arg}")
 
     success, msg, output_path, output_files, output_extensions, formats = check_output_formats_v2(output_file_or_dir, file_format,
-                                                                                       CUSTOMIZED_FORMAT)
+                                                                                                  CUSTOMIZED_FORMAT)
     if output_path == "":
         output_path = _executed_path
     else:
@@ -505,8 +504,8 @@ def run_main(mode_list, path_arg, dep_arguments, output_file_or_dir, file_format
                                                 output_extensions, num_cores, db_url,
                                                 default_oss_name, default_oss_version, url_to_analyze,
                                                 correct_mode, correct_fpath, ui_mode, path_to_exclude,
-                                                selected_source_scanner, source_write_json_file, source_print_matched_text, source_time_out,
-                                                binary_simple, formats, recursive_dep)
+                                                selected_source_scanner, source_write_json_file, source_print_matched_text,
+                                                source_time_out, binary_simple, formats, recursive_dep)
 
                 if extract_folder:
                     shutil.rmtree(extract_folder)
