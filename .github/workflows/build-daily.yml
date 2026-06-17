@@ -37,4 +37,4 @@ jobs:
         fosslight_scanner -p .
     - name: Run Tox
       run: |
-        tox -e release
+        tox -e test_run
