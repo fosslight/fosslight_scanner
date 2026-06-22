@@ -143,7 +143,7 @@ def source_analysis_wrapper(*args, **kwargs):
 
 
 def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
-                run_src=True, run_bin=True, run_dep=True, run_prechecker=False,
+                run_src=True, run_bin=True, run_dep=True,
                 remove_src_data=True, result_log={}, output_files=[],
                 output_extensions=[], num_cores=-1, db_url="",
                 default_oss_name="", default_oss_version="", url="",
@@ -469,7 +469,6 @@ def run_main(mode_list, path_arg, dep_arguments, output_file_or_dir, file_format
             run_src = False
             run_bin = False
             run_dep = False
-            run_prechecker = False
             remove_downloaded_source = False
 
             if "all" in mode_list or (not mode_list):
@@ -499,8 +498,7 @@ def run_main(mode_list, path_arg, dep_arguments, output_file_or_dir, file_format
 
                 if src_path != "":
                     final_reports = run_scanner(src_path, dep_arguments, output_path, keep_raw_data,
-                                                run_src, run_bin, run_dep, run_prechecker,
-                                                remove_downloaded_source, {}, output_files,
+                                                run_src, run_bin, run_dep, remove_downloaded_source, {}, output_files,
                                                 output_extensions, num_cores, db_url,
                                                 default_oss_name, default_oss_version, url_to_analyze,
                                                 correct_mode, correct_fpath, ui_mode, path_to_exclude,

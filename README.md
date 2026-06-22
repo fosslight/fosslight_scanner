@@ -10,7 +10,6 @@ SPDX-License-Identifier: Apache-2.0
 
 **FOSSLight Scanner** performs open source analysis after downloading the source by passing a link that can be cloned by wget or git. Instead, open source analysis can be performed for the local source path. The output result is generated in [FOSSLight Report][or] format.
 
-- **[FOSSLight Prechecker][re]** Check whether the [source code's copyright and license writing rules][rule] are complied with.
 - **[FOSSLight Source Scanner][s]** Extract license and copyright in the source code using [ScanCode][sc].
 - **[FOSSLight Dependency Scanner][d]** Extract dependency and OSS information from the package manager's manifest file.
 - **[FOSSLight Binary Scanner][flbin]** Find binary and print OSS information.
@@ -20,8 +19,6 @@ SPDX-License-Identifier: Apache-2.0
 [sc]: https://github.com/nexB/scancode-toolkit
 [or]: https://fosslight.org/fosslight-guide-en/learn/2_fosslight_report.html
 [flbin]: https://github.com/fosslight/fosslight_binary_scanner
-[re]: https://github.com/fosslight/fosslight_prechecker
-[rule]: https://oss.lge.com/guide/process/osc_process/1-identification/copyright_license_rule.html
 
 ## Contents
 Please refer to https://fosslight.org/fosslight-guide/scanner/ for the FOSSLight Scanner User Guide.    
@@ -70,7 +67,6 @@ Mode
         source                  Run FOSSLight Source
         dependency              Run FOSSLight Dependency
         binary                  Run FOSSLight Binary
-        prechecker              Run FOSSLight Prechecker
         compare                 Compare two FOSSLight reports
 ```
 
