@@ -88,7 +88,6 @@ def test_run_scanner(tmp_path):
         run_src=True,
         run_bin=False,
         run_dep=False,
-        run_prechecker=False,
         remove_src_data=False,
         result_log={},
         output_files=output_file,
