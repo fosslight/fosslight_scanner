@@ -17,6 +17,8 @@
   "source_write_json_file": true,
   "source_print_matched_text": true,
   "source_time_out": 120,
+  "kb_url": "",
+  "kb_token": "",
   "binary_simple": false,
   "recursive_dep": false
 }

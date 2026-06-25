@@ -33,7 +33,9 @@ def test_set_args(monkeypatch):
         "source_write_json_file": True,
         "source_print_matched_text": True,
         "source_time_out": 100,
-        "binary_simple": True
+        "binary_simple": True,
+        "kb_url": "http://kb.example.com",
+        "kb_token": "test_token"
     })
 
     def mock_open(*args, **kwargs):
@@ -52,7 +54,8 @@ def test_set_args(monkeypatch):
     # Expected result
     expected = (
         ["test_mode"], ["test_path"], "test_dep_argument", "test_output", ["test_format"], "test_link", "test_db_url", True,
-        True, 4, True, "test_correct_fpath", True, ["test_exclude_path"], "test_scanner", True, True, 100, True, False
+        True, 4, True, "test_correct_fpath", True, ["test_exclude_path"], "test_scanner", True, True, 100, True, False,
+        "http://kb.example.com", "test_token"
     )
 
     assert result == expected
