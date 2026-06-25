@@ -16,7 +16,7 @@ from fosslight_util.help import print_package_version
 
 def set_args(mode, path, dep_argument, output, format, link, db_url, timer,
              raw, core, no_correction, correct_fpath, ui, setting, exclude_path,
-             recursive_dep):
+             recursive_dep, kb_url="", kb_token=""):
 
     selected_source_scanner = "all"
     source_write_json_file = False
@@ -31,7 +31,7 @@ def set_args(mode, path, dep_argument, output, format, link, db_url, timer,
             s_mode, s_path, s_dep_argument, s_output, s_format, s_link, s_db_url, s_timer, s_raw, s_core, \
                 s_no_correction, s_correct_fpath, s_ui, s_exclude_path, \
                 s_selected_source_scanner, s_source_write_json_file, s_source_print_matched_text, \
-                s_source_time_out, s_binary_simple, s_recursive_dep = parse_setting_json(data)
+                s_source_time_out, s_binary_simple, s_recursive_dep, s_kb_url, s_kb_token = parse_setting_json(data)
 
             # direct cli arguments have higher priority than setting file
             mode = mode or s_mode
@@ -49,6 +49,8 @@ def set_args(mode, path, dep_argument, output, format, link, db_url, timer,
             ui = ui or s_ui
             exclude_path = exclude_path or s_exclude_path
             recursive_dep = recursive_dep or s_recursive_dep
+            kb_url = kb_url or s_kb_url
+            kb_token = kb_token or s_kb_token
 
             # These options are only set from the setting file, not from CLI arguments
             selected_source_scanner = s_selected_source_scanner or selected_source_scanner
@@ -62,7 +64,7 @@ def set_args(mode, path, dep_argument, output, format, link, db_url, timer,
     return mode, path, dep_argument, output, format, link, db_url, timer, \
         raw, core, no_correction, correct_fpath, ui, exclude_path, \
         selected_source_scanner, source_write_json_file, source_print_matched_text, source_time_out, \
-        binary_simple, recursive_dep
+        binary_simple, recursive_dep, kb_url, kb_token
 
 
 def main():
@@ -109,6 +111,10 @@ def main():
                         action='store_true', required=False, default=False)
     parser.add_argument('--recursive_dep', '-rd', help='Recursively analyze dependencies',
                         action='store_true', dest='recursive_dep', default=False)
+    parser.add_argument('--kb_url', help='KB API URL for source analysis',
+                        type=str, dest='kb_url', default="")
+    parser.add_argument('--kb_token', help='KB API bearer token for source analysis',
+                        type=str, dest='kb_token', default="")
 
     try:
         args = parser.parse_args()
@@ -122,16 +128,17 @@ def main():
     else:
         mode, path, dep_argument, output, format, link, db_url, timer, raw, core, no_correction, correct_fpath, \
             ui, exclude_path, selected_source_scanner, source_write_json_file, source_print_matched_text, \
-            source_time_out, binary_simple, recursive_dep = set_args(
+            source_time_out, binary_simple, recursive_dep, kb_url, kb_token = set_args(
                 args.mode, args.path, args.dep_argument, args.output,
                 args.format, args.link, args.db_url, args.timer, args.raw,
                 args.core, args.no_correction, args.correct_fpath, args.ui,
-                args.setting, args.exclude_path, args.recursive_dep)
+                args.setting, args.exclude_path, args.recursive_dep,
+                args.kb_url, args.kb_token)
 
         run_main(mode, path, dep_argument, output, format, link, db_url, timer,
                  raw, core, not no_correction, correct_fpath, ui, exclude_path,
                  selected_source_scanner, source_write_json_file, source_print_matched_text,
-                 source_time_out, binary_simple, recursive_dep)
+                 source_time_out, kb_url, kb_token, binary_simple, recursive_dep)
 
 
 if __name__ == "__main__":

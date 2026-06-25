@@ -63,6 +63,10 @@ _HELP_MESSAGE_SCANNER = f"""
     For 'all' or 'dependency' mode:
       -d <args>            Additional arguments for dependency analysis
 
+    For 'all' or 'source' mode:
+      --kb_url <url>       KB API URL for source analysis
+      --kb_token <token>   KB API bearer token for source analysis
+
     💡 Examples
     ────────────────────────────────────────────────────────────────────
     # Scan current directory with all scanners

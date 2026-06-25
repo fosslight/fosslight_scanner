@@ -26,10 +26,13 @@ def test_parse_setting_json_valid_data():
         'source_write_json_file': True,
         'source_print_matched_text': True,
         'source_time_out': 60,
-        'binary_simple': True
+        'binary_simple': True,
+        'kb_url': 'http://kb.example.com',
+        'kb_token': 'test_token'
     }
     result = parse_setting_json(data)
     assert result == (
         ['test'], ['/some/path'], 'arg', 'output', 'json', 'http://example.com', 'sqlite:///:memory:', True,
-        True, 4, True, '/correct/path', True, ['/exclude/path'], 'scanner', True, True, 60, True, False
+        True, 4, True, '/correct/path', True, ['/exclude/path'], 'scanner', True, True, 60, True, False,
+        'http://kb.example.com', 'test_token'
     )
