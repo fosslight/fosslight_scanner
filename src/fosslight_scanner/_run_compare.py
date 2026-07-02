@@ -16,6 +16,8 @@ import fosslight_util.constant as constant
 from fosslight_util.compare_yaml import compare_yaml
 from fosslight_util.read_excel import read_oss_report
 from fosslight_util.parsing_yaml import parsing_yml
+from fosslight_util.time import timestamp_for_filename
+
 
 logger = logging.getLogger(constant.LOGGER_NAME)
 ADD = "add"
@@ -202,7 +204,7 @@ def write_compared_result(output_file, compared_result, file_ext, before_f='', a
 
 def get_comparison_result_filename(output_path, output_file, output_extension, _start_time):
     result_file = ""
-    compare_prefix = f"fosslight_compare_{_start_time}"
+    compare_prefix = f"fosslight_compare_{timestamp_for_filename(_start_time)}"
     if output_file != '':
         result_file = f"{output_file}{output_extension}"
     else:
