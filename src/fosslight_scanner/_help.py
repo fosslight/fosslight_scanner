@@ -66,6 +66,7 @@ _HELP_MESSAGE_SCANNER = f"""
     For 'all' or 'source' mode:
       --kb_url <url>       KB API URL for source analysis
       --kb_token <token>   KB API bearer token for source analysis
+      --no_merge           Keep source paths file-based without folder merge
 
     💡 Examples
     ────────────────────────────────────────────────────────────────────

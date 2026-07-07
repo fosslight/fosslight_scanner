@@ -152,7 +152,8 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                 default_oss_name="", default_oss_version="", url="",
                 correct_mode=True, correct_fpath="", ui_mode=False, path_to_exclude=[],
                 selected_source_scanner="all", source_write_json_file=False, source_print_matched_text=False,
-                source_time_out=120, kb_url="", kb_token="", binary_simple=False, formats=[], recursive_dep=False):
+                source_time_out=120, kb_url="", kb_token="", binary_simple=False, formats=[],
+                recursive_dep=False, no_merge=False):
 
     final_excel_dir = output_path
     final_reports = []
@@ -230,6 +231,7 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                                     kb_url=kb_url,
                                     kb_token=kb_token,
                                     formats=formats,
+                                    merge_by_folder=not no_merge,
                                     all_exclude_mode=_all_exclude_mode_for_scanner(
                                         excluded_path_with_default_exclusion,
                                         excluded_path_without_dot,
@@ -250,6 +252,8 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                             command += f" --kb_url {shlex.quote(kb_url)}"
                         if kb_token:
                             command += f" --kb_token {shlex.quote(kb_token)}"
+                        if no_merge:
+                            command += " --no_merge"
                         command_result = subprocess.run(command, stdout=subprocess.PIPE, text=True)
                         logger.info(f"Source Analysis Result:{command_result.stdout}")
 
@@ -400,7 +404,8 @@ def run_main(mode_list, path_arg, dep_arguments, output_file_or_dir, file_format
              db_url, hide_progressbar=False, keep_raw_data=False, num_cores=-1,
              correct_mode=True, correct_fpath="", ui_mode=False, path_to_exclude=[],
              selected_source_scanner="all", source_write_json_file=False, source_print_matched_text=False,
-             source_time_out=120, kb_url="", kb_token="", binary_simple=False, recursive_dep=False):
+             source_time_out=120, kb_url="", kb_token="", binary_simple=False,
+             recursive_dep=False, no_merge=False):
     global _executed_path
 
     output_files = []
@@ -512,7 +517,8 @@ def run_main(mode_list, path_arg, dep_arguments, output_file_or_dir, file_format
                                                 default_oss_name, default_oss_version, url_to_analyze,
                                                 correct_mode, correct_fpath, ui_mode, path_to_exclude,
                                                 selected_source_scanner, source_write_json_file, source_print_matched_text,
-                                                source_time_out, kb_url, kb_token, binary_simple, formats, recursive_dep)
+                                                source_time_out, kb_url,
+                                                kb_token, binary_simple, formats, recursive_dep, no_merge)
 
                 if extract_folder:
                     shutil.rmtree(extract_folder)
