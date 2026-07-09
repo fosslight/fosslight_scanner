@@ -78,7 +78,7 @@ def call_analysis_api(path_to_run, str_run_start, return_idx, func, *args, **kwa
         logger.debug(f"Get return value:{ex}")
         success = False
     logger.info(f"## Complete {str_run_start}\n")
-    return success, result or []
+    return success, [] if result is None else result
 
 
 def update_oss_item(scan_item, oss_name, oss_version, download_loc):
