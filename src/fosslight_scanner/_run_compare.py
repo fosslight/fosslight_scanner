@@ -204,7 +204,11 @@ def write_compared_result(output_file, compared_result, file_ext, before_f='', a
 
 def get_comparison_result_filename(output_path, output_file, output_extension, _start_time):
     result_file = ""
-    compare_prefix = f"fosslight_compare_{timestamp_for_filename(_start_time)}"
+    try:
+        compare_suffix = timestamp_for_filename(_start_time)
+    except ValueError:
+        compare_suffix = _start_time
+    compare_prefix = f"fosslight_compare_{compare_suffix}"
     if output_file != '':
         result_file = f"{output_file}{output_extension}"
     else:
