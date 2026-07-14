@@ -10,7 +10,6 @@ import logging
 import warnings
 import yaml
 import shutil
-import shlex
 import subprocess
 import platform
 from pathlib import Path
@@ -69,6 +68,29 @@ def _all_exclude_mode_for_scanner(
         list(excluded_files),
         cnt_file_except_skipped,
     )
+
+
+def _build_source_docker_command(
+        output_dir, path_to_scan, path_to_exclude=None,
+        kb_url="", kb_token="", ui_mode=False):
+    """Build docker argv for fosslight_source fallback when the package is not installed."""
+    command = [
+        "docker", "run", "-it",
+        "-v", f"{output_dir}:/app/output",
+        "fosslight",
+        "-p", path_to_scan,
+        "-o", "output",
+    ]
+    if path_to_exclude:
+        command.append("-e")
+        command.extend(path_to_exclude)
+    if kb_url:
+        command.extend(["--kb_url", kb_url])
+    if kb_token:
+        command.extend(["--kb_token", kb_token])
+    if ui_mode:
+        command.append("--ui")
+    return command
 
 
 def run_dependency(path_to_analyze, output_file_with_path, params="", path_to_exclude=[], formats=[],
@@ -244,14 +266,9 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
 
                     else:  # Run fosslight_source by using docker image
                         output_rel_path = os.path.relpath(abs_path, os.getcwd())
-                        command = shlex.quote(f"docker run -it -v {_output_dir}:/app/output "
-                                              f"fosslight -p {output_rel_path} -o output")
-                        if path_to_exclude:
-                            command += f" -e {' '.join(path_to_exclude)}"
-                        if kb_url:
-                            command += f" --kb_url {shlex.quote(kb_url)}"
-                        if kb_token:
-                            command += f" --kb_token {shlex.quote(kb_token)}"
+                        command = _build_source_docker_command(
+                            _output_dir, output_rel_path, path_to_exclude,
+                            kb_url, kb_token, ui_mode)
                         command_result = subprocess.run(command, stdout=subprocess.PIPE, text=True)
                         logger.info(f"Source Analysis Result:{command_result.stdout}")
 
