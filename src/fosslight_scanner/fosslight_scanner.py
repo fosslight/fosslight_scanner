@@ -136,13 +136,14 @@ def source_analysis_wrapper(*args, **kwargs):
     kb_url = kwargs.pop('kb_url', '')
     kb_token = kwargs.pop('kb_token', '')
     formats = kwargs.pop('formats', [])
+    ui_mode = kwargs.pop('ui_mode', False)
     args = list(args)
     args.insert(2, source_write_json_file)
     args.insert(5, source_print_matched_text)
     args.insert(6, formats)
 
     return source_analysis(*args, selected_scanner=selected_scanner, time_out=source_time_out,
-                           kb_url=kb_url, kb_token=kb_token, **kwargs)
+                           kb_url=kb_url, kb_token=kb_token, ui_mode=ui_mode, **kwargs)
 
 
 def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
@@ -230,6 +231,7 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                                     kb_url=kb_url,
                                     kb_token=kb_token,
                                     formats=formats,
+                                    ui_mode=ui_mode,
                                     all_exclude_mode=_all_exclude_mode_for_scanner(
                                         excluded_path_with_default_exclusion,
                                         excluded_path_without_dot,
