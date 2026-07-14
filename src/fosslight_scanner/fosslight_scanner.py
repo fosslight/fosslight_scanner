@@ -8,12 +8,10 @@ import sys
 import re
 import logging
 import warnings
-import yaml
 import shutil
 import subprocess
 import platform
 from pathlib import Path
-from datetime import datetime
 
 from fosslight_binary import binary_analysis
 from fosslight_dependency.run_dependency_scanner import run_dependency_scanner
@@ -24,7 +22,13 @@ from fosslight_util.set_log import init_log, move_log_file
 from fosslight_util.timer_thread import TimerThread
 import fosslight_util.constant as constant
 from fosslight_util.output_format import check_output_formats_v2
-from fosslight_util.cover import CoverItem
+from fosslight_util.cover import CoverItem, dump_result_log
+from fosslight_util.time import (
+    current_timestamp_for_filename,
+    current_timestamp_utc,
+    format_running_time,
+    timestamp_for_filename,
+)
 from fosslight_util.oss_item import ScannerItem
 from fosslight_util.output_format import write_output_file
 from fosslight_util.exclude import get_excluded_paths
@@ -177,14 +181,21 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                 selected_source_scanner="all", source_write_json_file=False, source_print_matched_text=False,
                 source_time_out=120, kb_url="", kb_token="", binary_simple=False, formats=[], recursive_dep=False):
 
+    global _start_time
+
     final_excel_dir = output_path
     final_reports = []
     success = True
     all_cover_items = []
-    all_scan_item = ScannerItem(PKG_NAME, _start_time)
-    _json_ext = '.json'
+
     if not remove_src_data:
         success, final_excel_dir, result_log = init(output_path)
+    elif not _start_time:
+        _start_time = current_timestamp_utc()
+
+    all_scan_item = ScannerItem(PKG_NAME, _start_time)
+    _file_time = timestamp_for_filename(_start_time)
+    _json_ext = '.json'
 
     if not output_files:
         # If -o does not contains file name, set default name
@@ -200,19 +211,19 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                             to_remove.append(i)
                         else:
                             if formats[i].startswith('spdx'):
-                                output_files[i] = f"fosslight_spdx_all_{_start_time}"
+                                output_files[i] = f"fosslight_spdx_all_{_file_time}"
                             elif formats[i].startswith('cyclonedx'):
-                                output_files[i] = f'fosslight_cyclonedx_all_{_start_time}'
+                                output_files[i] = f'fosslight_cyclonedx_all_{_file_time}'
                     else:
                         if output_extension == _json_ext:
-                            output_files[i] = f"fosslight_opossum_all_{_start_time}"
+                            output_files[i] = f"fosslight_opossum_all_{_file_time}"
                         else:
-                            output_files[i] = f"fosslight_report_all_{_start_time}"
+                            output_files[i] = f"fosslight_report_all_{_file_time}"
                 else:
                     if output_extension == _json_ext:
-                        output_files[i] = f"fosslight_opossum_all_{_start_time}"
+                        output_files[i] = f"fosslight_opossum_all_{_file_time}"
                     else:
-                        output_files[i] = f"fosslight_report_all_{_start_time}"
+                        output_files[i] = f"fosslight_report_all_{_file_time}"
         for index in sorted(to_remove, reverse=True):
             # remove elements of spdx format on windows
             del output_files[index]
@@ -236,7 +247,7 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
             if run_src:
                 try:
                     if fosslight_source_installed:
-                        src_output = os.path.join(_output_dir, f"fosslight_report_src_{_start_time}.xlsx")
+                        src_output = os.path.join(_output_dir, f"fosslight_report_src_{_file_time}.xlsx")
                         success, result = call_analysis_api(
                                     src_path,
                                     "Source Analysis",
@@ -244,7 +255,7 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                                     abs_path,
                                     src_output,
                                     num_cores,
-                                    False,
+                                    True,
                                     path_to_exclude=path_to_exclude,
                                     selected_scanner=selected_source_scanner,
                                     source_write_json_file=source_write_json_file,
@@ -279,7 +290,7 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                 success, result = call_analysis_api(src_path, "Binary Analysis",
                                                     1, binary_analysis.find_binaries,
                                                     abs_path,
-                                                    os.path.join(_output_dir, f"fosslight_report_bin_{_start_time}.xlsx"),
+                                                    os.path.join(_output_dir, f"fosslight_report_bin_{_file_time}.xlsx"),
                                                     formats, db_url, binary_simple,
                                                     correct_mode, correct_fpath,
                                                     path_to_exclude=path_to_exclude,
@@ -293,7 +304,7 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                     all_cover_items.append(result.cover)
 
             if run_dep:
-                dep_scanitem = run_dependency(src_path, os.path.join(_output_dir, f"fosslight_report_dep_{_start_time}.xlsx"),
+                dep_scanitem = run_dependency(src_path, os.path.join(_output_dir, f"fosslight_report_dep_{_file_time}.xlsx"),
                                               dep_arguments, path_to_exclude, formats,
                                               recursive_dep,
                                               all_exclude_mode=_all_exclude_mode_for_scanner(
@@ -310,8 +321,10 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
         logger.error(f"Scanning: {ex}")
 
     try:
+        finish_time = current_timestamp_utc()
         cover = CoverItem(tool_name=PKG_NAME,
                           start_time=_start_time,
+                          finish_time=finish_time,
                           input_path=abs_path,
                           exclude_path=excluded_path_without_dot,
                           simple_mode=False)
@@ -339,7 +352,7 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
             if output_files:
                 output_file = output_files[0]
             else:
-                output_file = OUTPUT_REPORT_PREFIX + _start_time
+                output_file = OUTPUT_REPORT_PREFIX + _file_time
             output_file_without_ext = os.path.join(final_excel_dir, output_file)
             ui_mode_report = f"{output_file_without_ext}.json"
             success, err_msg = create_scancodejson(all_scan_item, ui_mode_report, src_path)
@@ -348,8 +361,9 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
             else:
                 logger.error(f'Fail to generate a ui mode result file({ui_mode_report}): {err_msg}')
 
-        _str_final_result_log = yaml.safe_dump(result_log, allow_unicode=True, sort_keys=True)
-        logger.info(_str_final_result_log)
+        if _start_time:
+            result_log["Running time"] = format_running_time(_start_time, finish_time)
+        logger.info(dump_result_log(result_log))
     except Exception as ex:
         logger.warning(f"Error to write final report: {ex}")
 
@@ -363,7 +377,7 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
 
 
 def download_source(link, out_dir):
-    start_time = datetime.now().strftime('%Y%m%d_%H%M%S')
+    start_time = current_timestamp_utc()
     success = False
     temp_src_dir = ""
     oss_name = ""
@@ -371,7 +385,7 @@ def download_source(link, out_dir):
     try:
         success, final_excel_dir, result_log = init(out_dir)
         temp_src_dir = os.path.join(
-            _output_dir, SRC_DIR_FROM_LINK_PREFIX + start_time)
+            _output_dir, SRC_DIR_FROM_LINK_PREFIX + timestamp_for_filename(start_time))
 
         link = link.strip()
         logger.info(f"Link to download: {link}")
@@ -394,7 +408,8 @@ def init(output_path="", make_outdir=True):
 
     result_log = {}
     output_root_dir = ""
-    _start_time = datetime.now().strftime('%y%m%d_%H%M')
+    _start_time = current_timestamp_utc()
+    file_time = timestamp_for_filename(_start_time)
 
     if output_path != "":
         _output_dir = os.path.join(output_path, _output_dir)
@@ -407,7 +422,7 @@ def init(output_path="", make_outdir=True):
         _output_dir = os.path.abspath(_output_dir)
 
     log_dir = os.path.join(output_root_dir, "fosslight_log")
-    logger, result_log = init_log(os.path.join(log_dir, f"{_log_file}{_start_time}.txt"),
+    logger, result_log = init_log(os.path.join(log_dir, f"{_log_file}{file_time}.txt"),
                                   True, logging.INFO, logging.DEBUG, PKG_NAME)
 
     logger.info(f"Tool Info : {result_log['Tool Info']}")
@@ -453,7 +468,7 @@ def run_main(mode_list, path_arg, dep_arguments, output_file_or_dir, file_format
 
                 for ext in compression_extension:
                     if src_path.endswith(ext):
-                        temp_folder = f"temp_extract_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+                        temp_folder = f"temp_extract_{current_timestamp_for_filename()}"
                         Path(temp_folder).mkdir(parents=True, exist_ok=True)
 
                         extract_success = extract_file(src_path, temp_folder, False)
@@ -472,7 +487,7 @@ def run_main(mode_list, path_arg, dep_arguments, output_file_or_dir, file_format
         output_path = os.path.abspath(output_path)
 
     final_dir = output_path
-    output_path = os.path.join(os.path.dirname(output_path), f".fosslight_temp_{datetime.now().strftime('%Y%m%d_%H%M%S')}")
+    output_path = os.path.join(os.path.dirname(output_path), f".fosslight_temp_{current_timestamp_for_filename()}")
     final_reports = []
     if not success:
         logger.error(msg)
@@ -490,7 +505,7 @@ def run_main(mode_list, path_arg, dep_arguments, output_file_or_dir, file_format
                 return False
             ret, final_excel_dir, result_log = init(output_path)
             if not output_files:
-                output_files = [COMPARE_OUTPUT_REPORT_PREFIX + _start_time]
+                output_files = [COMPARE_OUTPUT_REPORT_PREFIX + timestamp_for_filename(_start_time)]
             run_compare(os.path.join(_executed_path, before_comp_f), os.path.join(_executed_path, after_comp_f),
                         final_excel_dir, output_files, output_extensions, _start_time, _output_dir)
         else:
@@ -539,10 +554,11 @@ def run_main(mode_list, path_arg, dep_arguments, output_file_or_dir, file_format
                 logger.error("(mode) No mode has been selected for analysis.")
         try:
             try:
-                log_file_path = os.path.join(output_path, "fosslight_log", f"{_log_file}{_start_time}.txt")
+                log_file_path = os.path.join(output_path, "fosslight_log",
+                                             f"{_log_file}{timestamp_for_filename(_start_time)}.txt")
                 final_log_dir = os.path.join(final_dir, "fosslight_log")
                 os.makedirs(final_log_dir, exist_ok=True)
-                final_log_path = os.path.join(final_log_dir, f"{_log_file}{_start_time}.txt")
+                final_log_path = os.path.join(final_log_dir, f"{_log_file}{timestamp_for_filename(_start_time)}.txt")
                 move_log_file(log_file_path, final_log_path)
             except Exception as ex:
                 logger.debug(f"Failed to move log file: {ex}")

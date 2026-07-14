@@ -2,11 +2,17 @@
 Copyright (c) 2021 LG Electronics
 SPDX-License-Identifier: Apache-2.0
  -->
+ <p align='right'>
+  <a href="https://fosslight.org/fosslight-guide/scanner/">
+    [Korean]
+ </a>
+</p>
+
 
 # FOSSLight Scanner
 <strong>Analyze at once for Open Source Compliance.</strong><br>
 
-<img src="https://img.shields.io/pypi/l/fosslight_scanner" alt="FOSSLight Scanner license: Apache-2.0" /> <img src="https://img.shields.io/pypi/v/fosslight_scanner" alt="Current python package version" /> <img src="https://img.shields.io/pypi/pyversions/fosslight_scanner" /> [![REUSE status](https://api.reuse.software/badge/github.com/fosslight/fosslight_scanner)](https://api.reuse.software/info/github.com/fosslight/fosslight_scanner)
+<img src="https://img.shields.io/pypi/l/fosslight_scanner" alt="FOSSLight Scanner license: Apache-2.0" /> <img src="https://img.shields.io/pypi/v/fosslight_scanner" alt="Current python package version" /> <img src="https://img.shields.io/pypi/pyversions/fosslight_scanner" /> [![REUSE status](https://api.reuse.software/badge/github.com/fosslight/fosslight_scanner)](https://api.reuse.software/info/github.com/fosslight/fosslight_scanner) [![Guide](http://img.shields.io/badge/-doc-blue?style=flat-square&logo=github&link=https://fosslight.org/fosslight-guide-en/scanner/)](https://fosslight.org/fosslight-guide-en/scanner/)
 
 **FOSSLight Scanner** performs open source analysis after downloading the source by passing a link that can be cloned by wget or git. Instead, open source analysis can be performed for the local source path. The output result is generated in [FOSSLight Report][or] format.
 
@@ -166,10 +172,14 @@ docker run -it -v /Users/fosslight_source_scanner/test_output:/app/output fossli
 
 ## 👏 How to report issue
 
-Please report any ideas or bugs to improve by creating an issue in [fosslight_scanner repository][cl].  
-Then there will be quick bug fixes and upgrades. Ideas to improve are always welcome.
+Please report any ideas or bugs to improve by creating an issue in [fosslight_scanner repository][cl]. Then there will be quick bug fixes and upgrades. Ideas to improve are always welcome.
 
 [cl]: https://github.com/fosslight/fosslight_scanner/issues
+
+## 👏 Contributing Guide
+
+We always welcome your contributions. Please see the [CONTRIBUTING guide](https://fosslight.org/hub-guide-en/contribution/1_contribution.html) for how to contribute.
+
 
 ## 📄 License
 

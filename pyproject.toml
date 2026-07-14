@@ -7,7 +7,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "fosslight_scanner"
-version = "2.1.24"
+version = "2.1.26"
 description = "FOSSLight Scanner"
 readme = "README.md"
 license = "Apache-2.0"
@@ -28,7 +28,7 @@ dependencies = [
     "progress",
     "pyyaml",
     "beautifulsoup4",
-    "fosslight_util>=2.1.47,<3.0.0",
+    "fosslight_util>=2.2.2,<3.0.0",
     "fosslight_source>=2.3.5,<3.0.0",
     "fosslight_dependency>=4.1.31,<5.0.0",
     "fosslight_binary>=5.1.17,<6.0.0",
