@@ -6,6 +6,7 @@
 
 import os
 import pytest
+from fosslight_util.constant import FOSSLIGHT_SOURCE, FOSSLIGHT_BINARY
 from fosslight_scanner.common import copy_file, run_analysis, call_analysis_api, check_package_dir, \
     create_scancodejson, correct_scanner_result
 
@@ -168,14 +169,14 @@ def test_correct_scanner_result(monkeypatch):
     bin_file_item = MockFileItem("path/to/source", [bin_oss_item])
 
     all_scan_item = MockAllScanItem({
-        "FOSSLIGHT_SOURCE": [src_file_item],
-        "FOSSLIGHT_BINARY": [bin_file_item]
+        FOSSLIGHT_SOURCE: [src_file_item],
+        FOSSLIGHT_BINARY: [bin_file_item]
     })
 
     # When
     result = correct_scanner_result(all_scan_item)
     # Then
-    assert len(result.file_items["FOSSLIGHT_BINARY"][0].oss_items) == 1
+    assert len(result.file_items[FOSSLIGHT_BINARY][0].oss_items) == 1
 
 
 @pytest.mark.parametrize("source_name_or_path, expected", [
@@ -185,8 +186,41 @@ def test_correct_scanner_result(monkeypatch):
     ("project/Carthage/file.swift", True),
     ("project/src/file.py", False),
     ("project/venv/file.py", True),
+    (r"project\venv\file.py", True),
+    (r"project\src\file.py", False),
 ])
 def test_check_package_dir(source_name_or_path, expected):
     result = check_package_dir(source_name_or_path)
     # Then
     assert result == expected
+
+
+def test_correct_scanner_result_matches_windows_separators():
+    class MockOSSItem:
+        def __init__(self, license, exclude=False):
+            self.license = license
+            self.exclude = exclude
+
+    class MockFileItem:
+        def __init__(self, source_name_or_path, oss_items, exclude=False):
+            self.source_name_or_path = source_name_or_path
+            self.oss_items = oss_items
+            self.exclude = exclude
+            self.comment = ""
+
+    class MockAllScanItem:
+        def __init__(self, file_items):
+            self.file_items = file_items
+
+    src_file_item = MockFileItem("path/to/source", [MockOSSItem(license="MIT")])
+    bin_file_item = MockFileItem(r"path\to\source", [MockOSSItem(license="")])
+
+    all_scan_item = MockAllScanItem({
+        FOSSLIGHT_SOURCE: [src_file_item],
+        FOSSLIGHT_BINARY: [bin_file_item]
+    })
+
+    result = correct_scanner_result(all_scan_item)
+    assert len(result.file_items[FOSSLIGHT_SOURCE]) == 0
+    assert result.file_items[FOSSLIGHT_BINARY][0].oss_items[0].license == "MIT"
+    assert result.file_items[FOSSLIGHT_BINARY][0].comment == 'Loaded from SRC OSS info'
