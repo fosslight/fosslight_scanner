@@ -119,16 +119,17 @@ def create_scancodejson(all_scan_item_origin, ui_mode_report, src_path=""):
         if src_path:
             fileitems_without_oss = []
             for root, _, files in os.walk(src_path):
-                root = root.replace(root_strip, "")
+                root = root.replace(root_strip, "").replace('\\', '/')
                 for file in files:
                     fi_without_oss = FileItem('')
                     included = False
-                    item_path = os.path.join(root, file)
-                    item_path = item_path.replace(parent + os.path.sep, '', 1)
+                    item_path = f"{root}/{file}".replace('\\', '/')
+                    item_path = item_path.replace(parent + '/', '', 1)
                     for file_items in all_scan_item.file_items.values():
                         for file_item in file_items:
                             if file_item.source_name_or_path:
-                                if file_item.source_name_or_path == item_path:
+                                existing_path = file_item.source_name_or_path.replace('\\', '/')
+                                if existing_path == item_path:
                                     included = True
                                     break
                     if not included:
@@ -140,7 +141,8 @@ def create_scancodejson(all_scan_item_origin, ui_mode_report, src_path=""):
             for file_items in all_scan_item.file_items.values():
                 for fi in file_items:
                     if fi.source_name_or_path:
-                        fi.source_name_or_path = os.path.join(root_dir, fi.source_name_or_path)
+                        normalized = fi.source_name_or_path.replace('\\', '/')
+                        fi.source_name_or_path = f"{root_dir}/{normalized}"
         write_scancodejson(os.path.dirname(ui_mode_report), os.path.basename(ui_mode_report),
                            all_scan_item)
     except Exception as ex:
@@ -167,7 +169,9 @@ def correct_scanner_result(all_scan_item):
                 for bin_fileitem in bin_fileitems:
                     if check_package_dir(bin_fileitem.source_name_or_path):
                         continue
-                    if src_fileitem.source_name_or_path == bin_fileitem.source_name_or_path:
+                    src_path_norm = src_fileitem.source_name_or_path.replace('\\', '/')
+                    bin_path_norm = bin_fileitem.source_name_or_path.replace('\\', '/')
+                    if src_path_norm == bin_path_norm:
                         dup_flag = True
                         src_all_licenses_non_empty = all(oss_item.license for oss_item in src_fileitem.oss_items)
                         bin_empty_license_exists = all(not oss_item.license for oss_item in bin_fileitem.oss_items)
@@ -200,9 +204,10 @@ def correct_scanner_result(all_scan_item):
 def check_package_dir(source_name_or_path):
     _package_dirs = ["venv", "node_modules", "Pods", "Carthage"]
     is_pkg = False
+    path_parts = source_name_or_path.replace('\\', '/').split('/')
 
     for package_dir in _package_dirs:
-        if package_dir in source_name_or_path.split(os.path.sep):
+        if package_dir in path_parts:
             is_pkg = True
             break
     return is_pkg
