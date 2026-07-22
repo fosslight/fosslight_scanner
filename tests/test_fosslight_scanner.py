@@ -2,7 +2,10 @@ import shutil
 import openpyxl
 import pytest
 from pathlib import Path
-from fosslight_scanner.fosslight_scanner import run_scanner, download_source, init, run_main, run_dependency
+from fosslight_scanner.fosslight_scanner import (
+    run_scanner, download_source, init, run_main, run_dependency,
+    _build_source_docker_command,
+)
 from fosslight_util.oss_item import ScannerItem
 from fosslight_util.constant import FOSSLIGHT_BINARY, FOSSLIGHT_DEPENDENCY, FOSSLIGHT_SOURCE, SHEET_NAME_FOR_SCANNER
 
@@ -40,6 +43,89 @@ def _get_sheet_row_count(xlsx_path: str, sheet_name: str) -> int:
     row_count = ws.max_row or 0
     wb.close()
     return row_count
+
+
+def test_build_source_docker_command_includes_ui_and_optional_args():
+    command = _build_source_docker_command(
+        output_dir="/tmp/out",
+        path_to_scan="src",
+        path_to_exclude=["vendor", "third_party"],
+        kb_url="http://kb.example",
+        kb_token="secret",
+        ui_mode=True,
+    )
+
+    assert command[:3] == ["docker", "run", "-it"]
+    assert command[3:5] == ["-v", "/tmp/out:/app/output"]
+    assert "fosslight" in command
+    assert command[command.index("-p") + 1] == "src"
+    assert command[command.index("-o") + 1] == "output"
+    e_idx = command.index("-e")
+    assert command[e_idx + 1:e_idx + 3] == ["vendor", "third_party"]
+    assert command[command.index("--kb_url") + 1] == "http://kb.example"
+    assert command[command.index("--kb_token") + 1] == "secret"
+    assert command[-1] == "--ui"
+
+
+def test_build_source_docker_command_omits_optional_args_by_default():
+    command = _build_source_docker_command("/tmp/out", "src")
+
+    assert "-e" not in command
+    assert "--kb_url" not in command
+    assert "--kb_token" not in command
+    assert "--ui" not in command
+
+
+def test_run_scanner_docker_fallback_passes_argv_and_ui(monkeypatch, tmp_path):
+    import subprocess
+    import fosslight_scanner.fosslight_scanner as scanner_mod
+
+    monkeypatch.setattr(scanner_mod, "fosslight_source_installed", False)
+    monkeypatch.setattr(scanner_mod, "_output_dir", "fosslight_raw_data")
+
+    captured = {}
+
+    def fake_run(cmd, **kwargs):
+        captured["cmd"] = cmd
+        captured["kwargs"] = kwargs
+        return subprocess.CompletedProcess(cmd, 0, stdout="docker-ok", stderr="")
+
+    monkeypatch.setattr(scanner_mod.subprocess, "run", fake_run)
+
+    src_path = tmp_path / "test_src"
+    output_path = tmp_path / "output"
+    src_path.mkdir(parents=True, exist_ok=True)
+    output_path.mkdir(parents=True, exist_ok=True)
+    (src_path / "test_file.py").write_text("print('hi')\n")
+
+    run_scanner(
+        src_path=str(src_path),
+        dep_arguments="",
+        output_path=str(output_path),
+        keep_raw_data=True,
+        run_src=True,
+        run_bin=False,
+        run_dep=False,
+        remove_src_data=False,
+        result_log={},
+        output_files=["test_output"],
+        output_extensions=[".yaml"],
+        num_cores=1,
+        ui_mode=True,
+        path_to_exclude=["vendor"],
+        kb_url="http://kb.example",
+        kb_token="secret",
+    )
+
+    assert "cmd" in captured, "Docker fallback should call subprocess.run"
+    cmd = captured["cmd"]
+    assert isinstance(cmd, list), "Docker command must be passed as an argv list"
+    assert cmd[0] == "docker"
+    assert "--ui" in cmd
+    assert cmd[cmd.index("--kb_url") + 1] == "http://kb.example"
+    assert cmd[cmd.index("--kb_token") + 1] == "secret"
+    assert "vendor" in cmd
+    assert captured["kwargs"].get("text") is True
 
 
 def test_run_dependency(tmp_path):
