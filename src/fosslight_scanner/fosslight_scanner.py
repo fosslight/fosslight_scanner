@@ -219,12 +219,13 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
     try:
         final_excel_dir = os.path.abspath(final_excel_dir)
         abs_path = os.path.abspath(src_path)
-
+        _default_ext = '.xlsx'
+        _default_format = 'excel'
         if success:
             if run_src:
                 try:
                     if fosslight_source_installed:
-                        src_output = os.path.join(_output_dir, f"fosslight_report_src_{_file_time}.xlsx")
+                        src_output = os.path.join(_output_dir, f"fosslight_report_src_{_file_time}{_default_ext}")
                         success, result = call_analysis_api(
                                     src_path,
                                     "Source Analysis",
@@ -240,7 +241,7 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                                     source_time_out=source_time_out,
                                     kb_url=kb_url,
                                     kb_token=kb_token,
-                                    formats=formats,
+                                    formats=[_default_format],
                                     all_exclude_mode=_all_exclude_mode_for_scanner(
                                         excluded_path_with_default_exclusion,
                                         excluded_path_without_dot,
@@ -268,11 +269,12 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                     logger.warning(f"Failed to run source analysis: {ex}")
 
             if run_bin:
+                bin_output = os.path.join(_output_dir, f"fosslight_report_bin_{_file_time}{_default_ext}")
                 success, result = call_analysis_api(src_path, "Binary Analysis",
                                                     1, binary_analysis.find_binaries,
                                                     abs_path,
-                                                    os.path.join(_output_dir, f"fosslight_report_bin_{_file_time}.xlsx"),
-                                                    formats, db_url, binary_simple,
+                                                    bin_output,
+                                                    [_default_format], db_url, binary_simple,
                                                     correct_mode, correct_fpath,
                                                     path_to_exclude=path_to_exclude,
                                                     all_exclude_mode=_all_exclude_mode_for_scanner(
@@ -285,8 +287,9 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                     all_cover_items.append(result.cover)
 
             if run_dep:
-                dep_scanitem = run_dependency(src_path, os.path.join(_output_dir, f"fosslight_report_dep_{_file_time}.xlsx"),
-                                              dep_arguments, path_to_exclude, formats,
+                dep_output = os.path.join(_output_dir, f"fosslight_report_dep_{_file_time}{_default_ext}")
+                dep_scanitem = run_dependency(src_path, dep_output,
+                                              dep_arguments, path_to_exclude, [_default_format],
                                               recursive_dep,
                                               all_exclude_mode=_all_exclude_mode_for_scanner(
                                                   excluded_path_with_default_exclusion,
