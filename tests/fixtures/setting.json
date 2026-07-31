@@ -1,9 +1,16 @@
 {
-  "mode": ["binary", "source"],
-  "path": ["tests/fixtures/scan_project"],
+  "mode": [
+    "binary",
+    "source"
+  ],
+  "path": [
+    "tests/fixtures/scan_project"
+  ],
   "dep_argument": "",
   "output": "test_result_dir",
-  "format": ["excel"],
+  "format": [
+    "excel"
+  ],
   "link": "",
   "db_url": "",
   "timer": false,
@@ -12,7 +19,10 @@
   "no_correction": false,
   "correct_fpath": "",
   "ui": false,
-  "exclude": ["test", "sample_license.txt"],
+  "exclude": [
+    "test",
+    "sample_license.txt"
+  ],
   "selected_source_scanner": "scancode",
   "source_write_json_file": true,
   "source_print_matched_text": true,
@@ -20,5 +30,6 @@
   "kb_url": "",
   "kb_token": "",
   "binary_simple": false,
-  "recursive_dep": false
+  "recursive_dep": false,
+  "no_merge": false
 }
