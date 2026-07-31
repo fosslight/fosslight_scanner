@@ -1,5 +1,18 @@
 # Changelog
 
+## v2.1.27 (31/07/2026)
+## Changes
+## 🚀 Features
+
+- Add --no_merge option for source scanner @JustinWonjaePark (#187)
+
+## 🐛 Hotfixes
+
+- Fix raw default file format to excel @dd-jy (#191)
+- Normalize report path separators to '/' on Windows @soimkim (#190)
+
+---
+
 ## v2.1.26 (09/07/2026)
 ## Changes
 ## 🔧 Maintenance
@@ -273,20 +286,3 @@
 
 - Remove prechecker @dd-jy (#119)
 - Refactoring OSS item @dd-jy (#118)
-
----
-
-## v1.7.31 (06/09/2024)
-## Changes
-## 🚀 Features
-
-- Setting.json with source_scanner selection @soonhong99 (#109)
-
-## 🐛 Hotfixes
-
-- Fix a bug related to path_to_exclude @soimkim (#116)
-
-## 🔧 Maintenance
-
-- Limit installation fosslight package @dd-jy (#117)
-- Add simple_mode parameter to CoverItem constructor @YongGoose (#108)
