@@ -1,6 +1,6 @@
 # Copyright (c) 2022 LG Electronics Inc.
 # SPDX-License-Identifier: Apache-2.0
-FROM --platform=linux/amd64 python:3.11
+FROM python:3.11-bookworm
 
 COPY . /app
 WORKDIR	/app
@@ -9,7 +9,7 @@ RUN	ln -sf /bin/bash /bin/sh && \
   apt-get update && \
   apt-get install --no-install-recommends -y  \
   build-essential \
-  python3 python3-distutils python3-pip python3-dev python3-magic \
+  python3 python3-pip python3-dev python3-magic \
   libxml2-dev \
   libxslt1-dev \
   libhdf5-dev \

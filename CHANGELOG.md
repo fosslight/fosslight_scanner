@@ -1,5 +1,14 @@
 # Changelog
 
+## v2.1.26 (09/07/2026)
+## Changes
+## 🔧 Maintenance
+
+- Add running time output to cover sheet and result log @bjk7119 (#186)
+- Migrate to REUSE.toml and update GitHub Actions @woocheol-lge (#188)
+
+---
+
 ## v2.1.25 (25/06/2026)
 ## Changes
 ## 🚀 Features
@@ -9,7 +18,7 @@
 ## 🔧 Maintenance
 
 - Bump fosslight_source minimum to 2.2.16 @soimkim (#185)
-- Remove prechecker remnants @bjk7119 (#183)
+- Remove fosslight_prechecker from dependencies @bjk7119 (#183)
 - Run flake8 directly instead of pytest-flake8 @dd-jy (#182)
 
 ---
@@ -281,15 +290,3 @@
 
 - Limit installation fosslight package @dd-jy (#117)
 - Add simple_mode parameter to CoverItem constructor @YongGoose (#108)
-
----
-
-## v1.7.30 (22/07/2024)
-## Changes
-## 🚀 Features
-
-- Run with compressed file @bjk7119 (#105)
-
-## 🔧 Maintenance
-
-- Remove to create bin.txt @bjk7119 (#100)
