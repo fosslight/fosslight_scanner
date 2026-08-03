@@ -1,5 +1,13 @@
 # Changelog
 
+## v2.1.28 (03/08/2026)
+## Changes
+## 🐛 Hotfixes
+
+- Pass kb args correctly to binary analysis @bjk7119 (#192)
+
+---
+
 ## v2.1.27 (31/07/2026)
 ## Changes
 ## 🚀 Features
@@ -277,12 +285,3 @@
 ## 🔧 Maintenance
 
 - Revert "Remove prechecker" @dd-jy (#120)
-
----
-
-## v2.0.0 (06/09/2024)
-## Changes
-## 🔧 Maintenance
-
-- Remove prechecker @dd-jy (#119)
-- Refactoring OSS item @dd-jy (#118)
