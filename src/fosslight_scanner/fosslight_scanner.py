@@ -278,7 +278,7 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                                                     1, binary_analysis.find_binaries,
                                                     abs_path,
                                                     bin_output,
-                                                    [_default_format], db_url, binary_simple,
+                                                    [_default_format], kb_url, kb_token, binary_simple,
                                                     correct_mode, correct_fpath,
                                                     path_to_exclude=path_to_exclude,
                                                     all_exclude_mode=_all_exclude_mode_for_scanner(
