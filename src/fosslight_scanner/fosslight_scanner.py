@@ -63,6 +63,16 @@ SCANNER_MODE = [
 ]
 
 
+def _add_write_permission(target):
+    # Add the owner write bit to the existing mode. Replacing the mode instead would
+    # drop the read and execute bits a directory needs, and os.walk() could no longer
+    # descend into it.
+    try:
+        os.chmod(target, os.stat(target).st_mode | stat.S_IWRITE)
+    except OSError:
+        pass
+
+
 def remove_tree(path):
     if not os.path.exists(path):
         return True
@@ -73,12 +83,11 @@ def remove_tree(path):
         logger.debug(f"Retry to remove {path} after clearing read-only flags: {ex}")
 
     try:
+        # os.walk() is top-down, so a directory is made writable before it is entered.
+        _add_write_permission(path)
         for root, dirs, files in os.walk(path):
             for name in dirs + files:
-                try:
-                    os.chmod(os.path.join(root, name), stat.S_IWRITE)
-                except OSError:
-                    pass
+                _add_write_permission(os.path.join(root, name))
         shutil.rmtree(path)
         return True
     except Exception as ex:
@@ -584,6 +593,7 @@ def run_main(mode_list, path_arg, dep_arguments, output_file_or_dir, file_format
             if os.path.exists(output_path):
                 os.makedirs(final_dir, exist_ok=True)
                 raw_data_name = os.path.basename(os.path.normpath(_output_dir))
+                move_failed = False
                 for item in os.listdir(output_path):
                     if not raw_data_removed and item == raw_data_name:
                         # The raw data was meant to be discarded and could not be removed;
@@ -598,10 +608,22 @@ def run_main(mode_list, path_arg, dep_arguments, output_file_or_dir, file_format
                         else:
                             shutil.move(src_item, dst_item)
                     except Exception as ex:
+                        move_failed = True
                         logger.warning(f"Failed to move {src_item} to {final_dir}: {ex}")
-                remove_tree(output_path)
+                if move_failed:
+                    # Removing the staging directory now would delete the very results that
+                    # could not be moved out of it. Leave it and tell the user where it is.
+                    logger.warning(f"Some results could not be moved and are left in {output_path}.")
+                else:
+                    remove_tree(output_path)
                 if final_reports:
-                    final_reports = [report.replace(output_path, final_dir) for report in final_reports]
+                    # Only rewrite the paths of the reports that really arrived in final_dir,
+                    # so a report left behind is reported where it actually is.
+                    moved_reports = []
+                    for report in final_reports:
+                        moved = report.replace(output_path, final_dir)
+                        moved_reports.append(moved if os.path.exists(moved) else report)
+                    final_reports = moved_reports
                     logger.info(f'Output File: {", ".join(final_reports)}')
         except Exception as ex:
             logger.debug(f"Error to remove temp files:{ex}")
