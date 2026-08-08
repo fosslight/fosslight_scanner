@@ -10,6 +10,7 @@ import logging
 import warnings
 import shutil
 import shlex
+import stat
 import subprocess
 import platform
 from pathlib import Path
@@ -60,6 +61,29 @@ SCANNER_MODE = [
     "all", "compare", "binary",
     "bin", "src", "source", "dependency", "dep"
 ]
+
+
+def remove_tree(path):
+    if not os.path.exists(path):
+        return True
+    try:
+        shutil.rmtree(path)
+        return True
+    except Exception as ex:
+        logger.debug(f"Retry to remove {path} after clearing read-only flags: {ex}")
+
+    try:
+        for root, dirs, files in os.walk(path):
+            for name in dirs + files:
+                try:
+                    os.chmod(os.path.join(root, name), stat.S_IWRITE)
+                except OSError:
+                    pass
+        shutil.rmtree(path)
+        return True
+    except Exception as ex:
+        logger.warning(f"Failed to remove the temporary directory({path}): {ex}")
+        return False
 
 
 def _all_exclude_mode_for_scanner(
@@ -539,7 +563,7 @@ def run_main(mode_list, path_arg, dep_arguments, output_file_or_dir, file_format
                                                 kb_token, binary_simple, formats, recursive_dep, no_merge)
 
                 if extract_folder:
-                    shutil.rmtree(extract_folder)
+                    remove_tree(extract_folder)
             else:
                 logger.error("(mode) No mode has been selected for analysis.")
         try:
@@ -553,20 +577,29 @@ def run_main(mode_list, path_arg, dep_arguments, output_file_or_dir, file_format
             except Exception as ex:
                 logger.debug(f"Failed to move log file: {ex}")
 
+            raw_data_removed = True
             if not keep_raw_data:
                 logger.debug(f"Remove temporary files: {_output_dir}")
-                shutil.rmtree(_output_dir)
+                raw_data_removed = remove_tree(_output_dir)
             if os.path.exists(output_path):
                 os.makedirs(final_dir, exist_ok=True)
+                raw_data_name = os.path.basename(os.path.normpath(_output_dir))
                 for item in os.listdir(output_path):
+                    if not raw_data_removed and item == raw_data_name:
+                        # The raw data was meant to be discarded and could not be removed;
+                        # publishing it into the user's output directory is not the answer.
+                        continue
                     src_item = os.path.join(output_path, item)
                     dst_item = os.path.join(final_dir, item)
-                    if os.path.isdir(src_item) and os.path.exists(dst_item):
-                        for sub_item in os.listdir(src_item):
-                            shutil.move(os.path.join(src_item, sub_item), os.path.join(dst_item, sub_item))
-                    else:
-                        shutil.move(src_item, dst_item)
-                shutil.rmtree(output_path)
+                    try:
+                        if os.path.isdir(src_item) and os.path.exists(dst_item):
+                            for sub_item in os.listdir(src_item):
+                                shutil.move(os.path.join(src_item, sub_item), os.path.join(dst_item, sub_item))
+                        else:
+                            shutil.move(src_item, dst_item)
+                    except Exception as ex:
+                        logger.warning(f"Failed to move {src_item} to {final_dir}: {ex}")
+                remove_tree(output_path)
                 if final_reports:
                     final_reports = [report.replace(output_path, final_dir) for report in final_reports]
                     logger.info(f'Output File: {", ".join(final_reports)}')
