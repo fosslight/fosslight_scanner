@@ -432,6 +432,7 @@ def run_main(mode_list, path_arg, dep_arguments, output_file_or_dir, file_format
     src_path = ""
     _executed_path = os.getcwd()
     extract_folder = ""
+    analysis_success = True
 
     mode_not_supported = list(set(mode_list).difference(SCANNER_MODE))
     if mode_not_supported:
@@ -526,7 +527,10 @@ def run_main(mode_list, path_arg, dep_arguments, output_file_or_dir, file_format
 
                 if url_to_analyze != "":
                     remove_downloaded_source = True
-                    success, src_path, default_oss_name, default_oss_version = download_source(url_to_analyze, output_path)
+                    (analysis_success, src_path,
+                     default_oss_name, default_oss_version) = download_source(url_to_analyze, output_path)
+                    if not analysis_success:
+                        logger.error("Stop the analysis because the source could not be downloaded.")
 
                 if src_path != "":
                     final_reports = run_scanner(src_path, dep_arguments, output_path, keep_raw_data,
@@ -575,4 +579,4 @@ def run_main(mode_list, path_arg, dep_arguments, output_file_or_dir, file_format
     except Exception as ex:
         logger.warning(str(ex))
         return False
-    return True
+    return analysis_success
