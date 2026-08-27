@@ -56,10 +56,6 @@ _HELP_MESSAGE_SCANNER = f"""
 
     🔍 Mode-Specific Options
     ────────────────────────────────────────────────────────────────────
-    For 'all' or 'binary' mode:
-      -u <db_url>          Database connection string
-                           Format: postgresql://username:password@host:port/database
-
     For 'all' or 'dependency' mode:
       -d <args>            Additional arguments for dependency analysis
 
@@ -87,9 +83,6 @@ _HELP_MESSAGE_SCANNER = f"""
 
     # Compare two FOSSLight reports
     fosslight compare -p report_v1.xlsx report_v2.xlsx -f excel
-
-    # Run with database connection for binary analysis
-    fosslight binary -p /path/to/binary -u "postgresql://user:pass@localhost:5432/sample"
     """
 
 

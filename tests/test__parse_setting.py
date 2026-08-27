@@ -14,7 +14,6 @@ def test_parse_setting_json_valid_data():
         'output': 'output',
         'format': 'json',
         'link': 'http://example.com',
-        'db_url': 'sqlite:///:memory:',
         'timer': True,
         'raw': True,
         'core': 4,
@@ -32,7 +31,7 @@ def test_parse_setting_json_valid_data():
     }
     result = parse_setting_json(data)
     assert result == (
-        ['test'], ['/some/path'], 'arg', 'output', 'json', 'http://example.com', 'sqlite:///:memory:', True,
+        ['test'], ['/some/path'], 'arg', 'output', 'json', 'http://example.com', True,
         True, 4, True, '/correct/path', True, ['/exclude/path'], 'scanner', True, True, 60, True, False,
         'http://kb.example.com', 'test_token', False
     )

@@ -162,7 +162,6 @@ def test_run_main(tmp_path):
     output_file_or_dir = str(tmp_path / "output")
     file_format = ['yaml']
     url_to_analyze = ""
-    db_url = ""
 
     # Create necessary directories and files for the test
     (tmp_path / "test_src").mkdir(parents=True, exist_ok=True)
@@ -175,7 +174,6 @@ def test_run_main(tmp_path):
         output_file_or_dir=output_file_or_dir,
         file_format=file_format,
         url_to_analyze=url_to_analyze,
-        db_url=db_url,
         hide_progressbar=True,  # Disable progress bar for testing
         keep_raw_data=True,     # Keep raw data to avoid cleanup during test
         num_cores=1,
@@ -203,7 +201,6 @@ def test_output_excel_contains_required_sheets(tmp_path, mode_list, expected_she
         output_file_or_dir=str(output_dir),
         file_format=["excel"],
         url_to_analyze="",
-        db_url="",
         hide_progressbar=True,
         keep_raw_data=False,
         num_cores=0,
