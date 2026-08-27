@@ -364,7 +364,7 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
     return final_reports
 
 
-def download_source(link, out_dir):
+def download_source(link, out_dir, git_id="", git_token=""):
     start_time = current_timestamp_utc()
     success = False
     temp_src_dir = ""
@@ -377,8 +377,11 @@ def download_source(link, out_dir):
 
         link = link.strip()
         logger.info(f"Link to download: {link}")
+        if git_token and not git_id:
+            git_id = "oauth2"
         success, msg, oss_name, oss_version, _ = cli_download_and_extract(
-            link, temp_src_dir, _output_dir)
+            link, temp_src_dir, _output_dir,
+            id=git_id, git_token=git_token)
 
         if success:
             logger.info(f"Downloaded Dir: {temp_src_dir}")
@@ -423,7 +426,7 @@ def run_main(mode_list, path_arg, dep_arguments, output_file_or_dir, file_format
              correct_mode=True, correct_fpath="", ui_mode=False, path_to_exclude=[],
              selected_source_scanner="all", source_write_json_file=False, source_print_matched_text=False,
              source_time_out=120, kb_url="", kb_token="", binary_simple=False,
-             recursive_dep=False, no_merge=False):
+             recursive_dep=False, no_merge=False, git_id="", git_token=""):
     global _executed_path
 
     output_files = []
@@ -526,7 +529,8 @@ def run_main(mode_list, path_arg, dep_arguments, output_file_or_dir, file_format
 
                 if url_to_analyze != "":
                     remove_downloaded_source = True
-                    success, src_path, default_oss_name, default_oss_version = download_source(url_to_analyze, output_path)
+                    success, src_path, default_oss_name, default_oss_version = download_source(
+                        url_to_analyze, output_path, git_id=git_id, git_token=git_token)
 
                 if src_path != "":
                     final_reports = run_scanner(src_path, dep_arguments, output_path, keep_raw_data,

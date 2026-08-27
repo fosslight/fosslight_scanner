@@ -28,10 +28,13 @@ def parse_setting_json(data):
     binary_simple = data.get('binary_simple', False)
     recursive_dep = data.get('recursive_dep', False)
     no_merge = data.get('no_merge', False)
+    git_id = data.get('id', '')
+    git_token = data.get('git_token', '')
     str_lists = [mode, path, exclude_path]
     strings = [
         dep_argument, output, format,
-        correct_fpath, link, selected_source_scanner, kb_url, kb_token
+        correct_fpath, link, selected_source_scanner, kb_url, kb_token,
+        git_id, git_token
     ]
     booleans = [timer, raw, no_correction, ui, source_write_json_file,
                 source_print_matched_text, binary_simple, recursive_dep, no_merge]
@@ -69,4 +72,4 @@ def parse_setting_json(data):
     return mode, path, dep_argument, output, format, link, timer, \
         raw, core, no_correction, correct_fpath, ui, exclude_path, \
         selected_source_scanner, source_write_json_file, source_print_matched_text, source_time_out, \
-        binary_simple, recursive_dep, kb_url, kb_token, no_merge
+        binary_simple, recursive_dep, kb_url, kb_token, no_merge, git_id, git_token

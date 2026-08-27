@@ -30,5 +30,7 @@
   "kb_token": "",
   "binary_simple": false,
   "recursive_dep": false,
-  "no_merge": false
+  "no_merge": false,
+  "id": "",
+  "git_token": ""
 }
