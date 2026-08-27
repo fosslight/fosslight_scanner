@@ -1,5 +1,18 @@
 # Changelog
 
+## v2.1.29 (27/08/2026)
+## Changes
+## 🚀 Features
+
+- Add git_token for private url download @soimkim (#198)
+
+## 🔧 Maintenance
+
+- Remove deprecated binary db_url option @soimkim (#197)
+- Remove daily build workflow moved to fosslight_scanner_test. @soimkim (#193)
+
+---
+
 ## v2.1.28 (03/08/2026)
 ## Changes
 ## 🐛 Hotfixes
@@ -277,11 +290,3 @@
 
 - Change the test code to use pytest @cjho0316 (#124)
 - ci: Add Docker build and push workflow for automated releases @soonhong99 (#122)
-
----
-
-## v2.0.1 (09/09/2024)
-## Changes
-## 🔧 Maintenance
-
-- Revert "Remove prechecker" @dd-jy (#120)
