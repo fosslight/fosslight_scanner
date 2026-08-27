@@ -267,7 +267,7 @@ def run_compare(before_f, after_f, output_path, output_files, file_ext, _start_t
     elif YAML_EXT == before_ext:
         before_fileitems, _, _ = parsing_yml(before_yaml, before_basepath)
     if XLSX_EXT == after_ext:
-        after_fileitems = read_oss_report(after_f, after_basepath)
+        after_fileitems = read_oss_report(after_f, "", after_basepath)
     elif YAML_EXT == after_ext:
         after_fileitems, _, _ = parsing_yml(after_yaml, after_basepath)
 
