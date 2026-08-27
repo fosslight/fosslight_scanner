@@ -27,11 +27,13 @@ def test_parse_setting_json_valid_data():
         'source_time_out': 60,
         'binary_simple': True,
         'kb_url': 'http://kb.example.com',
-        'kb_token': 'test_token'
+        'kb_token': 'test_token',
+        'id': 'oauth2',
+        'git_token': 'ghp_test'
     }
     result = parse_setting_json(data)
     assert result == (
         ['test'], ['/some/path'], 'arg', 'output', 'json', 'http://example.com', True,
         True, 4, True, '/correct/path', True, ['/exclude/path'], 'scanner', True, True, 60, True, False,
-        'http://kb.example.com', 'test_token', False
+        'http://kb.example.com', 'test_token', False, 'oauth2', 'ghp_test'
     )

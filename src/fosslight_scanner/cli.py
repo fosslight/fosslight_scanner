@@ -16,7 +16,8 @@ from fosslight_util.help import print_package_version
 
 def set_args(mode, path, dep_argument, output, format, link, timer,
              raw, core, no_correction, correct_fpath, ui, setting, exclude_path,
-             recursive_dep, kb_url="", kb_token="", no_merge=False):
+             recursive_dep, kb_url="", kb_token="", no_merge=False,
+             git_id="", git_token=""):
 
     selected_source_scanner = "all"
     source_write_json_file = False
@@ -31,7 +32,8 @@ def set_args(mode, path, dep_argument, output, format, link, timer,
             s_mode, s_path, s_dep_argument, s_output, s_format, s_link, s_timer, s_raw, s_core, \
                 s_no_correction, s_correct_fpath, s_ui, s_exclude_path, \
                 s_selected_source_scanner, s_source_write_json_file, s_source_print_matched_text, \
-                s_source_time_out, s_binary_simple, s_recursive_dep, s_kb_url, s_kb_token, s_no_merge = parse_setting_json(data)
+                s_source_time_out, s_binary_simple, s_recursive_dep, s_kb_url, s_kb_token, s_no_merge, \
+                s_git_id, s_git_token = parse_setting_json(data)
 
             # direct cli arguments have higher priority than setting file
             mode = mode or s_mode
@@ -51,6 +53,8 @@ def set_args(mode, path, dep_argument, output, format, link, timer,
             kb_url = kb_url or s_kb_url
             kb_token = kb_token or s_kb_token
             no_merge = no_merge or s_no_merge
+            git_id = git_id or s_git_id
+            git_token = git_token or s_git_token
 
             # These options are only set from the setting file, not from CLI arguments
             selected_source_scanner = s_selected_source_scanner or selected_source_scanner
@@ -64,7 +68,7 @@ def set_args(mode, path, dep_argument, output, format, link, timer,
     return mode, path, dep_argument, output, format, link, timer, \
         raw, core, no_correction, correct_fpath, ui, exclude_path, \
         selected_source_scanner, source_write_json_file, source_print_matched_text, source_time_out, \
-        binary_simple, recursive_dep, kb_url, kb_token, no_merge
+        binary_simple, recursive_dep, kb_url, kb_token, no_merge, git_id, git_token
 
 
 def main():
@@ -115,6 +119,10 @@ def main():
                         type=str, dest='kb_token', default="")
     parser.add_argument('--no_merge', help='Keep source paths file-based without folder merge',
                         action='store_true', dest='no_merge', required=False, default=False)
+    parser.add_argument('--id', help='Git HTTP credential username (used with --git_token for -w)',
+                        type=str, dest='git_id', default="")
+    parser.add_argument('--git_token', help='Git HTTP personal access token for private URL (-w)',
+                        type=str, dest='git_token', default="")
 
     try:
         args = parser.parse_args()
@@ -128,17 +136,19 @@ def main():
     else:
         mode, path, dep_argument, output, format, link, timer, raw, core, no_correction, correct_fpath, \
             ui, exclude_path, selected_source_scanner, source_write_json_file, source_print_matched_text, \
-            source_time_out, binary_simple, recursive_dep, kb_url, kb_token, no_merge = set_args(
+            source_time_out, binary_simple, recursive_dep, kb_url, kb_token, no_merge, git_id, git_token = set_args(
                 args.mode, args.path, args.dep_argument, args.output,
                 args.format, args.link, args.timer, args.raw,
                 args.core, args.no_correction, args.correct_fpath, args.ui,
                 args.setting, args.exclude_path, args.recursive_dep,
-                args.kb_url, args.kb_token, args.no_merge)
+                args.kb_url, args.kb_token, args.no_merge,
+                args.git_id, args.git_token)
 
         run_main(mode, path, dep_argument, output, format, link, timer,
                  raw, core, not no_correction, correct_fpath, ui, exclude_path,
                  selected_source_scanner, source_write_json_file, source_print_matched_text,
-                 source_time_out, kb_url, kb_token, binary_simple, recursive_dep, no_merge)
+                 source_time_out, kb_url, kb_token, binary_simple, recursive_dep, no_merge,
+                 git_id, git_token)
 
 
 if __name__ == "__main__":
