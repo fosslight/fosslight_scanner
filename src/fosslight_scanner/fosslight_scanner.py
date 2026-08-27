@@ -152,7 +152,7 @@ def source_analysis_wrapper(*args, **kwargs):
 def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                 run_src=True, run_bin=True, run_dep=True,
                 remove_src_data=True, result_log={}, output_files=[],
-                output_extensions=[], num_cores=-1, db_url="",
+                output_extensions=[], num_cores=-1,
                 default_oss_name="", default_oss_version="", url="",
                 correct_mode=True, correct_fpath="", ui_mode=False, path_to_exclude=[],
                 selected_source_scanner="all", source_write_json_file=False, source_print_matched_text=False,
@@ -419,7 +419,7 @@ def init(output_path="", make_outdir=True):
 
 
 def run_main(mode_list, path_arg, dep_arguments, output_file_or_dir, file_format, url_to_analyze,
-             db_url, hide_progressbar=False, keep_raw_data=False, num_cores=-1,
+             hide_progressbar=False, keep_raw_data=False, num_cores=-1,
              correct_mode=True, correct_fpath="", ui_mode=False, path_to_exclude=[],
              selected_source_scanner="all", source_write_json_file=False, source_print_matched_text=False,
              source_time_out=120, kb_url="", kb_token="", binary_simple=False,
@@ -531,7 +531,7 @@ def run_main(mode_list, path_arg, dep_arguments, output_file_or_dir, file_format
                 if src_path != "":
                     final_reports = run_scanner(src_path, dep_arguments, output_path, keep_raw_data,
                                                 run_src, run_bin, run_dep, remove_downloaded_source, {}, output_files,
-                                                output_extensions, num_cores, db_url,
+                                                output_extensions, num_cores,
                                                 default_oss_name, default_oss_version, url_to_analyze,
                                                 correct_mode, correct_fpath, ui_mode, path_to_exclude,
                                                 selected_source_scanner, source_write_json_file, source_print_matched_text,

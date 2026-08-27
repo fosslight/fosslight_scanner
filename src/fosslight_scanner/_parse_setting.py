@@ -12,7 +12,6 @@ def parse_setting_json(data):
     output = data.get('output', '')
     format = data.get('format', '')
     link = data.get('link', '')
-    db_url = data.get('db_url', '')
     timer = data.get('timer', False)
     raw = data.get('raw', False)
     core = data.get('core', -1)
@@ -31,7 +30,7 @@ def parse_setting_json(data):
     no_merge = data.get('no_merge', False)
     str_lists = [mode, path, exclude_path]
     strings = [
-        dep_argument, output, format, db_url,
+        dep_argument, output, format,
         correct_fpath, link, selected_source_scanner, kb_url, kb_token
     ]
     booleans = [timer, raw, no_correction, ui, source_write_json_file,
@@ -67,7 +66,7 @@ def parse_setting_json(data):
     if is_incorrect:
         print('Ignoring some values with incorrect format in the setting file.')
 
-    return mode, path, dep_argument, output, format, link, db_url, timer, \
+    return mode, path, dep_argument, output, format, link, timer, \
         raw, core, no_correction, correct_fpath, ui, exclude_path, \
         selected_source_scanner, source_write_json_file, source_print_matched_text, source_time_out, \
         binary_simple, recursive_dep, kb_url, kb_token, no_merge
