@@ -213,6 +213,8 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
     if not correct_fpath:
         correct_fpath = src_path
 
+    # Shared exclude for source/binary/dependency: -e, dirs, dots, extensions only.
+    # Source/binary apply their own filename excludes locally.
     excluded_path_with_default_exclusion, excluded_path_without_dot, excluded_files, cnt_file_except_skipped = (
             get_excluded_paths(src_path, path_to_exclude))
     logger.debug(f"Skipped paths: {excluded_path_with_default_exclusion}")
