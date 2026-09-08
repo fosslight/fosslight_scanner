@@ -28,10 +28,10 @@ dependencies = [
     "progress",
     "pyyaml",
     "beautifulsoup4",
-    "fosslight_util>=2.2.2,<3.0.0",
-    "fosslight_source>=2.3.3,<3.0.0",
-    "fosslight_dependency>=4.1.31,<5.0.0",
-    "fosslight_binary>=5.1.30,<6.0.0",
+    "fosslight_util>=2.2.13,<3.0.0",
+    "fosslight_source>=2.3.12,<3.0.0",
+    "fosslight_dependency>=4.1.51,<5.0.0",
+    "fosslight_binary>=5.1.32,<6.0.0",
 ]
 
 [project.optional-dependencies]
