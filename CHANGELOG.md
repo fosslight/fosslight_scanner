@@ -1,5 +1,13 @@
 # Changelog
 
+## v2.1.30 (14/09/2026)
+## Changes
+## 🔧 Maintenance
+
+- Avoid pairing distinct empty-name oss items @bjk7119 (#196)
+
+---
+
 ## v2.1.29 (27/08/2026)
 ## Changes
 ## 🚀 Features
@@ -277,16 +285,3 @@
 ## 🔧 Maintenance
 
 - Print option name with error msg @bjk7119 (#132)
-
----
-
-## v2.1.0 (08/10/2024)
-## Changes
-## 🚀 Features
-
-- Support multi format and spdx (spdx only Linux) @dd-jy (#130)
-
-## 🔧 Maintenance
-
-- Change the test code to use pytest @cjho0316 (#124)
-- ci: Add Docker build and push workflow for automated releases @soonhong99 (#122)
