@@ -328,7 +328,8 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
         results = []
         final_reports = []
         for combined_path_and_file, output_extension, output_format in zip(combined_paths_and_files, output_extensions, formats):
-            results.append(write_output_file(combined_path_and_file, output_extension, all_scan_item, {}, {}, output_format))
+            results.append(write_output_file(combined_path_and_file, output_extension, all_scan_item, {}, {}, output_format,
+                                             scanner_covers=[cover, *all_cover_items]))
         for success, msg, result_file in results:
             if success:
                 final_reports.append(result_file)
