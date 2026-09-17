@@ -183,15 +183,14 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
         for i, output_extension in enumerate(output_extensions):
             if output_files[i] is None or output_files[i] == "":
                 if formats:
-                    if formats[i].startswith('spdx') or formats[i].startswith('cyclonedx'):
+                    if formats[i].startswith('spdx'):
                         if platform.system() == 'Windows':
                             logger.warning(f'{formats[i]} is not supported on Windows. Please remove {formats[i]} from format.')
                             to_remove.append(i)
                         else:
-                            if formats[i].startswith('spdx'):
-                                output_files[i] = f"fosslight_spdx_all_{_file_time}"
-                            elif formats[i].startswith('cyclonedx'):
-                                output_files[i] = f'fosslight_cyclonedx_all_{_file_time}'
+                            output_files[i] = f"fosslight_spdx_all_{_file_time}"
+                    elif formats[i].startswith('cyclonedx'):
+                        output_files[i] = f'fosslight_cyclonedx_all_{_file_time}'
                     else:
                         if output_extension == _json_ext:
                             output_files[i] = f"fosslight_opossum_all_{_file_time}"
@@ -329,7 +328,8 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
         results = []
         final_reports = []
         for combined_path_and_file, output_extension, output_format in zip(combined_paths_and_files, output_extensions, formats):
-            results.append(write_output_file(combined_path_and_file, output_extension, all_scan_item, {}, {}, output_format))
+            results.append(write_output_file(combined_path_and_file, output_extension, all_scan_item, {}, {}, output_format,
+                                             scanner_covers=[cover, *all_cover_items]))
         for success, msg, result_file in results:
             if success:
                 final_reports.append(result_file)
