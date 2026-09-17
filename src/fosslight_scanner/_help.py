@@ -35,6 +35,9 @@ _HELP_MESSAGE_SCANNER = f"""
     -p <path>              Path to analyze
                            • Compare mode: path to two FOSSLight reports (excel/yaml)
     -w <url>               URL to download and analyze (git clone or wget)
+    --git_token <token>    Git HTTP personal access token for private URL (-w)
+    --id <user>            Git HTTP credential username (with --git_token)
+                           Default: oauth2 when only --git_token is given
     -f <format>            Output format ({', '.join(SUPPORT_FORMAT)})
                            • Compare mode: excel, json, yaml, html
                            • Multiple formats: ex) -f excel yaml json (separated by space)
@@ -56,10 +59,6 @@ _HELP_MESSAGE_SCANNER = f"""
 
     🔍 Mode-Specific Options
     ────────────────────────────────────────────────────────────────────
-    For 'all' or 'binary' mode:
-      -u <db_url>          Database connection string
-                           Format: postgresql://username:password@host:port/database
-
     For 'all' or 'dependency' mode:
       -d <args>            Additional arguments for dependency analysis
 
@@ -85,11 +84,11 @@ _HELP_MESSAGE_SCANNER = f"""
     # Download and analyze from git repository
     fosslight -w https://github.com/user/repo.git -o result_dir
 
+    # Download and analyze a private repository with PAT
+    fosslight -w https://github.com/org/private-repo.git --git_token ghp_xxxx -o result_dir
+
     # Compare two FOSSLight reports
     fosslight compare -p report_v1.xlsx report_v2.xlsx -f excel
-
-    # Run with database connection for binary analysis
-    fosslight binary -p /path/to/binary -u "postgresql://user:pass@localhost:5432/sample"
     """
 
 

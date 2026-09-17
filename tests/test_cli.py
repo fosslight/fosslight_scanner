@@ -21,7 +21,6 @@ def test_set_args(monkeypatch):
         "output": "test_output",
         "format": ["test_format"],
         "link": "test_link",
-        "db_url": "test_db_url",
         "timer": True,
         "raw": True,
         "core": 4,
@@ -35,7 +34,9 @@ def test_set_args(monkeypatch):
         "source_time_out": 100,
         "binary_simple": True,
         "kb_url": "http://kb.example.com",
-        "kb_token": "test_token"
+        "kb_token": "test_token",
+        "id": "oauth2",
+        "git_token": "ghp_test"
     })
 
     def mock_open(*args, **kwargs):
@@ -46,16 +47,16 @@ def test_set_args(monkeypatch):
 
     # Call the function with some arguments
     result = set_args(
-        mode=None, path=None, dep_argument=None, output=None, format=None, link=None, db_url=None, timer=None,
+        mode=None, path=None, dep_argument=None, output=None, format=None, link=None, timer=None,
         raw=None, core=-1, no_correction=None, correct_fpath=None, ui=None, setting="dummy_path", exclude_path=None,
         recursive_dep=False
     )
 
     # Expected result
     expected = (
-        ["test_mode"], ["test_path"], "test_dep_argument", "test_output", ["test_format"], "test_link", "test_db_url", True,
+        ["test_mode"], ["test_path"], "test_dep_argument", "test_output", ["test_format"], "test_link", True,
         True, 4, True, "test_correct_fpath", True, ["test_exclude_path"], "test_scanner", True, True, 100, True, False,
-        "http://kb.example.com", "test_token", False
+        "http://kb.example.com", "test_token", False, "oauth2", "ghp_test"
     )
 
     assert result == expected

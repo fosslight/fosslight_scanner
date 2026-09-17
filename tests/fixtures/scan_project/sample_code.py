@@ -14,7 +14,7 @@ from ._parse_setting import parse_setting_json
 from fosslight_util.help import print_package_version
 
 
-def set_args(mode, path, dep_argument, output, format, link, db_url, timer,
+def set_args(mode, path, dep_argument, output, format, link, timer,
              raw, core, no_correction, correct_fpath, ui, setting, exclude_path,
              recursive_dep):
 
@@ -28,10 +28,10 @@ def set_args(mode, path, dep_argument, output, format, link, db_url, timer,
         try:
             with open(setting, 'r', encoding='utf-8') as file:
                 data = json.load(file)
-            s_mode, s_path, s_dep_argument, s_output, s_format, s_link, s_db_url, s_timer, s_raw, s_core, \
+            s_mode, s_path, s_dep_argument, s_output, s_format, s_link, s_timer, s_raw, s_core, \
                 s_no_correction, s_correct_fpath, s_ui, s_exclude_path, \
                 s_selected_source_scanner, s_source_write_json_file, s_source_print_matched_text, \
-                s_source_time_out, s_binary_simple, s_recursive_dep = parse_setting_json(data)
+                s_source_time_out, s_binary_simple, s_recursive_dep, s_kb_url, s_kb_token, s_no_merge = parse_setting_json(data)
 
             # direct cli arguments have higher priority than setting file
             mode = mode or s_mode
@@ -40,7 +40,6 @@ def set_args(mode, path, dep_argument, output, format, link, db_url, timer,
             output = output or s_output
             format = format or s_format
             link = link or s_link
-            db_url = db_url or s_db_url
             timer = timer or s_timer
             raw = raw or s_raw
             core = core if core != -1 else s_core
@@ -59,7 +58,7 @@ def set_args(mode, path, dep_argument, output, format, link, db_url, timer,
 
         except Exception as e:
             print(f"Cannot open setting file: {e}")
-    return mode, path, dep_argument, output, format, link, db_url, timer, \
+    return mode, path, dep_argument, output, format, link, timer, \
         raw, core, no_correction, correct_fpath, ui, exclude_path, \
         selected_source_scanner, source_write_json_file, source_print_matched_text, source_time_out, \
         binary_simple, recursive_dep
@@ -83,8 +82,6 @@ def main():
                         type=str, dest='output', default="")
     parser.add_argument('--dependency', '-d', help='Dependency arguments (e.g. -d "-m pip" )',
                         type=str, dest='dep_argument', default="")
-    parser.add_argument('--url', '-u', help="DB Url",
-                        type=str, dest='db_url', default="")
     parser.add_argument('--core', '-c',
                         help='Number of processes to analyze source',
                         type=int, dest='core', default=-1)
@@ -120,15 +117,15 @@ def main():
     elif args.version:
         print_package_version(PKG_NAME, "FOSSLight Scanner Version:")
     else:
-        mode, path, dep_argument, output, format, link, db_url, timer, raw, core, no_correction, correct_fpath, \
+        mode, path, dep_argument, output, format, link, timer, raw, core, no_correction, correct_fpath, \
             ui, exclude_path, selected_source_scanner, source_write_json_file, source_print_matched_text, \
             source_time_out, binary_simple, recursive_dep = set_args(
                 args.mode, args.path, args.dep_argument, args.output,
-                args.format, args.link, args.db_url, args.timer, args.raw,
+                args.format, args.link, args.timer, args.raw,
                 args.core, args.no_correction, args.correct_fpath, args.ui,
                 args.setting, args.exclude_path, args.recursive_dep)
 
-        run_main(mode, path, dep_argument, output, format, link, db_url, timer,
+        run_main(mode, path, dep_argument, output, format, link, timer,
                  raw, core, not no_correction, correct_fpath, ui, exclude_path,
                  selected_source_scanner, source_write_json_file, source_print_matched_text,
                  source_time_out, binary_simple, recursive_dep)

@@ -152,7 +152,7 @@ def source_analysis_wrapper(*args, **kwargs):
 def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                 run_src=True, run_bin=True, run_dep=True,
                 remove_src_data=True, result_log={}, output_files=[],
-                output_extensions=[], num_cores=-1, db_url="",
+                output_extensions=[], num_cores=-1,
                 default_oss_name="", default_oss_version="", url="",
                 correct_mode=True, correct_fpath="", ui_mode=False, path_to_exclude=[],
                 selected_source_scanner="all", source_write_json_file=False, source_print_matched_text=False,
@@ -364,7 +364,7 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
     return final_reports
 
 
-def download_source(link, out_dir):
+def download_source(link, out_dir, git_id="", git_token=""):
     start_time = current_timestamp_utc()
     success = False
     temp_src_dir = ""
@@ -377,8 +377,11 @@ def download_source(link, out_dir):
 
         link = link.strip()
         logger.info(f"Link to download: {link}")
+        if git_token and not git_id:
+            git_id = "oauth2"
         success, msg, oss_name, oss_version, _ = cli_download_and_extract(
-            link, temp_src_dir, _output_dir)
+            link, temp_src_dir, _output_dir,
+            id=git_id, git_token=git_token)
 
         if success:
             logger.info(f"Downloaded Dir: {temp_src_dir}")
@@ -419,11 +422,11 @@ def init(output_path="", make_outdir=True):
 
 
 def run_main(mode_list, path_arg, dep_arguments, output_file_or_dir, file_format, url_to_analyze,
-             db_url, hide_progressbar=False, keep_raw_data=False, num_cores=-1,
+             hide_progressbar=False, keep_raw_data=False, num_cores=-1,
              correct_mode=True, correct_fpath="", ui_mode=False, path_to_exclude=[],
              selected_source_scanner="all", source_write_json_file=False, source_print_matched_text=False,
              source_time_out=120, kb_url="", kb_token="", binary_simple=False,
-             recursive_dep=False, no_merge=False):
+             recursive_dep=False, no_merge=False, git_id="", git_token=""):
     global _executed_path
 
     output_files = []
@@ -527,15 +530,15 @@ def run_main(mode_list, path_arg, dep_arguments, output_file_or_dir, file_format
 
                 if url_to_analyze != "":
                     remove_downloaded_source = True
-                    (analysis_success, src_path,
-                     default_oss_name, default_oss_version) = download_source(url_to_analyze, output_path)
+                    analysis_success, src_path, default_oss_name, default_oss_version = download_source(
+                        url_to_analyze, output_path, git_id=git_id, git_token=git_token)
                     if not analysis_success:
                         logger.error("Stop the analysis because the source could not be downloaded.")
 
                 if src_path != "":
                     final_reports = run_scanner(src_path, dep_arguments, output_path, keep_raw_data,
                                                 run_src, run_bin, run_dep, remove_downloaded_source, {}, output_files,
-                                                output_extensions, num_cores, db_url,
+                                                output_extensions, num_cores,
                                                 default_oss_name, default_oss_version, url_to_analyze,
                                                 correct_mode, correct_fpath, ui_mode, path_to_exclude,
                                                 selected_source_scanner, source_write_json_file, source_print_matched_text,
