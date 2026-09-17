@@ -1,5 +1,17 @@
 # Changelog
 
+## v2.1.31 (17/09/2026)
+## Changes
+## 🚀 Features
+
+- fix(cyclonedx): update aggregate BOM and tool metadata @JustinWonjaePark (#200)
+
+## 🐛 Hotfixes
+
+- Report a failed download in run_main's return value @bjk7119 (#194)
+
+---
+
 ## v2.1.30 (14/09/2026)
 ## Changes
 ## 🔧 Maintenance
@@ -273,15 +285,3 @@
 ## 🐛 Hotfixes
 
 - Fix json output error when not analyzing source @soimkim (#136)
-
----
-
-## v2.1.1 (05/12/2024)
-## Changes
-## 🚀 Features
-
-- Support cycloneDX format @dd-jy (#135)
-
-## 🔧 Maintenance
-
-- Print option name with error msg @bjk7119 (#132)
