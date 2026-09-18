@@ -11,7 +11,6 @@ import warnings
 import shutil
 import shlex
 import subprocess
-import platform
 from pathlib import Path
 
 from fosslight_binary import binary_analysis
@@ -179,16 +178,11 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
         # If -o does not contains file name, set default name
         while len(output_files) < len(output_extensions):
             output_files.append(None)
-        to_remove = []  # elements of spdx format on windows that should be removed
         for i, output_extension in enumerate(output_extensions):
             if output_files[i] is None or output_files[i] == "":
                 if formats:
                     if formats[i].startswith('spdx'):
-                        if platform.system() == 'Windows':
-                            logger.warning(f'{formats[i]} is not supported on Windows. Please remove {formats[i]} from format.')
-                            to_remove.append(i)
-                        else:
-                            output_files[i] = f"fosslight_spdx_all_{_file_time}"
+                        output_files[i] = f"fosslight_spdx_all_{_file_time}"
                     elif formats[i].startswith('cyclonedx'):
                         output_files[i] = f'fosslight_cyclonedx_all_{_file_time}'
                     else:
@@ -201,14 +195,6 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                         output_files[i] = f"fosslight_opossum_all_{_file_time}"
                     else:
                         output_files[i] = f"fosslight_report_all_{_file_time}"
-        for index in sorted(to_remove, reverse=True):
-            # remove elements of spdx format on windows
-            del output_files[index]
-            del output_extensions[index]
-            del formats[index]
-        if len(output_extensions) < 1:
-            sys.exit(0)
-
     if not correct_fpath:
         correct_fpath = src_path
 
