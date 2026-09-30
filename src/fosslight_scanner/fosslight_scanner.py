@@ -579,11 +579,7 @@ def run_main(mode_list, path_arg, dep_arguments, output_file_or_dir, file_format
                 shutil.rmtree(output_path)
                 if final_reports:
                     final_reports = [report.replace(output_path, final_dir) for report in final_reports]
-                    if "compare" in mode_list:
-                        for report in final_reports:
-                            logger.info(f"Output file: {report}")
-                    else:
-                        logger.info(f'Output File: {", ".join(final_reports)}')
+                    logger.info(f'Output File: {", ".join(final_reports)}')
         except Exception as ex:
             logger.debug(f"Error to remove temp files:{ex}")
     except Exception as ex:
