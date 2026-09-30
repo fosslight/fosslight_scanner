@@ -2,7 +2,9 @@ import shutil
 import openpyxl
 import pytest
 from pathlib import Path
-from fosslight_scanner.fosslight_scanner import run_scanner, download_source, init, run_main, run_dependency
+from fosslight_scanner.fosslight_scanner import (
+    run_scanner, download_source, init, run_main, run_dependency, remove_tree
+)
 from fosslight_util.oss_item import ScannerItem
 from fosslight_util.constant import FOSSLIGHT_BINARY, FOSSLIGHT_DEPENDENCY, FOSSLIGHT_SOURCE, SHEET_NAME_FOR_SCANNER
 
@@ -234,3 +236,49 @@ def test_output_excel_contains_required_sheets(tmp_path, mode_list, expected_she
             f"[mode={mode_list}] Sheet '{sheet}' has {row_count} row(s), "
             f"expected at least {_MIN_DATA_ROWS}."
         )
+
+
+def _make_read_only(target: Path) -> None:
+    target.chmod(target.stat().st_mode & ~0o222)
+
+
+def test_remove_tree_removes_nested_read_only_tree(tmp_path: Path):
+    """remove_tree must remove a tree that shutil.rmtree alone cannot.
+
+    A cloned git repository leaves read-only pack files behind, which Windows refuses
+    to delete, and on POSIX an entry of a read-only directory cannot be removed.
+    """
+    # given: a read-only file inside read-only directories, under a read-only root
+    root = tmp_path / "raw_data"
+    nested = root / "objects" / "pack"
+    nested.mkdir(parents=True)
+    (nested / "locked.pack").write_bytes(b"x")
+    _make_read_only(nested / "locked.pack")
+    for directory in (nested, nested.parent, root):
+        _make_read_only(directory)
+
+    with pytest.raises(PermissionError):
+        shutil.rmtree(root)
+
+    # when
+    removed = remove_tree(root)
+
+    # then
+    assert removed is True, "remove_tree should report the tree as gone."
+    assert not root.exists(), f"{root} should have been removed."
+
+
+def test_remove_tree_reports_failure_without_raising(tmp_path: Path, monkeypatch):
+    """A directory that cannot be removed is reported, not raised, so callers continue."""
+    # given
+    target = tmp_path / "stuck"
+    target.mkdir()
+
+    def always_fail(*args, **kwargs):
+        raise PermissionError("locked")
+
+    monkeypatch.setattr(shutil, "rmtree", always_fail)
+
+    # when / then
+    assert remove_tree(target) is False
+    assert target.exists()

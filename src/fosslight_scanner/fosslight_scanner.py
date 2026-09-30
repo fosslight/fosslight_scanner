@@ -10,6 +10,7 @@ import logging
 import warnings
 import shutil
 import shlex
+import stat
 import subprocess
 import platform
 from pathlib import Path
@@ -60,6 +61,42 @@ SCANNER_MODE = [
     "all", "compare", "binary",
     "bin", "src", "source", "dependency", "dep"
 ]
+
+
+def _add_write_permission(target):
+    # Add the owner write bit to the existing mode. Replacing the mode instead would
+    # drop the read and execute bits a directory needs to be listed.
+    try:
+        os.chmod(target, os.stat(target).st_mode | stat.S_IWRITE)
+    except OSError:
+        pass
+
+
+def _retry_with_write_permission(func, path, _exc):
+    # shutil.rmtree calls this only for the entries it failed to remove, so the tree is
+    # walked once and only those entries are touched. Windows refuses to delete a
+    # read-only file (git writes its pack files read-only), and POSIX refuses to remove
+    # an entry of a directory without write permission, so add the write bit to both
+    # and retry once. A second failure (e.g. [WinError 32]) propagates to the caller.
+    _add_write_permission(os.path.dirname(path))
+    _add_write_permission(path)
+    func(path)
+
+
+def remove_tree(path):
+    """Remove a temporary directory tree. Returns whether it is gone; never raises."""
+    if not os.path.exists(path):
+        return True
+    try:
+        # onerror is deprecated since Python 3.12 in favor of onexc.
+        if sys.version_info >= (3, 12):
+            shutil.rmtree(path, onexc=_retry_with_write_permission)
+        else:
+            shutil.rmtree(path, onerror=_retry_with_write_permission)
+        return True
+    except Exception as ex:
+        logger.warning(f"Failed to remove the temporary directory({path}): {ex}")
+        return False
 
 
 def _all_exclude_mode_for_scanner(
@@ -549,7 +586,7 @@ def run_main(mode_list, path_arg, dep_arguments, output_file_or_dir, file_format
                                                 kb_token, binary_simple, formats, recursive_dep, no_merge)
 
                 if extract_folder:
-                    shutil.rmtree(extract_folder)
+                    remove_tree(extract_folder)
             else:
                 logger.error("(mode) No mode has been selected for analysis.")
         try:
@@ -563,22 +600,44 @@ def run_main(mode_list, path_arg, dep_arguments, output_file_or_dir, file_format
             except Exception as ex:
                 logger.debug(f"Failed to move log file: {ex}")
 
-            if not keep_raw_data:
-                logger.debug(f"Remove temporary files: {_output_dir}")
-                shutil.rmtree(_output_dir)
             if os.path.exists(output_path):
                 os.makedirs(final_dir, exist_ok=True)
+                # Deliver the results before removing anything, so that a cleanup failure
+                # can never keep them out of the output directory. The raw data lives in
+                # output_path, so unless it is kept it is removed along with it below.
+                raw_data_name = os.path.basename(os.path.normpath(_output_dir))
+                move_failed = False
                 for item in os.listdir(output_path):
+                    if not keep_raw_data and item == raw_data_name:
+                        continue
                     src_item = os.path.join(output_path, item)
                     dst_item = os.path.join(final_dir, item)
-                    if os.path.isdir(src_item) and os.path.exists(dst_item):
-                        for sub_item in os.listdir(src_item):
-                            shutil.move(os.path.join(src_item, sub_item), os.path.join(dst_item, sub_item))
-                    else:
-                        shutil.move(src_item, dst_item)
-                shutil.rmtree(output_path)
+                    try:
+                        if os.path.isdir(src_item) and os.path.exists(dst_item):
+                            for sub_item in os.listdir(src_item):
+                                shutil.move(os.path.join(src_item, sub_item), os.path.join(dst_item, sub_item))
+                        else:
+                            shutil.move(src_item, dst_item)
+                    except Exception as ex:
+                        # One item that cannot be moved (e.g. a file still held open,
+                        # [WinError 32]) must not stop the others from being delivered.
+                        move_failed = True
+                        logger.warning(f"Failed to move {src_item} to {final_dir}: {ex}")
+                if move_failed:
+                    # Removing output_path now would delete the results that could not
+                    # be moved out of it. Leave it and tell the user where it is.
+                    logger.warning(f"Some results could not be moved and are left in {output_path}.")
+                else:
+                    logger.debug(f"Remove temporary files: {output_path}")
+                    remove_tree(output_path)
                 if final_reports:
-                    final_reports = [report.replace(output_path, final_dir) for report in final_reports]
+                    # Rewrite only the reports that really arrived in final_dir, so that a
+                    # report left behind is reported where it actually is.
+                    moved_reports = []
+                    for report in final_reports:
+                        moved = report.replace(output_path, final_dir)
+                        moved_reports.append(moved if os.path.exists(moved) else report)
+                    final_reports = moved_reports
                     logger.info(f'Output File: {", ".join(final_reports)}')
         except Exception as ex:
             logger.debug(f"Error to remove temp files:{ex}")
