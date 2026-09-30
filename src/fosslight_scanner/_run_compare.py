@@ -273,6 +273,7 @@ def run_compare(before_f, after_f, output_path, output_files, file_ext, _start_t
 
     if output_files:
         output_file = output_files[0]
+    written_files = []
     compared_result = compare_yaml(before_fileitems, after_fileitems)
     if compared_result != '':
         count_compared_result(compared_result)
@@ -280,8 +281,8 @@ def run_compare(before_f, after_f, output_path, output_files, file_ext, _start_t
             result_file = get_comparison_result_filename(output_path, output_file, f_ext, _start_time)
             ret, result_file = write_compared_result(result_file, compared_result, f_ext, before_yaml, after_yaml)
             if ret:
-                logger.info(f"Output file: {result_file}")
+                written_files.append(result_file)
             else:
                 logger.error("Fail to write compared result file.")
 
-    return ret
+    return written_files

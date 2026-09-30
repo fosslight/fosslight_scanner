@@ -499,8 +499,11 @@ def run_main(mode_list, path_arg, dep_arguments, output_file_or_dir, file_format
             ret, final_excel_dir, result_log = init(output_path)
             if not output_files:
                 output_files = [COMPARE_OUTPUT_REPORT_PREFIX + timestamp_for_filename(_start_time)]
-            run_compare(os.path.join(_executed_path, before_comp_f), os.path.join(_executed_path, after_comp_f),
-                        final_excel_dir, output_files, output_extensions, _start_time, _output_dir)
+            compared_outputs = run_compare(
+                os.path.join(_executed_path, before_comp_f), os.path.join(_executed_path, after_comp_f),
+                final_excel_dir, output_files, output_extensions, _start_time, _output_dir)
+            if isinstance(compared_outputs, list):
+                final_reports = compared_outputs
         else:
             run_src = False
             run_bin = False
@@ -576,7 +579,11 @@ def run_main(mode_list, path_arg, dep_arguments, output_file_or_dir, file_format
                 shutil.rmtree(output_path)
                 if final_reports:
                     final_reports = [report.replace(output_path, final_dir) for report in final_reports]
-                    logger.info(f'Output File: {", ".join(final_reports)}')
+                    if "compare" in mode_list:
+                        for report in final_reports:
+                            logger.info(f"Output file: {report}")
+                    else:
+                        logger.info(f'Output File: {", ".join(final_reports)}')
         except Exception as ex:
             logger.debug(f"Error to remove temp files:{ex}")
     except Exception as ex:
