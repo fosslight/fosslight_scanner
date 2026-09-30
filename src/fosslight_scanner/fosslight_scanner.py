@@ -607,6 +607,7 @@ def run_main(mode_list, path_arg, dep_arguments, output_file_or_dir, file_format
                 # output_path, so unless it is kept it is removed along with it below.
                 raw_data_name = os.path.basename(os.path.normpath(_output_dir))
                 move_failed = False
+                moved_sources = set()
                 for item in os.listdir(output_path):
                     if not keep_raw_data and item == raw_data_name:
                         continue
@@ -615,9 +616,12 @@ def run_main(mode_list, path_arg, dep_arguments, output_file_or_dir, file_format
                     try:
                         if os.path.isdir(src_item) and os.path.exists(dst_item):
                             for sub_item in os.listdir(src_item):
-                                shutil.move(os.path.join(src_item, sub_item), os.path.join(dst_item, sub_item))
+                                src_sub_item = os.path.join(src_item, sub_item)
+                                shutil.move(src_sub_item, os.path.join(dst_item, sub_item))
+                                moved_sources.add(src_sub_item)
                         else:
                             shutil.move(src_item, dst_item)
+                            moved_sources.add(src_item)
                     except Exception as ex:
                         # One item that cannot be moved (e.g. a file still held open,
                         # [WinError 32]) must not stop the others from being delivered.
@@ -636,7 +640,7 @@ def run_main(mode_list, path_arg, dep_arguments, output_file_or_dir, file_format
                     moved_reports = []
                     for report in final_reports:
                         moved = report.replace(output_path, final_dir)
-                        moved_reports.append(moved if os.path.exists(moved) else report)
+                        moved_reports.append(moved if report in moved_sources else report)
                     final_reports = moved_reports
                     logger.info(f'Output File: {", ".join(final_reports)}')
         except Exception as ex:

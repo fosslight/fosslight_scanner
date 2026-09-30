@@ -1,3 +1,4 @@
+import os
 import shutil
 import openpyxl
 import pytest
@@ -5,6 +6,7 @@ from pathlib import Path
 from fosslight_scanner.fosslight_scanner import (
     run_scanner, download_source, init, run_main, run_dependency, remove_tree
 )
+from fosslight_scanner import fosslight_scanner as scanner
 from fosslight_util.oss_item import ScannerItem
 from fosslight_util.constant import FOSSLIGHT_BINARY, FOSSLIGHT_DEPENDENCY, FOSSLIGHT_SOURCE, SHEET_NAME_FOR_SCANNER
 
@@ -189,6 +191,57 @@ def test_run_main(tmp_path):
     assert result is True
 
 
+@pytest.mark.parametrize("nested", [False, True], ids=["file", "merged-directory"])
+@pytest.mark.parametrize("move_fails", [False, True], ids=["move-succeeds", "move-fails"])
+def test_run_main_reports_only_successfully_moved_paths(tmp_path, monkeypatch, caplog, nested, move_fails):
+    output_dir = tmp_path / "output"
+    relative_report = Path("reports/report.yaml") if nested else Path("report.yaml")
+    destination = output_dir / relative_report
+    destination.parent.mkdir(parents=True)
+    destination.write_text("old report")
+    reports = []
+
+    def fake_run_scanner(src_path, dep_arguments, output_path, *args):
+        report = Path(output_path) / relative_report
+        report.parent.mkdir(parents=True, exist_ok=True)
+        report.write_text("current report")
+        delivered = Path(output_path) / "delivered.yaml"
+        delivered.write_text("another report")
+        reports.extend([report, delivered])
+        return [str(report), str(delivered)]
+
+    real_move = shutil.move
+
+    def move(src, dst):
+        if move_fails and Path(src) == reports[0]:
+            raise PermissionError("report is locked")
+        return real_move(src, dst)
+
+    monkeypatch.setattr(scanner, "run_scanner", fake_run_scanner)
+    monkeypatch.setattr(scanner, "move_log_file", lambda *args: None)
+    monkeypatch.setattr(shutil, "move", move)
+    caplog.set_level("INFO", logger=scanner.logger.name)
+
+    result = run_main(
+        mode_list=["source"],
+        path_arg=[str(tmp_path)],
+        dep_arguments=[],
+        output_file_or_dir=str(output_dir),
+        file_format=["yaml"],
+        url_to_analyze="",
+        hide_progressbar=True,
+    )
+
+    assert result is True
+    expected_report = reports[0] if move_fails else destination
+    delivered = output_dir / "delivered.yaml"
+    assert any(message.endswith(f"Output File: {expected_report}, {delivered}") for message in caplog.messages)
+    assert delivered.read_text() == "another report"
+    assert destination.read_text() == ("old report" if move_fails else "current report")
+    assert reports[0].exists() is move_fails
+    assert reports[1].parent.exists() is move_fails
+
+
 @pytest.mark.parametrize("mode_list,expected_sheets", SHEET_CHECK_PARAMS)
 def test_output_excel_contains_required_sheets(tmp_path, mode_list, expected_sheets):
     # given
@@ -242,6 +295,10 @@ def _make_read_only(target: Path) -> None:
     target.chmod(target.stat().st_mode & ~0o222)
 
 
+@pytest.mark.skipif(
+    hasattr(os, "geteuid") and os.geteuid() == 0,
+    reason="Root bypasses the read-only directory permission precondition.",
+)
 def test_remove_tree_removes_nested_read_only_tree(tmp_path: Path):
     """remove_tree must remove a tree that shutil.rmtree alone cannot.
 
