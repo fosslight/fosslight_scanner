@@ -242,7 +242,7 @@ def run_compare(before_f, after_f, output_path, output_files, file_ext, _start_t
     ret = False
     before_yaml = ''
     after_yaml = ''
-    logger.info("Start compare mode")
+    logger.debug("Start compare mode")
     logger.info(f"before file: {before_f}")
     logger.info(f"after file: {after_f}")
 
