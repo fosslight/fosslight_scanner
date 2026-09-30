@@ -499,8 +499,11 @@ def run_main(mode_list, path_arg, dep_arguments, output_file_or_dir, file_format
             ret, final_excel_dir, result_log = init(output_path)
             if not output_files:
                 output_files = [COMPARE_OUTPUT_REPORT_PREFIX + timestamp_for_filename(_start_time)]
-            run_compare(os.path.join(_executed_path, before_comp_f), os.path.join(_executed_path, after_comp_f),
-                        final_excel_dir, output_files, output_extensions, _start_time, _output_dir)
+            compared_outputs = run_compare(
+                os.path.join(_executed_path, before_comp_f), os.path.join(_executed_path, after_comp_f),
+                final_excel_dir, output_files, output_extensions, _start_time, _output_dir)
+            if isinstance(compared_outputs, list):
+                final_reports = compared_outputs
         else:
             run_src = False
             run_bin = False
