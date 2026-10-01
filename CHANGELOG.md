@@ -1,5 +1,17 @@
 # Changelog
 
+## v2.1.32 (01/10/2026)
+## Changes
+## 🐛 Hotfixes
+
+- fix(scanner): keep temp cleanup failures from stranding the reports @bjk7119 (#202)
+
+## 🔧 Maintenance
+
+- fix(compare): log output file at final path @soimkim (#201)
+
+---
+
 ## v2.1.31 (17/09/2026)
 ## Changes
 ## 🚀 Features
@@ -277,11 +289,3 @@
 
 - Update platform in docker build workflow @soimkim (#138)
 - Change base image to fix docker build error on macOS @soimkim (#137)
-
----
-
-## v2.1.2 (09/01/2025)
-## Changes
-## 🐛 Hotfixes
-
-- Fix json output error when not analyzing source @soimkim (#136)
