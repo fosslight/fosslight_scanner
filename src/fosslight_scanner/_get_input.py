@@ -25,14 +25,12 @@ def ask_to_run(ask_msg):
     return return_value in return_true_item
 
 
-def get_input_mode(_executed_path, mode_list=["all"]):
+def get_input_mode(_executed_path, mode_list=["all"], dep_arguments=""):
     global _PYTHON_VERSION
     _PYTHON_VERSION = sys.version_info[0]
 
     url_to_analyze = ""
     src_path = ""
-    dep_arguments = ""
-
     if ask_to_run("What are you going to analyze? (1/2)\n\
                    1. Links that can be cloned by git or wget\n\
                    2. Local source path\n"):
@@ -40,7 +38,7 @@ def get_input_mode(_executed_path, mode_list=["all"]):
     else:
         src_path = get_input("Please enter the path to analyze:", _executed_path)
 
-        if "all" or "dependency" or "dep" in mode_list:
+        if not dep_arguments and (not mode_list or any(mode in mode_list for mode in ("all", "dependency", "dep"))):
             dep_arguments = get_input(
                 "Please enter arguments for dependency analysis:", "")
 

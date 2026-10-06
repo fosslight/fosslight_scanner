@@ -122,12 +122,14 @@ def run_dependency(path_to_analyze, output_file_with_path, params="", path_to_ex
     output_custom_dir = ""
     app_name = ""
     github_token = ""
+    runtime_config = ""
 
     try:
         if params:
             match_obj = re.findall(
-                r'\s*(-\s*[a|d|m|c|n|t])\s*\'([^\']+)\'\s*', params)
-            for param, value in match_obj:
+                r"\s*(--runtime-config|-[admcnt])\s*(?:'([^']*)'|([^\s-][^\s]*))\s*", params)
+            for param, quoted_value, bare_value in match_obj:
+                value = quoted_value if quoted_value else bare_value
                 if param == "-m":
                     package_manager = value
                 elif param == "-a":
@@ -140,6 +142,8 @@ def run_dependency(path_to_analyze, output_file_with_path, params="", path_to_ex
                     app_name = value
                 elif param == "-t":
                     github_token = value
+                elif param == "--runtime-config":
+                    runtime_config = value
     except Exception as ex:
         logger.warning(f"Set dependency Param: {ex}")
 
@@ -159,7 +163,8 @@ def run_dependency(path_to_analyze, output_file_with_path, params="", path_to_ex
             github_token, formats, True, path_to_exclude=path_to_exclude,
             graph_path="", graph_size=(600, 600),
             recursive=recursive_dep,
-            all_exclude_mode=all_exclude_mode
+            all_exclude_mode=all_exclude_mode,
+            runtime_config=runtime_config
         )
         if success:
             result = scan_item
@@ -561,7 +566,8 @@ def run_main(mode_list, path_arg, dep_arguments, output_file_or_dir, file_format
 
             if run_dep or run_src or run_bin:
                 if src_path == "" and url_to_analyze == "":
-                    src_path, dep_arguments, url_to_analyze = get_input_mode(_executed_path, mode_list)
+                    src_path, dep_arguments, url_to_analyze = get_input_mode(
+                        _executed_path, mode_list, dep_arguments)
 
                 if not hide_progressbar:
                     timer = TimerThread()
