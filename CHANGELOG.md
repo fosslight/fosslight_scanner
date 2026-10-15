@@ -1,5 +1,13 @@
 # Changelog
 
+## v2.1.33 (15/10/2026)
+## Changes
+## 🔧 Maintenance
+
+- feat(android): add release runtime classpath support @woocheol-lge (#203)
+
+---
+
 ## v2.1.32 (01/10/2026)
 ## Changes
 ## 🐛 Hotfixes
@@ -280,12 +288,3 @@
 ## 🔧 Maintenance
 
 - Remove prechecker @dd-jy (#139)
-
----
-
-## v2.1.3 (05/02/2025)
-## Changes
-## 🐛 Hotfixes
-
-- Update platform in docker build workflow @soimkim (#138)
-- Change base image to fix docker build error on macOS @soimkim (#137)
