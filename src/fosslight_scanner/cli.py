@@ -144,11 +144,13 @@ def main():
                 args.kb_url, args.kb_token, args.no_merge,
                 args.git_id, args.git_token)
 
-        run_main(mode, path, dep_argument, output, format, link, timer,
-                 raw, core, not no_correction, correct_fpath, ui, exclude_path,
-                 selected_source_scanner, source_write_json_file, source_print_matched_text,
-                 source_time_out, kb_url, kb_token, binary_simple, recursive_dep, no_merge,
-                 git_id, git_token)
+        success = run_main(mode, path, dep_argument, output, format, link, timer,
+                           raw, core, not no_correction, correct_fpath, ui, exclude_path,
+                           selected_source_scanner, source_write_json_file, source_print_matched_text,
+                           source_time_out, kb_url, kb_token, binary_simple, recursive_dep, no_merge,
+                           git_id, git_token)
+        if not success:
+            sys.exit(1)
 
 
 if __name__ == "__main__":

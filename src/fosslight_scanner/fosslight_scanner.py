@@ -50,6 +50,7 @@ except ModuleNotFoundError:
 OUTPUT_REPORT_PREFIX = "fosslight_report_all_"
 COMPARE_OUTPUT_REPORT_PREFIX = "fosslight_compare_"
 PKG_NAME = "fosslight_scanner"
+ANALYSIS_FAILED_PREFIX = "Analysis failed: "
 logger = logging.getLogger(constant.LOGGER_NAME)
 warnings.simplefilter(action='ignore', category=FutureWarning)
 _output_dir = "fosslight_raw_data"
@@ -114,7 +115,8 @@ def _all_exclude_mode_for_scanner(
 
 def run_dependency(path_to_analyze, output_file_with_path, params="", path_to_exclude=[], formats=[],
                    recursive_dep=False, all_exclude_mode=()):
-    result = []
+    success = False
+    result = ScannerItem(PKG_NAME, "")
 
     package_manager = ""
     pip_activate_cmd = ""
@@ -152,9 +154,9 @@ def run_dependency(path_to_analyze, output_file_with_path, params="", path_to_ex
     timer.start()
 
     try:
-        success, scan_item = call_analysis_api(
+        api_success, scan_result = call_analysis_api(
             path_to_analyze, "Dependency Analysis",
-            1, run_dependency_scanner,
+            -1, run_dependency_scanner,
             package_manager,
             os.path.abspath(path_to_analyze),
             output_file_with_path,
@@ -166,12 +168,12 @@ def run_dependency(path_to_analyze, output_file_with_path, params="", path_to_ex
             all_exclude_mode=all_exclude_mode,
             runtime_config=runtime_config
         )
-        if success:
-            result = scan_item
+        if api_success and scan_result:
+            success, result = scan_result
     except Exception as ex:
         logger.warning(f"Run dependency: {ex}")
 
-    return result
+    return success, result
 
 
 def source_analysis_wrapper(*args, **kwargs):
@@ -207,6 +209,9 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
     final_reports = []
     success = True
     all_cover_items = []
+    requested_analyses = [name for name, requested in (("Source", run_src), ("Binary", run_bin), ("Dependency", run_dep))
+                          if requested]
+    succeeded_analyses = set()
 
     if not remove_src_data:
         success, final_excel_dir, result_log = init(output_path)
@@ -291,9 +296,11 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                                         excluded_files,
                                         cnt_file_except_skipped)
                         )
-                        if success:
+                        if success and result[2]:
                             all_scan_item.file_items.update(result[2].file_items)
                             all_cover_items.append(result[2].cover)
+                        if success and result[0]:
+                            succeeded_analyses.add("Source")
 
                     else:  # Run fosslight_source by using docker image
                         output_rel_path = os.path.relpath(abs_path, os.getcwd())
@@ -309,6 +316,8 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                             command += " --no_merge"
                         command_result = subprocess.run(command, stdout=subprocess.PIPE, text=True)
                         logger.info(f"Source Analysis Result:{command_result.stdout}")
+                        if command_result.returncode == 0:
+                            succeeded_analyses.add("Source")
 
                 except Exception as ex:
                     logger.warning(f"Failed to run source analysis: {ex}")
@@ -316,7 +325,7 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
             if run_bin:
                 bin_output = os.path.join(_output_dir, f"fosslight_report_bin_{_file_time}{_default_ext}")
                 success, result = call_analysis_api(src_path, "Binary Analysis",
-                                                    1, binary_analysis.find_binaries,
+                                                    -1, binary_analysis.find_binaries,
                                                     abs_path,
                                                     bin_output,
                                                     [_default_format], kb_url, kb_token, binary_simple,
@@ -328,26 +337,36 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                                                         excluded_files,
                                                         cnt_file_except_skipped))
                 if success:
-                    all_scan_item.file_items.update(result.file_items)
-                    all_cover_items.append(result.cover)
+                    all_scan_item.file_items.update(result[1].file_items)
+                    all_cover_items.append(result[1].cover)
+                    if result[0]:
+                        succeeded_analyses.add("Binary")
 
             if run_dep:
                 dep_output = os.path.join(_output_dir, f"fosslight_report_dep_{_file_time}{_default_ext}")
-                dep_scanitem = run_dependency(src_path, dep_output,
-                                              dep_arguments, path_to_exclude, [_default_format],
-                                              recursive_dep,
-                                              all_exclude_mode=_all_exclude_mode_for_scanner(
-                                                  excluded_path_with_default_exclusion,
-                                                  excluded_path_without_dot,
-                                                  excluded_files,
-                                                  cnt_file_except_skipped))
-                all_scan_item.file_items.update(dep_scanitem.file_items)
-                all_cover_items.append(dep_scanitem.cover)
+                dep_success, dep_scanitem = run_dependency(src_path, dep_output,
+                                                           dep_arguments, path_to_exclude, [_default_format],
+                                                           recursive_dep,
+                                                           all_exclude_mode=_all_exclude_mode_for_scanner(
+                                                               excluded_path_with_default_exclusion,
+                                                               excluded_path_without_dot,
+                                                               excluded_files,
+                                                               cnt_file_except_skipped))
+                # An empty item means the dependency scanner crashed before returning a result.
+                if dep_scanitem.file_items:
+                    all_scan_item.file_items.update(dep_scanitem.file_items)
+                    all_cover_items.append(dep_scanitem.cover)
+                if dep_success:
+                    succeeded_analyses.add("Dependency")
         else:
-            return
+            return [], requested_analyses
 
     except Exception as ex:
         logger.error(f"Scanning: {ex}")
+
+    failed_analyses = [name for name in requested_analyses if name not in succeeded_analyses]
+    if failed_analyses:
+        logger.error(f"{ANALYSIS_FAILED_PREFIX}{', '.join(failed_analyses)}")
 
     try:
         finish_time = current_timestamp_utc()
@@ -403,7 +422,7 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
             shutil.rmtree(src_path)
     except Exception as ex:
         logger.debug(f"Error to remove temp files:{ex}")
-    return final_reports
+    return final_reports, failed_analyses
 
 
 def download_source(link, out_dir, git_id="", git_token=""):
@@ -582,14 +601,17 @@ def run_main(mode_list, path_arg, dep_arguments, output_file_or_dir, file_format
                         logger.error("Stop the analysis because the source could not be downloaded.")
 
                 if src_path != "":
-                    final_reports = run_scanner(src_path, dep_arguments, output_path, keep_raw_data,
-                                                run_src, run_bin, run_dep, remove_downloaded_source, {}, output_files,
-                                                output_extensions, num_cores,
-                                                default_oss_name, default_oss_version, url_to_analyze,
-                                                correct_mode, correct_fpath, ui_mode, path_to_exclude,
-                                                selected_source_scanner, source_write_json_file, source_print_matched_text,
-                                                source_time_out, kb_url,
-                                                kb_token, binary_simple, formats, recursive_dep, no_merge)
+                    final_reports, failed_analyses = run_scanner(
+                        src_path, dep_arguments, output_path, keep_raw_data,
+                        run_src, run_bin, run_dep, remove_downloaded_source, {}, output_files,
+                        output_extensions, num_cores,
+                        default_oss_name, default_oss_version, url_to_analyze,
+                        correct_mode, correct_fpath, ui_mode, path_to_exclude,
+                        selected_source_scanner, source_write_json_file, source_print_matched_text,
+                        source_time_out, kb_url,
+                        kb_token, binary_simple, formats, recursive_dep, no_merge)
+                    if failed_analyses:
+                        analysis_success = False
 
                 if extract_folder:
                     remove_tree(extract_folder)
