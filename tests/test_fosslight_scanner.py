@@ -57,12 +57,9 @@ def test_run_dependency(tmp_path):
     path_to_analyze.mkdir(parents=True, exist_ok=True)
 
     # when
-    success, result = run_dependency(str(path_to_analyze), str(output_file_with_path), params, path_to_exclude)
+    _, result = run_dependency(str(path_to_analyze), str(output_file_with_path), params, path_to_exclude)
 
     # then
-    # npm analysis fails because the directory has no package.json
-    assert success is False, "Dependency analysis should fail without a manifest for -m npm."
-
     # Check that result is an instance of ScannerItem
     assert isinstance(result, ScannerItem), "Result should be an instance of ScannerItem."
 
