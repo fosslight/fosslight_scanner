@@ -74,3 +74,16 @@ def test_main_invalid_option(capsys):
     # then
     captured = capsys.readouterr()
     assert "unrecognized arguments" in captured.err  # 인식되지 않은 인자에 대한 에러 메시지 확인
+
+
+@pytest.mark.parametrize("run_main_result,exit_code", [(False, 1), (True, None)], ids=["failure", "success"])
+def test_main_exit_code_follows_run_main(tmp_path, monkeypatch, run_main_result, exit_code):
+    monkeypatch.setattr("fosslight_scanner.cli.run_main", lambda *args, **kwargs: run_main_result)
+    monkeypatch.setattr(sys, "argv", ["fosslight_scanner", "source", "-p", str(tmp_path), "-o", str(tmp_path / "out")])
+
+    if exit_code is None:
+        main()
+    else:
+        with pytest.raises(SystemExit) as exc:
+            main()
+        assert exc.value.code == exit_code

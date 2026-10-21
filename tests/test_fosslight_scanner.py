@@ -7,7 +7,7 @@ from fosslight_scanner.fosslight_scanner import (
     run_scanner, download_source, init, run_main, run_dependency, remove_tree
 )
 from fosslight_scanner import fosslight_scanner as scanner
-from fosslight_util.oss_item import ScannerItem
+from fosslight_util.oss_item import FileItem, ScannerItem
 from fosslight_util.constant import FOSSLIGHT_BINARY, FOSSLIGHT_DEPENDENCY, FOSSLIGHT_SOURCE, SHEET_NAME_FOR_SCANNER
 
 _SRC = SHEET_NAME_FOR_SCANNER[FOSSLIGHT_SOURCE]       # 'SRC_FL_Source'
@@ -57,14 +57,32 @@ def test_run_dependency(tmp_path):
     path_to_analyze.mkdir(parents=True, exist_ok=True)
 
     # when
-    result = run_dependency(str(path_to_analyze), str(output_file_with_path), params, path_to_exclude)
+    success, result = run_dependency(str(path_to_analyze), str(output_file_with_path), params, path_to_exclude)
 
     # then
+    # npm analysis fails because the directory has no package.json
+    assert success is False, "Dependency analysis should fail without a manifest for -m npm."
+
     # Check that result is an instance of ScannerItem
     assert isinstance(result, ScannerItem), "Result should be an instance of ScannerItem."
 
-    # Check that result is not None
-    assert result is not None, "Result should not be None."
+
+def test_run_dependency_passes_through_scanner_result(tmp_path, monkeypatch):
+    item = ScannerItem("fosslight_dependency", "")
+    monkeypatch.setattr(scanner, "run_dependency_scanner", lambda *args, **kwargs: (True, item))
+
+    assert run_dependency(str(tmp_path), str(tmp_path / "dep.xlsx")) == (True, item)
+
+
+def test_run_dependency_returns_false_when_scanner_raises(tmp_path, monkeypatch):
+    def raise_error(*args, **kwargs):
+        raise RuntimeError("dependency scanner crashed")
+    monkeypatch.setattr(scanner, "run_dependency_scanner", raise_error)
+
+    success, result = run_dependency(str(tmp_path), str(tmp_path / "dep.xlsx"))
+
+    assert success is False
+    assert isinstance(result, ScannerItem)
 
 
 def test_run_scanner(tmp_path):
@@ -104,6 +122,103 @@ def test_run_scanner(tmp_path):
     # Check if `src_path` and `output_path` still exist
     assert src_path.is_dir(), "Source path should still exist."
     assert output_path.is_dir(), "Output path should still exist."
+
+
+SRC_OK = (True, "True", ScannerItem(FOSSLIGHT_SOURCE, ""), [], [])
+BIN_OK = (True, ScannerItem(FOSSLIGHT_BINARY, ""))
+DEP_OK = (True, ScannerItem(FOSSLIGHT_DEPENDENCY, ""))
+
+
+def _returns(value):
+    def fake(*args, **kwargs):
+        if isinstance(value, Exception):
+            raise value
+        return value
+    return fake
+
+
+def _run_scanner_with(tmp_path, monkeypatch, source=SRC_OK, binary=BIN_OK, dependency=DEP_OK):
+    """Run run_scanner with faked sub-scanners; return failed analyses and the merged scan items written."""
+    src_path = tmp_path / "src"
+    src_path.mkdir()
+    (src_path / "main.py").write_text("print('hello')")
+    written = []
+
+    def fake_write_output_file(path, extension, scan_item, *args, **kwargs):
+        written.append(scan_item)
+        return True, "", path
+
+    monkeypatch.setattr(scanner, "fosslight_source_installed", True)
+    monkeypatch.setattr(scanner, "source_analysis_wrapper", _returns(source))
+    monkeypatch.setattr(scanner.binary_analysis, "find_binaries", _returns(binary))
+    monkeypatch.setattr(scanner, "run_dependency", _returns(dependency))
+    monkeypatch.setattr(scanner, "write_output_file", fake_write_output_file)
+
+    _, failed_analyses = run_scanner(
+        src_path=str(src_path), dep_arguments="", output_path=str(tmp_path / "output"),
+        run_src=True, run_bin=True, run_dep=True, remove_src_data=False, result_log={},
+        output_files=["out"], output_extensions=[".xlsx"], formats=["excel"],
+        num_cores=1, correct_mode=False, path_to_exclude=[]
+    )
+    return failed_analyses, written
+
+
+@pytest.mark.parametrize("override,expected", [
+    pytest.param({}, [], id="all-succeed"),
+    pytest.param({"source": (False, "False, Source code analysis failed.", ScannerItem(FOSSLIGHT_SOURCE, ""), [], [])},
+                 ["Source"], id="source-returns-false"),
+    pytest.param({"source": RuntimeError("source crashed")}, ["Source"], id="source-raises"),
+    pytest.param({"binary": (False, ScannerItem(FOSSLIGHT_BINARY, ""))}, ["Binary"], id="binary-returns-false"),
+    pytest.param({"dependency": (False, ScannerItem(FOSSLIGHT_DEPENDENCY, ""))}, ["Dependency"],
+                 id="dependency-returns-false"),
+    pytest.param({"source": RuntimeError("source crashed"), "binary": RuntimeError("binary crashed"),
+                  "dependency": (False, ScannerItem(FOSSLIGHT_DEPENDENCY, ""))},
+                 ["Source", "Binary", "Dependency"], id="all-fail"),
+])
+def test_run_scanner_reports_failed_analyses(tmp_path, monkeypatch, override, expected):
+    failed_analyses, _ = _run_scanner_with(tmp_path, monkeypatch, **override)
+
+    assert failed_analyses == expected
+
+
+def test_run_scanner_logs_failed_analyses_marker(tmp_path, monkeypatch, caplog):
+    caplog.set_level("INFO", logger=scanner.logger.name)
+
+    _run_scanner_with(tmp_path, monkeypatch, dependency=(False, ScannerItem(FOSSLIGHT_DEPENDENCY, "")))
+
+    # The logger adapter prefixes messages with "[FOSSLIGHT_SCANNER] ".
+    assert any(message.endswith("Analysis failed: Dependency") for message in caplog.messages)
+
+
+def test_run_scanner_logs_no_marker_when_all_succeed(tmp_path, monkeypatch, caplog):
+    caplog.set_level("INFO", logger=scanner.logger.name)
+
+    _run_scanner_with(tmp_path, monkeypatch)
+
+    assert not any("Analysis failed:" in message for message in caplog.messages)
+
+
+def test_dependency_items_are_merged_even_when_dependency_fails(tmp_path, monkeypatch):
+    dep_item = ScannerItem(FOSSLIGHT_DEPENDENCY, "")
+    dep_item.file_items[FOSSLIGHT_DEPENDENCY] = [FileItem("pom.xml")]
+
+    _, written = _run_scanner_with(tmp_path, monkeypatch, dependency=(False, dep_item))
+
+    assert written[0].file_items[FOSSLIGHT_DEPENDENCY] == dep_item.file_items[FOSSLIGHT_DEPENDENCY]
+
+
+def test_dependency_without_result_adds_no_cover_comment(tmp_path, monkeypatch):
+    # run_dependency returns an empty fosslight_scanner item when the dependency scanner crashed.
+    _, written = _run_scanner_with(tmp_path, monkeypatch, dependency=(False, ScannerItem(scanner.PKG_NAME, "")))
+
+    assert f"[{scanner.PKG_NAME}]" not in written[0].cover.comment
+
+
+def test_unexpected_error_marks_remaining_analyses_failed(tmp_path, monkeypatch):
+    # A binary result without a scan item breaks the merge and jumps to run_scanner's outer except.
+    failed_analyses, _ = _run_scanner_with(tmp_path, monkeypatch, binary=(True, None))
+
+    assert failed_analyses == ["Binary", "Dependency"]
 
 
 def test_download_source(tmp_path):
@@ -191,6 +306,23 @@ def test_run_main(tmp_path):
     assert result is True
 
 
+def test_run_main_returns_false_when_an_analysis_fails(tmp_path, monkeypatch):
+    monkeypatch.setattr(scanner, "run_scanner", lambda *args, **kwargs: ([], ["Dependency"]))
+    monkeypatch.setattr(scanner, "move_log_file", lambda *args: None)
+
+    result = run_main(
+        mode_list=["dependency"],
+        path_arg=[str(tmp_path)],
+        dep_arguments=[],
+        output_file_or_dir=str(tmp_path / "output"),
+        file_format=["excel"],
+        url_to_analyze="",
+        hide_progressbar=True,
+    )
+
+    assert result is False
+
+
 @pytest.mark.parametrize("nested", [False, True], ids=["file", "merged-directory"])
 @pytest.mark.parametrize("move_fails", [False, True], ids=["move-succeeds", "move-fails"])
 def test_run_main_reports_only_successfully_moved_paths(tmp_path, monkeypatch, caplog, nested, move_fails):
@@ -208,7 +340,7 @@ def test_run_main_reports_only_successfully_moved_paths(tmp_path, monkeypatch, c
         delivered = Path(output_path) / "delivered.yaml"
         delivered.write_text("another report")
         reports.extend([report, delivered])
-        return [str(report), str(delivered)]
+        return [str(report), str(delivered)], []
 
     real_move = shutil.move
 
