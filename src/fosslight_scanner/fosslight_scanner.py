@@ -258,6 +258,9 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
             if run_src:
                 try:
                     if fosslight_source_installed:
+                        source_formats = [_default_format]
+                        if any(output_format.startswith('spdx') for output_format in formats):
+                            source_formats.append('spdx-json')
                         src_output = os.path.join(_output_dir, f"fosslight_report_src_{_file_time}{_default_ext}")
                         success, result = call_analysis_api(
                                     src_path,
@@ -274,7 +277,7 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                                     source_time_out=source_time_out,
                                     kb_url=kb_url,
                                     kb_token=kb_token,
-                                    formats=[_default_format],
+                                    formats=source_formats,
                                     merge_by_folder=not no_merge,
                                     all_exclude_mode=_all_exclude_mode_for_scanner(
                                         excluded_path_with_default_exclusion,
@@ -598,6 +601,9 @@ def run_main(mode_list, path_arg, dep_arguments, output_file_or_dir, file_format
                         kb_token, binary_simple, formats, recursive_dep, no_merge)
                     if failed_analyses:
                         analysis_success = False
+                    if len(final_reports) < len(formats):
+                        analysis_success = False
+                        logger.error("Failed to generate one or more requested reports.")
 
                 if extract_folder:
                     remove_tree(extract_folder)

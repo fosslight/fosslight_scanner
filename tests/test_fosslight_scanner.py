@@ -121,6 +121,268 @@ def test_run_scanner(tmp_path):
     assert output_path.is_dir(), "Output path should still exist."
 
 
+@pytest.mark.parametrize("format_name, extension", [
+    ("spdx-json", ".json"), ("spdx-yaml", ".yaml"), ("spdx-xml", ".xml"), ("spdx-tag", ".tag"),
+])
+@pytest.mark.parametrize("output_order", ["spdx-only", "excel-first", "spdx-first"])
+def test_spdx_source_keeps_files_and_matched_text(tmp_path, monkeypatch, format_name, extension, output_order):
+    from fosslight_source import cli as source_cli
+    from fosslight_source._license_matched import MatchedLicense
+    from fosslight_source._scan_item import SourceItem
+    from spdx_tools.spdx.parser.parse_anything import parse_file
+    from spdx_tools.spdx.validation.document_validator import validate_full_spdx_document
+
+    project = tmp_path / "project"
+    (project / "src").mkdir(parents=True)
+    source_items = []
+    for filename in ("one.c", "two.c"):
+        relative_path = f"src/{filename}"
+        (project / relative_path).write_text("/* Example license terms. */\n", encoding="utf-8")
+        item = SourceItem(relative_path)
+        item.licenses = ["Example-License"]
+        item.checksum = "a" * 40
+        source_items.append(item)
+    matched_license = MatchedLicense("Example-License", "", "Example license terms.", "src/one.c")
+    matched_license.set_files("src/two.c")
+    requested_matched_text = []
+
+    def run_scancode(*args, **kwargs):
+        requested_matched_text.append(args[5])
+        licenses = {"example": matched_license} if args[5] else {}
+        return True, "True", source_items, licenses
+
+    monkeypatch.setattr(source_cli, "run_scan", run_scancode)
+    monkeypatch.setattr(scanner, "fosslight_source_installed", True)
+    monkeypatch.setattr(scanner, "_output_dir", "fosslight_raw_data")
+    formats = [format_name]
+    extensions = [extension]
+    if output_order == "excel-first":
+        formats.insert(0, "excel")
+        extensions.insert(0, ".xlsx")
+    elif output_order == "spdx-first":
+        formats.append("excel")
+        extensions.append(".xlsx")
+    reports, failed_analyses = run_scanner(
+        str(project), "", str(tmp_path / "output"), run_bin=False, run_dep=False,
+        remove_src_data=False, result_log={}, output_files=["report"] * len(formats),
+        output_extensions=extensions, formats=formats,
+        selected_source_scanner="scancode", correct_mode=False,
+    )
+
+    assert failed_analyses == []
+    assert requested_matched_text == [True]
+    assert len(reports) == len(formats)
+    document = parse_file(next(report for report in reports if report.endswith(extension)))
+    assert validate_full_spdx_document(document) == []
+    assert {file.name for file in document.files} == {"./src/one.c", "./src/two.c"}
+    assert document.extracted_licensing_info[0].extracted_text == "Example license terms."
+    assert {creator.name.split(" - ", 1)[0] for creator in document.creation_info.creators} == {
+        "FOSSLIGHT_SCANNER", "FOSSLIGHT_Source", "spdx-tools",
+    }
+
+
+def test_excel_source_keeps_default_folder_merge(tmp_path, monkeypatch):
+    from fosslight_source import cli as source_cli
+    from fosslight_source._scan_item import SourceItem
+
+    project = tmp_path / "project"
+    (project / "src").mkdir(parents=True)
+    source_items = []
+    for filename in ("one.c", "two.c"):
+        (project / "src" / filename).write_text("/* MIT */\n", encoding="utf-8")
+        item = SourceItem(f"src/{filename}")
+        item.licenses = ["MIT"]
+        item.checksum = "a" * 40
+        source_items.append(item)
+    requested_matched_text = []
+
+    def run_scancode(*args, **kwargs):
+        requested_matched_text.append(args[5])
+        return True, "True", source_items, {}
+
+    monkeypatch.setattr(source_cli, "run_scan", run_scancode)
+    monkeypatch.setattr(scanner, "fosslight_source_installed", True)
+    monkeypatch.setattr(scanner, "_output_dir", "fosslight_raw_data")
+    reports, failed_analyses = run_scanner(
+        str(project), "", str(tmp_path / "output"), run_bin=False, run_dep=False,
+        remove_src_data=False, result_log={}, output_files=["report"],
+        output_extensions=[".xlsx"], formats=["excel"],
+        selected_source_scanner="scancode", correct_mode=False,
+    )
+
+    assert failed_analyses == []
+    assert requested_matched_text == [False]
+    workbook = openpyxl.load_workbook(reports[0], read_only=True, data_only=True)
+    try:
+        assert workbook[_SRC].max_row == 2
+    finally:
+        workbook.close()
+
+
+@pytest.fixture
+def spdx_scanner_project(tmp_path, monkeypatch):
+    import json
+    import subprocess
+    from random import Random
+    from fosslight_dependency.package_manager.Npm import Npm
+    from fosslight_source import cli as source_cli
+    from fosslight_source._license_matched import MatchedLicense
+    from fosslight_source._scan_item import SourceItem
+    from fosslight_util.oss_item import OssItem
+
+    project = tmp_path / "project"
+    project.mkdir()
+    (project / "main.c").write_text("/* Example license terms. */\n", encoding="utf-8")
+    binary = project / "artifact.bin"
+    binary.write_bytes(Random(4519).randbytes(8192))
+    manifest = {"name": "project", "version": "1.0.0", "dependencies": {"parent": "1.0.0"}}
+    (project / "package.json").write_text(json.dumps(manifest), encoding="utf-8")
+    source_item = SourceItem("main.c")
+    source_item.licenses = ["Example-License"]
+    source_items = [source_item]
+    matched_license = MatchedLicense("Example-License", "", "Example license terms.", "main.c")
+    npm_reports = [{
+        f"{name}@1.0.0": {
+            "name": name, "version": "1.0.0", "licenses": "MIT",
+            "path": str(project / "node_modules" / name), "repository": f"https://example.com/{name}",
+        }
+        for name in ("project", "parent", "child")
+    }]
+
+    def run_scancode(*args, **kwargs):
+        licenses = {"example": matched_license} if args[5] and source_items else {}
+        return True, "True", source_items, licenses
+
+    def lookup(items, _url, _token):
+        for item in items:
+            item.set_oss_items([OssItem("binary-package", "1.0.0", "Apache-2.0")])
+        return items, len(items), ""
+
+    def run_plugin(manager):
+        manager.manifest_file_name = ["package.json"]
+        for index, report in enumerate(npm_reports):
+            report_file = tmp_path / f"npm-report-{index}.json"
+            report_file.write_text(json.dumps(report), encoding="utf-8")
+            manager.input_package_list_file.append(str(report_file))
+        return True
+
+    original_run = subprocess.run
+
+    def command_output(command, *args, **kwargs):
+        if command == "npm ls -a --omit=dev --json -s":
+            tree = {"name": "project", "version": "1.0.0", "dependencies": {
+                "parent": {"version": "1.0.0", "dependencies": {"child": {"version": "1.0.0"}}},
+            }}
+            return subprocess.CompletedProcess(command, 0, stdout=json.dumps(tree), stderr="")
+        return original_run(command, *args, **kwargs)
+
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setattr(scanner, "fosslight_source_installed", True)
+    monkeypatch.setattr(scanner, "_output_dir", "fosslight_raw_data")
+    monkeypatch.setattr(source_cli, "run_scan", run_scancode)
+    monkeypatch.setattr(scanner.binary_analysis, "get_oss_info_from_db", lookup)
+    monkeypatch.setattr(Npm, "_check_network_available", lambda self: False)
+    monkeypatch.setattr(Npm, "_network_available", False)
+    monkeypatch.setattr(Npm, "run_plugin", run_plugin)
+    monkeypatch.setattr(subprocess, "run", command_output)
+    return project, tmp_path / "output", source_items, npm_reports, binary
+
+
+@pytest.mark.parametrize("format_name, extension", [
+    ("spdx-json", ".json"), ("spdx-yaml", ".yaml"), ("spdx-xml", ".xml"), ("spdx-tag", ".tag"),
+])
+@pytest.mark.parametrize("mode, expected_scanners", [
+    ("all", {"Source", "Binary", "Dependency"}),
+    ("source", {"Source"}), ("binary", {"Binary"}), ("dependency", {"Dependency"}),
+])
+@pytest.mark.parametrize("empty", [False, True])
+def test_spdx_all_and_partial_runs(spdx_scanner_project, format_name, extension, mode, expected_scanners, empty):
+    import hashlib
+    from spdx_tools.spdx.model import FileType, RelationshipType
+    from spdx_tools.spdx.parser.parse_anything import parse_file
+    from spdx_tools.spdx.validation.document_validator import validate_full_spdx_document
+
+    project, output, source_items, npm_reports, binary = spdx_scanner_project
+    if empty:
+        source_items.clear()
+        npm_reports.clear()
+        binary.unlink()
+
+    success = run_main(
+        mode_list=[mode], path_arg=[str(project)], dep_arguments="-m npm",
+        output_file_or_dir=str(output), file_format=[format_name], url_to_analyze="",
+        hide_progressbar=True, num_cores=0, selected_source_scanner="scancode", correct_mode=False,
+    )
+
+    assert success
+    filename, = output.glob(f"*{extension}")
+    assert filename.name.startswith("fosslight_spdx_all_")
+    document = parse_file(str(filename))
+    assert validate_full_spdx_document(document) == []
+    assert document.creation_info.name == "project"
+    assert {creator.name.split(" - ", 1)[0] for creator in document.creation_info.creators} == {
+        "FOSSLIGHT_SCANNER", "spdx-tools", *(f"FOSSLIGHT_{name}" for name in expected_scanners),
+    }
+    root = next(package for package in document.packages if package.spdx_id == "SPDXRef-ROOT-PACKAGE")
+    assert root.name == "project"
+    assert root.files_analyzed is False
+    expected_files = set()
+    if not empty and "Source" in expected_scanners:
+        expected_files.add("./main.c")
+        source_file = next(file for file in document.files if file.name == "./main.c")
+        assert source_file.file_types == [FileType.SOURCE]
+        assert source_file.checksums[0].value == hashlib.sha1((project / "main.c").read_bytes()).hexdigest()
+        assert document.extracted_licensing_info[0].extracted_text == "Example license terms."
+    if not empty and "Binary" in expected_scanners:
+        expected_files.add("./artifact.bin")
+        binary_file = next(file for file in document.files if file.name == "./artifact.bin")
+        assert binary_file.file_types == [FileType.BINARY]
+        assert binary_file.checksums[0].value == hashlib.sha1(binary.read_bytes()).hexdigest()
+        assert binary_file.comment.startswith("fosslight:tlsh=T")
+        package = next(package for package in document.packages if package.name == "binary-package")
+        assert any(
+            relation.spdx_element_id == package.spdx_id
+            and relation.relationship_type == RelationshipType.CONTAINS
+            and relation.related_spdx_element_id == binary_file.spdx_id
+            for relation in document.relationships
+        )
+    if not empty and "Dependency" in expected_scanners:
+        parent = next(package for package in document.packages if package.name == "npm:parent")
+        child = next(package for package in document.packages if package.name == "npm:child")
+        assert [reference.locator for reference in parent.external_references] == ["pkg:npm/parent@1.0.0"]
+        assert str(parent.license_declared) == "MIT"
+        assert parent.files_analyzed is False
+        assert {
+            (relation.spdx_element_id, relation.related_spdx_element_id)
+            for relation in document.relationships if relation.relationship_type == RelationshipType.DEPENDS_ON
+        } == {(root.spdx_id, parent.spdx_id), (parent.spdx_id, child.spdx_id)}
+    assert {file.name for file in document.files} == expected_files
+    if empty:
+        assert len(document.packages) == 1
+        assert not document.extracted_licensing_info
+
+
+@pytest.mark.parametrize("formats", [["spdx-json"], ["excel", "spdx-json"]])
+def test_spdx_write_failure_is_not_reported_as_success(spdx_scanner_project, monkeypatch, formats):
+    project, output, _source_items, _npm_reports, _binary = spdx_scanner_project
+    original_writer = scanner.write_output_file
+
+    def fail_spdx_output(*args, **kwargs):
+        if args[5].startswith("spdx"):
+            return False, "SPDX output failed", args[0] + args[1]
+        return original_writer(*args, **kwargs)
+
+    monkeypatch.setattr(scanner, "write_output_file", fail_spdx_output)
+    success = run_main(
+        mode_list=["source"], path_arg=[str(project)], dep_arguments="",
+        output_file_or_dir=str(output), file_format=formats, url_to_analyze="",
+        hide_progressbar=True, num_cores=0, selected_source_scanner="scancode", correct_mode=False,
+    )
+
+    assert success is False
+    assert not list(output.glob("*.json"))
+
+
 SRC_OK = (True, "True", ScannerItem(FOSSLIGHT_SOURCE, ""), [], [])
 BIN_OK = (True, ScannerItem(FOSSLIGHT_BINARY, ""))
 DEP_OK = (True, ScannerItem(FOSSLIGHT_DEPENDENCY, ""))
