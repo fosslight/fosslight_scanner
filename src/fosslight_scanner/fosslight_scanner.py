@@ -200,7 +200,7 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                 correct_mode=True, correct_fpath="", ui_mode=False, path_to_exclude=[],
                 selected_source_scanner="all", source_write_json_file=False, source_print_matched_text=False,
                 source_time_out=120, kb_url="", kb_token="", binary_simple=False, formats=[],
-                recursive_dep=False, no_merge=False):
+                recursive_dep=False, no_merge=False, report_results=None):
 
     global _start_time
 
@@ -375,7 +375,7 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
             all_scan_item = update_oss_item(all_scan_item, default_oss_name, default_oss_version, url)
 
         combined_paths_and_files = [os.path.join(final_excel_dir, file) for file in output_files]
-        results = []
+        results = [] if report_results is None else report_results
         final_reports = []
         for combined_path_and_file, output_extension, output_format in zip(combined_paths_and_files, output_extensions, formats):
             results.append(write_output_file(combined_path_and_file, output_extension, all_scan_item, {}, {}, output_format,
@@ -590,6 +590,7 @@ def run_main(mode_list, path_arg, dep_arguments, output_file_or_dir, file_format
                         logger.error("Stop the analysis because the source could not be downloaded.")
 
                 if src_path != "":
+                    report_results = []
                     final_reports, failed_analyses = run_scanner(
                         src_path, dep_arguments, output_path, keep_raw_data,
                         run_src, run_bin, run_dep, remove_downloaded_source, {}, output_files,
@@ -598,10 +599,10 @@ def run_main(mode_list, path_arg, dep_arguments, output_file_or_dir, file_format
                         correct_mode, correct_fpath, ui_mode, path_to_exclude,
                         selected_source_scanner, source_write_json_file, source_print_matched_text,
                         source_time_out, kb_url,
-                        kb_token, binary_simple, formats, recursive_dep, no_merge)
+                        kb_token, binary_simple, formats, recursive_dep, no_merge, report_results=report_results)
                     if failed_analyses:
                         analysis_success = False
-                    if len(final_reports) < len(formats):
+                    if len(report_results) != len(formats) or not all(result[0] for result in report_results):
                         analysis_success = False
                         logger.error("Failed to generate one or more requested reports.")
 

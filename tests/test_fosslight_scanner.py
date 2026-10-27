@@ -363,7 +363,8 @@ def test_spdx_all_and_partial_runs(spdx_scanner_project, format_name, extension,
 
 
 @pytest.mark.parametrize("formats", [["spdx-json"], ["excel", "spdx-json"]])
-def test_spdx_write_failure_is_not_reported_as_success(spdx_scanner_project, monkeypatch, formats):
+@pytest.mark.parametrize("ui_mode", [False, True])
+def test_spdx_write_failure_is_not_reported_as_success(spdx_scanner_project, monkeypatch, formats, ui_mode):
     project, output, _source_items, _npm_reports, _binary = spdx_scanner_project
     original_writer = scanner.write_output_file
 
@@ -377,10 +378,11 @@ def test_spdx_write_failure_is_not_reported_as_success(spdx_scanner_project, mon
         mode_list=["source"], path_arg=[str(project)], dep_arguments="",
         output_file_or_dir=str(output), file_format=formats, url_to_analyze="",
         hide_progressbar=True, num_cores=0, selected_source_scanner="scancode", correct_mode=False,
+        ui_mode=ui_mode,
     )
 
+    assert bool(list(output.glob("*.json"))) is ui_mode
     assert success is False
-    assert not list(output.glob("*.json"))
 
 
 SRC_OK = (True, "True", ScannerItem(FOSSLIGHT_SOURCE, ""), [], [])
@@ -592,13 +594,14 @@ def test_run_main_reports_only_successfully_moved_paths(tmp_path, monkeypatch, c
     destination.write_text("old report")
     reports = []
 
-    def fake_run_scanner(src_path, dep_arguments, output_path, *args):
+    def fake_run_scanner(src_path, dep_arguments, output_path, *args, report_results):
         report = Path(output_path) / relative_report
         report.parent.mkdir(parents=True, exist_ok=True)
         report.write_text("current report")
         delivered = Path(output_path) / "delivered.yaml"
         delivered.write_text("another report")
         reports.extend([report, delivered])
+        report_results.append((True, "", str(report)))
         return [str(report), str(delivered)], []
 
     real_move = shutil.move
