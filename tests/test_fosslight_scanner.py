@@ -385,6 +385,173 @@ def test_spdx_write_failure_is_not_reported_as_success(spdx_scanner_project, mon
     assert success is False
 
 
+def _assert_scanner_report(report, format_name):
+    import json
+    import xml.etree.ElementTree as element_tree
+    import yaml
+    from spdx_tools.spdx.parser.parse_anything import parse_file
+    from spdx_tools.spdx.validation.document_validator import validate_full_spdx_document
+
+    if format_name.startswith("spdx"):
+        document = parse_file(str(report))
+        assert validate_full_spdx_document(document) == []
+        assert {file.name for file in document.files} == {"./main.c"}
+        assert document.extracted_licensing_info[0].extracted_text == "Example license terms."
+    elif format_name == "cyclonedx-xml":
+        root = element_tree.parse(report).getroot()
+        assert root.tag.startswith("{http://cyclonedx.org/schema/bom/")
+        assert root.tag.endswith("}bom")
+    elif format_name == "yaml":
+        contents = yaml.safe_load(report.read_text(encoding="utf-8"))
+        assert "main.c" in str(contents)
+        assert "Example-License" in str(contents)
+        assert "spdxVersion" not in contents
+    else:
+        contents = json.loads(report.read_text(encoding="utf-8"))
+        if format_name == "opossum":
+            assert "resources" in contents
+            assert "externalAttributions" in contents
+        elif format_name == "ui":
+            assert any(file["path"] == "project/main.c" for file in contents["files"])
+            assert "spdxVersion" not in contents
+            assert "bomFormat" not in contents
+        else:
+            assert contents["bomFormat"] == "CycloneDX"
+
+
+@pytest.mark.parametrize("formats, extension", [
+    (["yaml", "spdx-yaml"], ".yaml"),
+    (["opossum", "spdx-json"], ".json"),
+    (["opossum", "cyclonedx-json"], ".json"),
+    (["spdx-json", "cyclonedx-json"], ".json"),
+    (["spdx-xml", "cyclonedx-xml"], ".xml"),
+    (["opossum", "spdx-json", "cyclonedx-json"], ".json"),
+])
+@pytest.mark.parametrize("reverse", [False, True])
+@pytest.mark.parametrize("ui_mode", [False, True])
+def test_shared_extension_reports_keep_distinct_files(spdx_scanner_project, formats, extension, reverse, ui_mode):
+    project, output, *_ = spdx_scanner_project
+    formats = list(reversed(formats)) if reverse else formats
+
+    success = run_main(
+        mode_list=["source"], path_arg=[str(project)], dep_arguments="",
+        output_file_or_dir=str(output / f"report{extension}"), file_format=formats, url_to_analyze="",
+        hide_progressbar=True, num_cores=0, selected_source_scanner="scancode", correct_mode=False, ui_mode=ui_mode,
+    )
+
+    assert success is True
+    expected = {f"report_{format_name}{extension}" for format_name in formats}
+    if ui_mode and extension == ".json":
+        expected.add("report.json")
+    assert {report.name for report in output.glob(f"*{extension}")} == expected
+    for format_name in formats:
+        _assert_scanner_report(output / f"report_{format_name}{extension}", format_name)
+    if ui_mode:
+        _assert_scanner_report(output / "report.json", "ui")
+
+
+@pytest.mark.parametrize("format_name", ["opossum", "spdx-json", "cyclonedx-json"])
+@pytest.mark.parametrize("output_mode", ["file", "directory", "default"])
+def test_ui_json_report_does_not_overwrite_requested_report(spdx_scanner_project, format_name, output_mode):
+    project, output, *_ = spdx_scanner_project
+    output_argument = str(output / "report.json") if output_mode == "file" else str(output)
+    if output_mode == "default":
+        output_argument = ""
+        output = project.parent
+
+    success = run_main(
+        mode_list=["source"], path_arg=[str(project)], dep_arguments="",
+        output_file_or_dir=output_argument, file_format=[format_name], url_to_analyze="",
+        hide_progressbar=True, num_cores=0, selected_source_scanner="scancode", correct_mode=False, ui_mode=True,
+    )
+
+    assert success is True
+    reports = list(output.glob("*.json"))
+    assert len(reports) == 2
+    report, = [report for report in reports if not report.stem.endswith("_ui")]
+    if output_mode == "file":
+        assert report.name == "report.json"
+    _assert_scanner_report(report, format_name)
+    ui_report = report.with_name(f"{report.stem}_ui.json")
+    _assert_scanner_report(ui_report, "ui")
+
+
+@pytest.mark.parametrize("output_name, formats, ui_mode, expected", [
+    ("report.yaml", ["yaml"], False, {"report.yaml"}),
+    ("report.yaml", ["yaml"], True, {"report.yaml", "report.json"}),
+    ("report.xlsx", ["excel"], True, {"report.xlsx", "report.json"}),
+    ("report.xlsx", ["excel", "spdx-json"], True, {"report.xlsx", "report.json", "report_ui.json"}),
+    ("report.yaml", ["yaml", "spdx-json"], True, {"report.yaml", "report.json", "report_ui.json"}),
+    ("report.yaml", ["spdx-yaml", "spdx-json"], True, {"report.yaml", "report.json", "report_ui.json"}),
+])
+def test_noncolliding_report_names_are_preserved(spdx_scanner_project, output_name, formats, ui_mode, expected):
+    project, output, *_ = spdx_scanner_project
+
+    success = run_main(
+        mode_list=["source"], path_arg=[str(project)], dep_arguments="",
+        output_file_or_dir=str(output / output_name), file_format=formats, url_to_analyze="",
+        hide_progressbar=True, num_cores=0, selected_source_scanner="scancode", correct_mode=False, ui_mode=ui_mode,
+    )
+
+    assert success is True
+    assert {report.name for report in output.iterdir() if report.is_file()} == expected
+    if "spdx-json" in formats:
+        _assert_scanner_report(output / "report.json", "spdx-json")
+    if ui_mode:
+        _assert_scanner_report(output / ("report_ui.json" if "spdx-json" in formats else "report.json"), "ui")
+
+
+@pytest.mark.parametrize("format_name, extension", [("yaml", ".yaml"), ("spdx-json", ".json")])
+def test_duplicate_report_formats_fail_before_writing(spdx_scanner_project, monkeypatch, caplog, format_name, extension):
+    project, output, *_ = spdx_scanner_project
+    written = []
+    original_writer = scanner.write_output_file
+
+    def record_write(*args, **kwargs):
+        written.append(args[0])
+        return original_writer(*args, **kwargs)
+
+    monkeypatch.setattr(scanner, "write_output_file", record_write)
+    success = run_main(
+        mode_list=["source"], path_arg=[str(project)], dep_arguments="",
+        output_file_or_dir=str(output / f"report{extension}"), file_format=[format_name, format_name], url_to_analyze="",
+        hide_progressbar=True, num_cores=0, selected_source_scanner="scancode", correct_mode=False,
+    )
+
+    assert written == []
+    assert success is False
+    assert "Requested report output paths must be distinct." in caplog.text
+
+
+@pytest.mark.parametrize("output_files, formats, extension, ui_mode, error_message", [
+    (["report", "report", "report_yaml"], ["yaml", "spdx-yaml", "yaml"], ".yaml", False,
+     "Requested report output paths must be distinct."),
+    (["report", "report_ui"], ["spdx-json", "opossum"], ".json", True,
+     "UI report output path conflicts with a requested report."),
+])
+def test_renamed_report_path_collision_fails_before_writing(
+        spdx_scanner_project, monkeypatch, caplog, output_files, formats, extension, ui_mode, error_message):
+    project, output, *_ = spdx_scanner_project
+    written = []
+    ui_reports = []
+    report_results = []
+    original_output_files = list(output_files)
+    monkeypatch.setattr(scanner, "write_output_file", lambda *args, **kwargs: written.append(args[0]))
+    monkeypatch.setattr(scanner, "create_scancodejson", lambda *args, **kwargs: ui_reports.append(args[1]))
+    reports, _ = run_scanner(
+        str(project), "", str(output), run_bin=False, run_dep=False, remove_src_data=False,
+        output_files=output_files, output_extensions=[extension] * len(formats), formats=formats,
+        selected_source_scanner="scancode", correct_mode=False, ui_mode=ui_mode, report_results=report_results,
+    )
+
+    assert written == []
+    assert ui_reports == []
+    assert report_results == []
+    assert output_files == original_output_files
+    assert reports == []
+    assert error_message in caplog.text
+
+
 SRC_OK = (True, "True", ScannerItem(FOSSLIGHT_SOURCE, ""), [], [])
 BIN_OK = (True, ScannerItem(FOSSLIGHT_BINARY, ""))
 DEP_OK = (True, ScannerItem(FOSSLIGHT_DEPENDENCY, ""))

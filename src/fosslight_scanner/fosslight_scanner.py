@@ -375,6 +375,26 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
             all_scan_item = update_oss_item(all_scan_item, default_oss_name, default_oss_version, url)
 
         combined_paths_and_files = [os.path.join(final_excel_dir, file) for file in output_files]
+        report_paths = [os.path.normcase(os.path.abspath(path + extension))
+                        for path, extension in zip(combined_paths_and_files, output_extensions)]
+        for index, path in enumerate(report_paths):
+            if report_paths.count(path) > 1:
+                combined_paths_and_files[index] += f"_{formats[index]}"
+        report_paths = [os.path.normcase(os.path.abspath(path + extension))
+                        for path, extension in zip(combined_paths_and_files, output_extensions)]
+        if len(report_paths) != len(set(report_paths)):
+            raise ValueError("Requested report output paths must be distinct.")
+
+        ui_mode_report = ""
+        if ui_mode:
+            output_file = output_files[0] if output_files else OUTPUT_REPORT_PREFIX + _file_time
+            output_file_without_ext = os.path.join(final_excel_dir, output_file)
+            ui_mode_report = f"{output_file_without_ext}.json"
+            if os.path.normcase(os.path.abspath(ui_mode_report)) in report_paths:
+                ui_mode_report = f"{output_file_without_ext}_ui.json"
+            if os.path.normcase(os.path.abspath(ui_mode_report)) in report_paths:
+                raise ValueError("UI report output path conflicts with a requested report.")
+
         results = [] if report_results is None else report_results
         final_reports = []
         for combined_path_and_file, output_extension, output_format in zip(combined_paths_and_files, output_extensions, formats):
@@ -387,12 +407,6 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                 logger.error(f"Fail to generate result file {result_file}. msg:({msg})")
 
         if ui_mode:
-            if output_files:
-                output_file = output_files[0]
-            else:
-                output_file = OUTPUT_REPORT_PREFIX + _file_time
-            output_file_without_ext = os.path.join(final_excel_dir, output_file)
-            ui_mode_report = f"{output_file_without_ext}.json"
             success, err_msg = create_scancodejson(all_scan_item, ui_mode_report, src_path)
             if success and os.path.isfile(ui_mode_report):
                 final_reports.append(ui_mode_report)

@@ -144,6 +144,11 @@ fosslight compare -p FOSSLight_before_proj.yaml FOSSLight_after_proj.yaml -f exc
 
 ## 📁 Result
 
+Report filenames are unchanged unless multiple requested formats resolve to the same path.
+For example, `-o report.yaml -f yaml spdx-yaml` produces `report_yaml.yaml` and `report_spdx-yaml.yaml`, regardless of format order.
+The separate ScanCode JSON from `--ui` keeps its existing name when available, or uses `<basename>_ui.json` to avoid a requested report.
+Any remaining path collision is rejected before final reports are written.
+
 ```text
 $ tree
 .
