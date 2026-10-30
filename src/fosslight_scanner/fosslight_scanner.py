@@ -12,7 +12,6 @@ import shutil
 import shlex
 import stat
 import subprocess
-import platform
 from pathlib import Path
 
 from fosslight_binary import binary_analysis
@@ -201,7 +200,7 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                 correct_mode=True, correct_fpath="", ui_mode=False, path_to_exclude=[],
                 selected_source_scanner="all", source_write_json_file=False, source_print_matched_text=False,
                 source_time_out=120, kb_url="", kb_token="", binary_simple=False, formats=[],
-                recursive_dep=False, no_merge=False):
+                recursive_dep=False, no_merge=False, report_results=None):
 
     global _start_time
 
@@ -226,16 +225,11 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
         # If -o does not contains file name, set default name
         while len(output_files) < len(output_extensions):
             output_files.append(None)
-        to_remove = []  # elements of spdx format on windows that should be removed
         for i, output_extension in enumerate(output_extensions):
             if output_files[i] is None or output_files[i] == "":
                 if formats:
                     if formats[i].startswith('spdx'):
-                        if platform.system() == 'Windows':
-                            logger.warning(f'{formats[i]} is not supported on Windows. Please remove {formats[i]} from format.')
-                            to_remove.append(i)
-                        else:
-                            output_files[i] = f"fosslight_spdx_all_{_file_time}"
+                        output_files[i] = f"fosslight_spdx_all_{_file_time}"
                     elif formats[i].startswith('cyclonedx'):
                         output_files[i] = f'fosslight_cyclonedx_all_{_file_time}'
                     else:
@@ -248,14 +242,6 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                         output_files[i] = f"fosslight_opossum_all_{_file_time}"
                     else:
                         output_files[i] = f"fosslight_report_all_{_file_time}"
-        for index in sorted(to_remove, reverse=True):
-            # remove elements of spdx format on windows
-            del output_files[index]
-            del output_extensions[index]
-            del formats[index]
-        if len(output_extensions) < 1:
-            sys.exit(0)
-
     if not correct_fpath:
         correct_fpath = src_path
 
@@ -272,6 +258,9 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
             if run_src:
                 try:
                     if fosslight_source_installed:
+                        source_formats = [_default_format]
+                        if any(output_format.startswith('spdx') for output_format in formats):
+                            source_formats.append('spdx-json')
                         src_output = os.path.join(_output_dir, f"fosslight_report_src_{_file_time}{_default_ext}")
                         success, result = call_analysis_api(
                                     src_path,
@@ -288,7 +277,7 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                                     source_time_out=source_time_out,
                                     kb_url=kb_url,
                                     kb_token=kb_token,
-                                    formats=[_default_format],
+                                    formats=source_formats,
                                     merge_by_folder=not no_merge,
                                     all_exclude_mode=_all_exclude_mode_for_scanner(
                                         excluded_path_with_default_exclusion,
@@ -386,7 +375,27 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
             all_scan_item = update_oss_item(all_scan_item, default_oss_name, default_oss_version, url)
 
         combined_paths_and_files = [os.path.join(final_excel_dir, file) for file in output_files]
-        results = []
+        report_paths = [os.path.normcase(os.path.abspath(path + extension))
+                        for path, extension in zip(combined_paths_and_files, output_extensions)]
+        for index, path in enumerate(report_paths):
+            if report_paths.count(path) > 1:
+                combined_paths_and_files[index] += f"_{formats[index]}"
+        report_paths = [os.path.normcase(os.path.abspath(path + extension))
+                        for path, extension in zip(combined_paths_and_files, output_extensions)]
+        if len(report_paths) != len(set(report_paths)):
+            raise ValueError("Requested report output paths must be distinct.")
+
+        ui_mode_report = ""
+        if ui_mode:
+            output_file = output_files[0] if output_files else OUTPUT_REPORT_PREFIX + _file_time
+            output_file_without_ext = os.path.join(final_excel_dir, output_file)
+            ui_mode_report = f"{output_file_without_ext}.json"
+            if os.path.normcase(os.path.abspath(ui_mode_report)) in report_paths:
+                ui_mode_report = f"{output_file_without_ext}_ui.json"
+            if os.path.normcase(os.path.abspath(ui_mode_report)) in report_paths:
+                raise ValueError("UI report output path conflicts with a requested report.")
+
+        results = [] if report_results is None else report_results
         final_reports = []
         for combined_path_and_file, output_extension, output_format in zip(combined_paths_and_files, output_extensions, formats):
             results.append(write_output_file(combined_path_and_file, output_extension, all_scan_item, {}, {}, output_format,
@@ -398,12 +407,6 @@ def run_scanner(src_path, dep_arguments, output_path, keep_raw_data=False,
                 logger.error(f"Fail to generate result file {result_file}. msg:({msg})")
 
         if ui_mode:
-            if output_files:
-                output_file = output_files[0]
-            else:
-                output_file = OUTPUT_REPORT_PREFIX + _file_time
-            output_file_without_ext = os.path.join(final_excel_dir, output_file)
-            ui_mode_report = f"{output_file_without_ext}.json"
             success, err_msg = create_scancodejson(all_scan_item, ui_mode_report, src_path)
             if success and os.path.isfile(ui_mode_report):
                 final_reports.append(ui_mode_report)
@@ -601,6 +604,7 @@ def run_main(mode_list, path_arg, dep_arguments, output_file_or_dir, file_format
                         logger.error("Stop the analysis because the source could not be downloaded.")
 
                 if src_path != "":
+                    report_results = []
                     final_reports, failed_analyses = run_scanner(
                         src_path, dep_arguments, output_path, keep_raw_data,
                         run_src, run_bin, run_dep, remove_downloaded_source, {}, output_files,
@@ -609,9 +613,12 @@ def run_main(mode_list, path_arg, dep_arguments, output_file_or_dir, file_format
                         correct_mode, correct_fpath, ui_mode, path_to_exclude,
                         selected_source_scanner, source_write_json_file, source_print_matched_text,
                         source_time_out, kb_url,
-                        kb_token, binary_simple, formats, recursive_dep, no_merge)
+                        kb_token, binary_simple, formats, recursive_dep, no_merge, report_results=report_results)
                     if failed_analyses:
                         analysis_success = False
+                    if len(report_results) != len(formats) or not all(result[0] for result in report_results):
+                        analysis_success = False
+                        logger.error("Failed to generate one or more requested reports.")
 
                 if extract_folder:
                     remove_tree(extract_folder)

@@ -121,6 +121,437 @@ def test_run_scanner(tmp_path):
     assert output_path.is_dir(), "Output path should still exist."
 
 
+@pytest.mark.parametrize("format_name, extension", [
+    ("spdx-json", ".json"), ("spdx-yaml", ".yaml"), ("spdx-xml", ".xml"), ("spdx-tag", ".tag"),
+])
+@pytest.mark.parametrize("output_order", ["spdx-only", "excel-first", "spdx-first"])
+def test_spdx_source_keeps_files_and_matched_text(tmp_path, monkeypatch, format_name, extension, output_order):
+    from fosslight_source import cli as source_cli
+    from fosslight_source._license_matched import MatchedLicense
+    from fosslight_source._scan_item import SourceItem
+    from spdx_tools.spdx.parser.parse_anything import parse_file
+    from spdx_tools.spdx.validation.document_validator import validate_full_spdx_document
+
+    project = tmp_path / "project"
+    (project / "src").mkdir(parents=True)
+    source_items = []
+    for filename in ("one.c", "two.c"):
+        relative_path = f"src/{filename}"
+        (project / relative_path).write_text("/* Example license terms. */\n", encoding="utf-8")
+        item = SourceItem(relative_path)
+        item.licenses = ["Example-License"]
+        item.checksum = "a" * 40
+        source_items.append(item)
+    matched_license = MatchedLicense("Example-License", "", "Example license terms.", "src/one.c")
+    matched_license.set_files("src/two.c")
+    requested_matched_text = []
+
+    def run_scancode(*args, **kwargs):
+        requested_matched_text.append(args[5])
+        licenses = {"example": matched_license} if args[5] else {}
+        return True, "True", source_items, licenses
+
+    monkeypatch.setattr(source_cli, "run_scan", run_scancode)
+    monkeypatch.setattr(scanner, "fosslight_source_installed", True)
+    monkeypatch.setattr(scanner, "_output_dir", "fosslight_raw_data")
+    formats = [format_name]
+    extensions = [extension]
+    if output_order == "excel-first":
+        formats.insert(0, "excel")
+        extensions.insert(0, ".xlsx")
+    elif output_order == "spdx-first":
+        formats.append("excel")
+        extensions.append(".xlsx")
+    reports, failed_analyses = run_scanner(
+        str(project), "", str(tmp_path / "output"), run_bin=False, run_dep=False,
+        remove_src_data=False, result_log={}, output_files=["report"] * len(formats),
+        output_extensions=extensions, formats=formats,
+        selected_source_scanner="scancode", correct_mode=False,
+    )
+
+    assert failed_analyses == []
+    assert requested_matched_text == [True]
+    assert len(reports) == len(formats)
+    document = parse_file(next(report for report in reports if report.endswith(extension)))
+    assert validate_full_spdx_document(document) == []
+    assert {file.name for file in document.files} == {"./src/one.c", "./src/two.c"}
+    assert document.extracted_licensing_info[0].extracted_text == "Example license terms."
+    assert {creator.name.split(" - ", 1)[0] for creator in document.creation_info.creators} == {
+        "FOSSLIGHT_SCANNER", "FOSSLIGHT_Source", "spdx-tools",
+    }
+
+
+def test_excel_source_keeps_default_folder_merge(tmp_path, monkeypatch):
+    from fosslight_source import cli as source_cli
+    from fosslight_source._scan_item import SourceItem
+
+    project = tmp_path / "project"
+    (project / "src").mkdir(parents=True)
+    source_items = []
+    for filename in ("one.c", "two.c"):
+        (project / "src" / filename).write_text("/* MIT */\n", encoding="utf-8")
+        item = SourceItem(f"src/{filename}")
+        item.licenses = ["MIT"]
+        item.checksum = "a" * 40
+        source_items.append(item)
+    requested_matched_text = []
+
+    def run_scancode(*args, **kwargs):
+        requested_matched_text.append(args[5])
+        return True, "True", source_items, {}
+
+    monkeypatch.setattr(source_cli, "run_scan", run_scancode)
+    monkeypatch.setattr(scanner, "fosslight_source_installed", True)
+    monkeypatch.setattr(scanner, "_output_dir", "fosslight_raw_data")
+    reports, failed_analyses = run_scanner(
+        str(project), "", str(tmp_path / "output"), run_bin=False, run_dep=False,
+        remove_src_data=False, result_log={}, output_files=["report"],
+        output_extensions=[".xlsx"], formats=["excel"],
+        selected_source_scanner="scancode", correct_mode=False,
+    )
+
+    assert failed_analyses == []
+    assert requested_matched_text == [False]
+    workbook = openpyxl.load_workbook(reports[0], read_only=True, data_only=True)
+    try:
+        assert workbook[_SRC].max_row == 2
+    finally:
+        workbook.close()
+
+
+@pytest.fixture
+def spdx_scanner_project(tmp_path, monkeypatch):
+    import json
+    import subprocess
+    from random import Random
+    from fosslight_dependency.package_manager.Npm import Npm
+    from fosslight_source import cli as source_cli
+    from fosslight_source._license_matched import MatchedLicense
+    from fosslight_source._scan_item import SourceItem
+    from fosslight_util.oss_item import OssItem
+
+    project = tmp_path / "project"
+    project.mkdir()
+    (project / "main.c").write_text("/* Example license terms. */\n", encoding="utf-8")
+    binary = project / "artifact.bin"
+    binary.write_bytes(Random(4519).randbytes(8192))
+    manifest = {"name": "project", "version": "1.0.0", "dependencies": {"parent": "1.0.0"}}
+    (project / "package.json").write_text(json.dumps(manifest), encoding="utf-8")
+    source_item = SourceItem("main.c")
+    source_item.licenses = ["Example-License"]
+    source_items = [source_item]
+    matched_license = MatchedLicense("Example-License", "", "Example license terms.", "main.c")
+    npm_reports = [{
+        f"{name}@1.0.0": {
+            "name": name, "version": "1.0.0", "licenses": "MIT",
+            "path": str(project / "node_modules" / name), "repository": f"https://example.com/{name}",
+        }
+        for name in ("project", "parent", "child")
+    }]
+
+    def run_scancode(*args, **kwargs):
+        licenses = {"example": matched_license} if args[5] and source_items else {}
+        return True, "True", source_items, licenses
+
+    def lookup(items, _url, _token):
+        for item in items:
+            item.set_oss_items([OssItem("binary-package", "1.0.0", "Apache-2.0")])
+        return items, len(items), ""
+
+    def run_plugin(manager):
+        manager.manifest_file_name = ["package.json"]
+        for index, report in enumerate(npm_reports):
+            report_file = tmp_path / f"npm-report-{index}.json"
+            report_file.write_text(json.dumps(report), encoding="utf-8")
+            manager.input_package_list_file.append(str(report_file))
+        return True
+
+    original_run = subprocess.run
+
+    def command_output(command, *args, **kwargs):
+        if command == "npm ls -a --omit=dev --json -s":
+            tree = {"name": "project", "version": "1.0.0", "dependencies": {
+                "parent": {"version": "1.0.0", "dependencies": {"child": {"version": "1.0.0"}}},
+            }}
+            return subprocess.CompletedProcess(command, 0, stdout=json.dumps(tree), stderr="")
+        return original_run(command, *args, **kwargs)
+
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setattr(scanner, "fosslight_source_installed", True)
+    monkeypatch.setattr(scanner, "_output_dir", "fosslight_raw_data")
+    monkeypatch.setattr(source_cli, "run_scan", run_scancode)
+    monkeypatch.setattr(scanner.binary_analysis, "get_oss_info_from_db", lookup)
+    monkeypatch.setattr(Npm, "_check_network_available", lambda self: False)
+    monkeypatch.setattr(Npm, "_network_available", False)
+    monkeypatch.setattr(Npm, "run_plugin", run_plugin)
+    monkeypatch.setattr(subprocess, "run", command_output)
+    return project, tmp_path / "output", source_items, npm_reports, binary
+
+
+@pytest.mark.parametrize("format_name, extension", [
+    ("spdx-json", ".json"), ("spdx-yaml", ".yaml"), ("spdx-xml", ".xml"), ("spdx-tag", ".tag"),
+])
+@pytest.mark.parametrize("mode, expected_scanners", [
+    ("all", {"Source", "Binary", "Dependency"}),
+    ("source", {"Source"}), ("binary", {"Binary"}), ("dependency", {"Dependency"}),
+])
+@pytest.mark.parametrize("empty", [False, True])
+def test_spdx_all_and_partial_runs(spdx_scanner_project, format_name, extension, mode, expected_scanners, empty):
+    import hashlib
+    from spdx_tools.spdx.model import FileType, RelationshipType
+    from spdx_tools.spdx.parser.parse_anything import parse_file
+    from spdx_tools.spdx.validation.document_validator import validate_full_spdx_document
+
+    project, output, source_items, npm_reports, binary = spdx_scanner_project
+    if empty:
+        source_items.clear()
+        npm_reports.clear()
+        binary.unlink()
+
+    success = run_main(
+        mode_list=[mode], path_arg=[str(project)], dep_arguments="-m npm",
+        output_file_or_dir=str(output), file_format=[format_name], url_to_analyze="",
+        hide_progressbar=True, num_cores=0, selected_source_scanner="scancode", correct_mode=False,
+    )
+
+    assert success
+    filename, = output.glob(f"*{extension}")
+    assert filename.name.startswith("fosslight_spdx_all_")
+    document = parse_file(str(filename))
+    assert validate_full_spdx_document(document) == []
+    assert document.creation_info.name == "project"
+    assert {creator.name.split(" - ", 1)[0] for creator in document.creation_info.creators} == {
+        "FOSSLIGHT_SCANNER", "spdx-tools", *(f"FOSSLIGHT_{name}" for name in expected_scanners),
+    }
+    root = next(package for package in document.packages if package.spdx_id == "SPDXRef-ROOT-PACKAGE")
+    assert root.name == "project"
+    assert root.files_analyzed is False
+    expected_files = set()
+    if not empty and "Source" in expected_scanners:
+        expected_files.add("./main.c")
+        source_file = next(file for file in document.files if file.name == "./main.c")
+        assert source_file.file_types == [FileType.SOURCE]
+        assert source_file.checksums[0].value == hashlib.sha1((project / "main.c").read_bytes()).hexdigest()
+        assert document.extracted_licensing_info[0].extracted_text == "Example license terms."
+    if not empty and "Binary" in expected_scanners:
+        expected_files.add("./artifact.bin")
+        binary_file = next(file for file in document.files if file.name == "./artifact.bin")
+        assert binary_file.file_types == [FileType.BINARY]
+        assert binary_file.checksums[0].value == hashlib.sha1(binary.read_bytes()).hexdigest()
+        assert binary_file.comment.startswith("fosslight:tlsh=T")
+        package = next(package for package in document.packages if package.name == "binary-package")
+        assert any(
+            relation.spdx_element_id == package.spdx_id
+            and relation.relationship_type == RelationshipType.CONTAINS
+            and relation.related_spdx_element_id == binary_file.spdx_id
+            for relation in document.relationships
+        )
+    if not empty and "Dependency" in expected_scanners:
+        parent = next(package for package in document.packages if package.name == "npm:parent")
+        child = next(package for package in document.packages if package.name == "npm:child")
+        assert [reference.locator for reference in parent.external_references] == ["pkg:npm/parent@1.0.0"]
+        assert str(parent.license_declared) == "MIT"
+        assert parent.files_analyzed is False
+        assert {
+            (relation.spdx_element_id, relation.related_spdx_element_id)
+            for relation in document.relationships if relation.relationship_type == RelationshipType.DEPENDS_ON
+        } == {(root.spdx_id, parent.spdx_id), (parent.spdx_id, child.spdx_id)}
+    assert {file.name for file in document.files} == expected_files
+    if empty:
+        assert len(document.packages) == 1
+        assert not document.extracted_licensing_info
+
+
+@pytest.mark.parametrize("formats", [["spdx-json"], ["excel", "spdx-json"]])
+@pytest.mark.parametrize("ui_mode", [False, True])
+def test_spdx_write_failure_is_not_reported_as_success(spdx_scanner_project, monkeypatch, formats, ui_mode):
+    project, output, _source_items, _npm_reports, _binary = spdx_scanner_project
+    original_writer = scanner.write_output_file
+
+    def fail_spdx_output(*args, **kwargs):
+        if args[5].startswith("spdx"):
+            return False, "SPDX output failed", args[0] + args[1]
+        return original_writer(*args, **kwargs)
+
+    monkeypatch.setattr(scanner, "write_output_file", fail_spdx_output)
+    success = run_main(
+        mode_list=["source"], path_arg=[str(project)], dep_arguments="",
+        output_file_or_dir=str(output), file_format=formats, url_to_analyze="",
+        hide_progressbar=True, num_cores=0, selected_source_scanner="scancode", correct_mode=False,
+        ui_mode=ui_mode,
+    )
+
+    assert bool(list(output.glob("*.json"))) is ui_mode
+    assert success is False
+
+
+def _assert_scanner_report(report, format_name):
+    import json
+    import xml.etree.ElementTree as element_tree
+    import yaml
+    from spdx_tools.spdx.parser.parse_anything import parse_file
+    from spdx_tools.spdx.validation.document_validator import validate_full_spdx_document
+
+    if format_name.startswith("spdx"):
+        document = parse_file(str(report))
+        assert validate_full_spdx_document(document) == []
+        assert {file.name for file in document.files} == {"./main.c"}
+        assert document.extracted_licensing_info[0].extracted_text == "Example license terms."
+    elif format_name == "cyclonedx-xml":
+        root = element_tree.parse(report).getroot()
+        assert root.tag.startswith("{http://cyclonedx.org/schema/bom/")
+        assert root.tag.endswith("}bom")
+    elif format_name == "yaml":
+        contents = yaml.safe_load(report.read_text(encoding="utf-8"))
+        assert "main.c" in str(contents)
+        assert "Example-License" in str(contents)
+        assert "spdxVersion" not in contents
+    else:
+        contents = json.loads(report.read_text(encoding="utf-8"))
+        if format_name == "opossum":
+            assert "resources" in contents
+            assert "externalAttributions" in contents
+        elif format_name == "ui":
+            assert any(file["path"] == "project/main.c" for file in contents["files"])
+            assert "spdxVersion" not in contents
+            assert "bomFormat" not in contents
+        else:
+            assert contents["bomFormat"] == "CycloneDX"
+
+
+@pytest.mark.parametrize("formats, extension", [
+    (["yaml", "spdx-yaml"], ".yaml"),
+    (["opossum", "spdx-json"], ".json"),
+    (["opossum", "cyclonedx-json"], ".json"),
+    (["spdx-json", "cyclonedx-json"], ".json"),
+    (["spdx-xml", "cyclonedx-xml"], ".xml"),
+    (["opossum", "spdx-json", "cyclonedx-json"], ".json"),
+])
+@pytest.mark.parametrize("reverse", [False, True])
+@pytest.mark.parametrize("ui_mode", [False, True])
+def test_shared_extension_reports_keep_distinct_files(spdx_scanner_project, formats, extension, reverse, ui_mode):
+    project, output, *_ = spdx_scanner_project
+    formats = list(reversed(formats)) if reverse else formats
+
+    success = run_main(
+        mode_list=["source"], path_arg=[str(project)], dep_arguments="",
+        output_file_or_dir=str(output / f"report{extension}"), file_format=formats, url_to_analyze="",
+        hide_progressbar=True, num_cores=0, selected_source_scanner="scancode", correct_mode=False, ui_mode=ui_mode,
+    )
+
+    assert success is True
+    expected = {f"report_{format_name}{extension}" for format_name in formats}
+    if ui_mode and extension == ".json":
+        expected.add("report.json")
+    assert {report.name for report in output.glob(f"*{extension}")} == expected
+    for format_name in formats:
+        _assert_scanner_report(output / f"report_{format_name}{extension}", format_name)
+    if ui_mode:
+        _assert_scanner_report(output / "report.json", "ui")
+
+
+@pytest.mark.parametrize("format_name", ["opossum", "spdx-json", "cyclonedx-json"])
+@pytest.mark.parametrize("output_mode", ["file", "directory", "default"])
+def test_ui_json_report_does_not_overwrite_requested_report(spdx_scanner_project, format_name, output_mode):
+    project, output, *_ = spdx_scanner_project
+    output_argument = str(output / "report.json") if output_mode == "file" else str(output)
+    if output_mode == "default":
+        output_argument = ""
+        output = project.parent
+
+    success = run_main(
+        mode_list=["source"], path_arg=[str(project)], dep_arguments="",
+        output_file_or_dir=output_argument, file_format=[format_name], url_to_analyze="",
+        hide_progressbar=True, num_cores=0, selected_source_scanner="scancode", correct_mode=False, ui_mode=True,
+    )
+
+    assert success is True
+    reports = list(output.glob("*.json"))
+    assert len(reports) == 2
+    report, = [report for report in reports if not report.stem.endswith("_ui")]
+    if output_mode == "file":
+        assert report.name == "report.json"
+    _assert_scanner_report(report, format_name)
+    ui_report = report.with_name(f"{report.stem}_ui.json")
+    _assert_scanner_report(ui_report, "ui")
+
+
+@pytest.mark.parametrize("output_name, formats, ui_mode, expected", [
+    ("report.yaml", ["yaml"], False, {"report.yaml"}),
+    ("report.yaml", ["yaml"], True, {"report.yaml", "report.json"}),
+    ("report.xlsx", ["excel"], True, {"report.xlsx", "report.json"}),
+    ("report.xlsx", ["excel", "spdx-json"], True, {"report.xlsx", "report.json", "report_ui.json"}),
+    ("report.yaml", ["yaml", "spdx-json"], True, {"report.yaml", "report.json", "report_ui.json"}),
+    ("report.yaml", ["spdx-yaml", "spdx-json"], True, {"report.yaml", "report.json", "report_ui.json"}),
+])
+def test_noncolliding_report_names_are_preserved(spdx_scanner_project, output_name, formats, ui_mode, expected):
+    project, output, *_ = spdx_scanner_project
+
+    success = run_main(
+        mode_list=["source"], path_arg=[str(project)], dep_arguments="",
+        output_file_or_dir=str(output / output_name), file_format=formats, url_to_analyze="",
+        hide_progressbar=True, num_cores=0, selected_source_scanner="scancode", correct_mode=False, ui_mode=ui_mode,
+    )
+
+    assert success is True
+    assert {report.name for report in output.iterdir() if report.is_file()} == expected
+    if "spdx-json" in formats:
+        _assert_scanner_report(output / "report.json", "spdx-json")
+    if ui_mode:
+        _assert_scanner_report(output / ("report_ui.json" if "spdx-json" in formats else "report.json"), "ui")
+
+
+@pytest.mark.parametrize("format_name, extension", [("yaml", ".yaml"), ("spdx-json", ".json")])
+def test_duplicate_report_formats_fail_before_writing(spdx_scanner_project, monkeypatch, caplog, format_name, extension):
+    project, output, *_ = spdx_scanner_project
+    written = []
+    original_writer = scanner.write_output_file
+
+    def record_write(*args, **kwargs):
+        written.append(args[0])
+        return original_writer(*args, **kwargs)
+
+    monkeypatch.setattr(scanner, "write_output_file", record_write)
+    success = run_main(
+        mode_list=["source"], path_arg=[str(project)], dep_arguments="",
+        output_file_or_dir=str(output / f"report{extension}"), file_format=[format_name, format_name], url_to_analyze="",
+        hide_progressbar=True, num_cores=0, selected_source_scanner="scancode", correct_mode=False,
+    )
+
+    assert written == []
+    assert success is False
+    assert "Requested report output paths must be distinct." in caplog.text
+
+
+@pytest.mark.parametrize("output_files, formats, extension, ui_mode, error_message", [
+    (["report", "report", "report_yaml"], ["yaml", "spdx-yaml", "yaml"], ".yaml", False,
+     "Requested report output paths must be distinct."),
+    (["report", "report_ui"], ["spdx-json", "opossum"], ".json", True,
+     "UI report output path conflicts with a requested report."),
+])
+def test_renamed_report_path_collision_fails_before_writing(
+        spdx_scanner_project, monkeypatch, caplog, output_files, formats, extension, ui_mode, error_message):
+    project, output, *_ = spdx_scanner_project
+    written = []
+    ui_reports = []
+    report_results = []
+    original_output_files = list(output_files)
+    monkeypatch.setattr(scanner, "write_output_file", lambda *args, **kwargs: written.append(args[0]))
+    monkeypatch.setattr(scanner, "create_scancodejson", lambda *args, **kwargs: ui_reports.append(args[1]))
+    reports, _ = run_scanner(
+        str(project), "", str(output), run_bin=False, run_dep=False, remove_src_data=False,
+        output_files=output_files, output_extensions=[extension] * len(formats), formats=formats,
+        selected_source_scanner="scancode", correct_mode=False, ui_mode=ui_mode, report_results=report_results,
+    )
+
+    assert written == []
+    assert ui_reports == []
+    assert report_results == []
+    assert output_files == original_output_files
+    assert reports == []
+    assert error_message in caplog.text
+
+
 SRC_OK = (True, "True", ScannerItem(FOSSLIGHT_SOURCE, ""), [], [])
 BIN_OK = (True, ScannerItem(FOSSLIGHT_BINARY, ""))
 DEP_OK = (True, ScannerItem(FOSSLIGHT_DEPENDENCY, ""))
@@ -330,13 +761,14 @@ def test_run_main_reports_only_successfully_moved_paths(tmp_path, monkeypatch, c
     destination.write_text("old report")
     reports = []
 
-    def fake_run_scanner(src_path, dep_arguments, output_path, *args):
+    def fake_run_scanner(src_path, dep_arguments, output_path, *args, report_results):
         report = Path(output_path) / relative_report
         report.parent.mkdir(parents=True, exist_ok=True)
         report.write_text("current report")
         delivered = Path(output_path) / "delivered.yaml"
         delivered.write_text("another report")
         reports.extend([report, delivered])
+        report_results.append((True, "", str(report)))
         return [str(report), str(delivered)], []
 
     real_move = shutil.move
